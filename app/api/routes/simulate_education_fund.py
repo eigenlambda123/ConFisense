@@ -43,7 +43,7 @@ def simulate_education_fund_route(data: EducationFundInput):
         log = SimulationLog(
             scenario="debt_management",
             input_data=data.model_dump(),
-            output_data=result,
+            output_data=response,
         )
         session.add(log)
         session.commit()

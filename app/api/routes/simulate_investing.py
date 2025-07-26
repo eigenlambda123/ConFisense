@@ -45,7 +45,7 @@ def simulate_investing_route(data: InvestmentInput):
         log = SimulationLog(
             scenario="debt_management",
             input_data=data.model_dump(),
-            output_data=result,
+            output_data=response,
         )
         session.add(log)
         session.commit()

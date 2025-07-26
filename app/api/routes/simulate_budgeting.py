@@ -40,7 +40,7 @@ def simulate_budgeting_route(data: BudgetInput):
         log = SimulationLog(
             scenario="budgeting",
             input_data=data.model_dump(),
-            output_data=result,
+            output_data=response,
         )
         session.add(log)
         session.commit()
