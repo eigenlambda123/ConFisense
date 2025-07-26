@@ -1,7 +1,9 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-from datetime import datetime
+from sqlalchemy import Column
 from sqlalchemy.dialects.sqlite import JSON
+from datetime import datetime
+
 
 class SimulationLog(SQLModel, table=True):
     """
@@ -9,6 +11,6 @@ class SimulationLog(SQLModel, table=True):
     """
     id: Optional[int] = Field(default=None, primary_key=True)
     scenario: str
-    input_data: JSON
-    output_data: JSON
+    input_data: dict = Field(sa_column=Column(JSON))
+    output_data: dict = Field(sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=datetime.utcnow)
