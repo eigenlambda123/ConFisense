@@ -34,3 +34,22 @@ class BudgetInput(BaseModel):
         ...,
         description="Target savings amount for the budget simulation"
     )
+
+
+class DebtManagementInput(BaseModel):
+    debt: float = Field(
+        ...,
+        description="Total debt amount for the debt management simulation"
+    )
+    monthly_payment: float = Field(
+        ...,
+        description="Monthly payment towards the debt"
+    )
+    interest_rate: float = Field(
+        ...,
+        description="Annual interest rate on the debt"
+    )
+    extra_payment: float = Field(
+        ...,
+        description="Extra payment towards the debt (if any)"
+    )
