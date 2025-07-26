@@ -2,6 +2,11 @@ from fastapi import APIRouter
 from app.schemas.simulation_inputs import BudgetInput
 from app.services.simulation_logic import simulate_budgeting
 
+# logging imports
+from app.models.log import SimulationLog
+from app.db.session import get_session
+
+
 router = APIRouter()
 
 @router.post("/simulate/budgeting")
@@ -23,9 +28,21 @@ def simulate_budgeting_route(data: BudgetInput):
         target_savings=data.target_savings,
     )
 
-    return {
+    response = {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],
         "summary": result["summary"],
         "math_explanation": result["math_explanation"]
     }
+
+    # Log the simulation inputs and outputs to Database
+    with get_session() as session:
+        log = SimulationLog(
+            scenario="budgeting",
+            input_data=data.model_dump(),
+            output_data=result,
+        )
+        session.add(log)
+        session.commit()
+
+    return response
