@@ -243,7 +243,6 @@ def simulate_education_fund(today_cost, years, current_savings, monthly_contrib,
 
     return {
         "data": [fv_savings, future_cost],
-        # need to add exact val
         "summary": f"You will {'exceed' if gap >= 0 else 'fall short by'} ₱{abs(gap):,.0f} in {years} years.",
         "math_explanation": {
             "title": "The 'Glass Box': How We Calculate",
