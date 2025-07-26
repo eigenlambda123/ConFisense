@@ -5,7 +5,7 @@ from typing import Optional
 class EmergencyFundInput(BaseModel):
     target: float = Field(
         ...,
-        description="Target for the simulation, default is 'emergency_fund'"
+        description="Target amount for the emergency fund simulation"
     )
     monthly_contrib: float = Field(
         ...,
@@ -28,7 +28,7 @@ class BudgetInput(BaseModel):
     )
     discretionary_pct: float = Field(
         ...,
-        description="Percentage of income allocated to discretionary spending"
+        description="Percentage of income allocated to discretionary spending (0-100)"
     )
     target_savings: float = Field(
         ...,
@@ -50,8 +50,8 @@ class DebtManagementInput(BaseModel):
         description="Annual interest rate on the debt"
     )
     extra_payment: float = Field(
-        ...,
-        description="Extra payment towards the debt (if any)"
+        0.0,
+        description="Extra payment towards the debt (zero allowed; defaults to 0 if omitted)"
     )
 
 
@@ -108,7 +108,7 @@ class MajorPurchaseInput(BaseModel):
     )
     down_pct: float = Field(
         ...,
-        description="Down payment percentage for the major purchase"
+        description="Down payment percentage for the major purchase (0-100)"
     )
     years_to_save: int = Field(
         ...,
