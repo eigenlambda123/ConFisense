@@ -17,7 +17,7 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
     - loan_rate: Expected annual interest rate on the loan
     - loan_term: Number of years for the loan repayment
     """
-    return simulate_major_purchase(
+    result = simulate_major_purchase(
         price=data.price,
         down_pct=data.down_pct,
         years_to_save=data.years_to_save,
