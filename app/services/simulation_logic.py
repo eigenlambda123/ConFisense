@@ -32,7 +32,7 @@ def simulate_emergency_fund(target, monthly_contrib, current_savings):
                 },
                 {
                     "heading": "2. Formula",
-                    # condition need fixing
+                    # TODO: condition need fixing
                     "items": [
                         "Time in Months = (Target - Current) / Monthly Contribution",
                         "*If contribution is ₱0 and savings < target, goal is unreachable.*"
