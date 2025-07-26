@@ -17,6 +17,15 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
     - loan_rate: Expected annual interest rate on the loan
     - loan_term: Number of years for the loan repayment
     """
+
+    if not (0 <= data.down_pct <= 100):
+        raise ValueError("Down payment percentage must be between 0 and 100")
+    if any(x < 0 for x in [data.current_savings, data.monthly_contrib, data.savings_return, data.loan_rate]) or \
+       any(y <= 0 for y in [data.years_to_save, data.loan_term, data.price]):
+        raise ValueError("Invalid input values for major purchase simulation")
+    if data.monthly_contrib > data.current_savings:
+        raise ValueError("Monthly contribution cannot exceed current savings")
+    
     result = simulate_major_purchase(
         price=data.price,
         down_pct=data.down_pct,

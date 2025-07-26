@@ -13,6 +13,14 @@ def simulate_investing_route(data: InvestmentInput):
     - return_rate: Expected annual return rate on the investment
     - years: Number of years to simulate the investment
     """
+
+    if any(x < 0 for x in [data.initial, data.monthly, data.return_rate, data.years]):
+        raise ValueError("All inputs must be non-negative values")
+    if data.monthly > data.initial:
+        raise ValueError("Monthly investment cannot exceed initial investment")
+    if data.monthly == 0 and data.initial == 0:
+        raise ValueError("At least one of initial or monthly investment must be greater than zero")
+    
     result = simulate_investing(
         initial=data.initial,
         monthly=data.monthly,

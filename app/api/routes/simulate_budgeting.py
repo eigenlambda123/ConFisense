@@ -13,6 +13,9 @@ def simulate_budgeting_route(data: BudgetInput):
     - discretionary_pct: Percentage of income allocated to discretionary spending
     - target_savings: Target savings amount for the budget simulation
     """
+    if data.discretionary_pct < 0 or data.discretionary_pct > 100:
+        raise ValueError("Discretionary percentage must be between 0 and 100")
+
     result = simulate_budgeting(
         income=data.income,
         fixed_expenses=data.fixed_expenses,
@@ -20,10 +23,6 @@ def simulate_budgeting_route(data: BudgetInput):
         target_savings=data.target_savings,
     )
 
-    # labels: sequence numbers for each value in 'values' (currently just [1, 2])
-    # values: [current_savings, target]
-    # summary is the result of how long it will take to reach the target
-    # math_explanation is the "show my math"
     return {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],
