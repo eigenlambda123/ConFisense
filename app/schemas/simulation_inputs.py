@@ -53,3 +53,22 @@ class DebtManagementInput(BaseModel):
         ...,
         description="Extra payment towards the debt (if any)"
     )
+
+
+class InvestmentInput(BaseModel):
+    initial: float = Field(
+        ...,
+        description="Initial investment amount"
+    )
+    monthly: float = Field(
+        ...,
+        description="Monthly contribution to the investment"
+    )
+    return_rate: float = Field(
+        ...,
+        description="Expected annual return rate on the investment"
+    )
+    years: int = Field(
+        ...,
+        description="Number of years for the investment simulation"
+    )

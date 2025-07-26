@@ -3,7 +3,8 @@ from app.db.base import init_db
 from app.api.routes import (
     simulate_emergency,
     simulate_budgeting,
-    simulate_debt_management
+    simulate_debt_management,
+    simulate_investing
 )
 
 
@@ -17,3 +18,4 @@ def on_startup():
 app.include_router(simulate_emergency.router)
 app.include_router(simulate_budgeting.router)
 app.include_router(simulate_debt_management.router)
+app.include_router(simulate_investing.router)
