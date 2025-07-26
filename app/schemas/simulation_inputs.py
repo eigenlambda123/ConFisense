@@ -72,3 +72,30 @@ class InvestmentInput(BaseModel):
         ...,
         description="Number of years for the investment simulation"
     )
+
+
+class EducationFundInput(BaseModel):
+    today_cost: float = Field(
+        ...,
+        description="Today's cost of the education"
+    )
+    years: int = Field(
+        ...,
+        description="Number of years until the education expense is incurred"
+    )
+    current_savings: float = Field(
+        ...,
+        description="Current savings amount for the education fund"
+    )
+    monthly_contrib: float = Field(
+        ...,
+        description="Monthly contribution to the education fund"
+    )
+    return_rate: float = Field(
+        ...,
+        description="Expected annual return rate on the education fund"
+    )
+    inflation_rate: float = Field(
+        ...,
+        description="Expected annual inflation rate for education costs"
+    )
