@@ -5,7 +5,8 @@ from app.api.routes import (
     simulate_budgeting,
     simulate_debt_management,
     simulate_investing,
-    simulate_education_fund
+    simulate_education_fund,
+    simulate_major_purchase
 )
 
 
@@ -21,3 +22,4 @@ app.include_router(simulate_budgeting.router)
 app.include_router(simulate_debt_management.router)
 app.include_router(simulate_investing.router)
 app.include_router(simulate_education_fund.router)
+app.include_router(simulate_major_purchase.router)

@@ -99,3 +99,38 @@ class EducationFundInput(BaseModel):
         ...,
         description="Expected annual inflation rate for education costs"
     )
+
+
+class MajorPurchaseInput(BaseModel):
+    price: float = Field(
+        ...,
+        description="Price of the major purchase"
+    )
+    down_pct: float = Field(
+        ...,
+        description="Down payment percentage for the major purchase"
+    )
+    years_to_save: int = Field(
+        ...,
+        description="Number of years to save for the major purchase"
+    )
+    current_savings: float = Field(
+        ...,
+        description="Current savings amount for the major purchase"
+    )
+    monthly_contrib: float = Field(
+        ...,
+        description="Monthly contribution towards the major purchase"
+    )
+    savings_return: float = Field(
+        ...,
+        description="Expected annual return rate on savings for the major purchase"
+    )
+    loan_rate: float = Field(
+        ...,
+        description="Annual interest rate on the loan for the major purchase"
+    )
+    loan_term: int = Field(
+        ...,
+        description="Loan term in years for the major purchase"
+    )
