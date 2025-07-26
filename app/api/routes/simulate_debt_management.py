@@ -4,7 +4,7 @@ from app.services.simulation_logic import simulate_debt_management
 
 router = APIRouter()
 
-@router.post("/simulate/debt_management")
+@router.post("/simulate/debt-management")
 def simulate_debt_management_route(data: DebtManagementInput):
     """
     POST endpoint to simulate debt management with user inputs:

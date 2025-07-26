@@ -4,7 +4,7 @@ from app.services.simulation_logic import simulate_education_fund
 
 router = APIRouter()
 
-@router.post("/simulate/education_fund")
+@router.post("/simulate/education-fund")
 def simulate_education_fund_route(data: EducationFundInput):
     """
     POST endpoint to simulate education fund savings with user inputs:
