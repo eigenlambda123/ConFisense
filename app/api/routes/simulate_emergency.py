@@ -5,7 +5,7 @@ from app.services.simulation_logic import simulate_emergency_fund
 router = APIRouter()
 
 @router.post("/simulate/emergency_fund")
-def simulate_emergency(data: EmergencyFundInput):
+def simulate_emergency_route(data: EmergencyFundInput):
     """
     POST endpoint to simulate emergency fund growth with user inputs:
     - target: Target amount for the emergency fund
