@@ -43,12 +43,18 @@ def simulate_education_fund_route(data: EducationFundInput):
 
 
     # Generate AI explanation for the education fund simulation
-    ai_explanation = generate_ai_explanation(
-        scenario="education_fund",
-        input_data=data.model_dump(),
-        output_data=response
-    )
-    response["ai_explanation"] = ai_explanation
+    try:
+        ai_explanation = generate_ai_explanation(
+            scenario="education_fund",
+            input_data=data.model_dump(),
+            output_data=response
+        )
+        response["ai_explanation"] = ai_explanation
+        
+    except Exception as e:
+        ai_explanation = "An AI explanation couldn't be generated at the moment."
+        # Log the error
+        print(f"AI error: {e}")
 
 
 

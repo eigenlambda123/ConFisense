@@ -6,6 +6,9 @@ from app.services.simulation_logic import simulate_major_purchase
 from app.models.log import SimulationLog
 from app.db.session import get_session
 
+# ai explaination imports
+from app.services.ai_explainer import generate_ai_explanation
+
 router = APIRouter()
 
 @router.post("/simulate/major-purchase")
@@ -48,10 +51,24 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
         "math_explanation": result["math_explanation"]
     }
 
+    # Generate AI explanation for the major purchase simulation
+    try:
+        ai_explanation = generate_ai_explanation(
+            scenario="major_purchase",
+            input_data=data.model_dump(),
+            output_data=response
+        )
+        response["ai_explanation"] = ai_explanation
+        
+    except Exception as e:
+        ai_explanation = "An AI explanation couldn't be generated at the moment."
+        # Log the error
+        print(f"AI error: {e}")
+
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
         log = SimulationLog(
-            scenario="debt_management",
+            scenario="major_purchase",
             input_data=data.model_dump(),
             output_data=response,
         )
