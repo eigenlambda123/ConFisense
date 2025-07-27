@@ -6,6 +6,9 @@ from app.services.simulation_logic import simulate_education_fund
 from app.models.log import SimulationLog
 from app.db.session import get_session
 
+# ai explaination imports
+from app.services.ai_explainer import generate_ai_explanation
+
 router = APIRouter()
 
 @router.post("/simulate/education-fund")
@@ -38,10 +41,21 @@ def simulate_education_fund_route(data: EducationFundInput):
         "math_explanation": result["math_explanation"]
     }
 
+
+    # Generate AI explanation for the education fund simulation
+    ai_explanation = generate_ai_explanation(
+        scenario="education_fund",
+        input_data=data.model_dump(),
+        output_data=response
+    )
+    response["ai_explanation"] = ai_explanation
+
+
+
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
         log = SimulationLog(
-            scenario="debt_management",
+            scenario="education_fund",
             input_data=data.model_dump(),
             output_data=response,
         )
