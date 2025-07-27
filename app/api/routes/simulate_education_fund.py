@@ -21,9 +21,23 @@ def simulate_education_fund_route(data: EducationFundInput):
     - years_to_save: Number of years to save for education
     """
 
-    # catch division zero error and other invalid inputs
-    if data.years <= 0 or data.monthly_contrib < 0 or data.current_savings < 0:
-        raise ValueError("Invalid input values for education fund simulation")
+    # Exception handling for input validation
+    if any(x < 0 for x in [data.current_savings, data.monthly_contrib, data.return_rate, data.inflation_rate]):
+        raise ValueError("All inputs must be non-negative values")
+    if data.monthly_contrib > data.current_savings:
+        raise ValueError("Monthly contribution cannot exceed current savings")
+    if data.monthly_contrib == 0 and data.current_savings == 0:
+        raise ValueError("At least one of current savings or monthly contribution must be greater than zero")
+    if not (0 <= data.inflation_rate <= 100):
+        raise ValueError("Inflation rate must be between 0 and 100")
+    if not (0 <= data.return_rate <= 100):
+        raise ValueError("Return rate must be between 0 and 100")
+    if getattr(data, "years", 0) <= 0 or getattr(data, "years_to_save", 0) <= 0:
+        raise ValueError("Years to save must be greater than zero")
+    if getattr(data, "today_cost", 0) <= 0:
+        raise ValueError("Today's cost must be greater than zero")
+
+    
 
     result = simulate_education_fund(
         today_cost=data.today_cost,
@@ -50,7 +64,7 @@ def simulate_education_fund_route(data: EducationFundInput):
             output_data=response
         )
         response["ai_explanation"] = ai_explanation
-        
+
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
         # Log the error
