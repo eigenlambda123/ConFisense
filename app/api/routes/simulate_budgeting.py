@@ -47,6 +47,7 @@ def simulate_budgeting_route(data: BudgetInput):
         target_savings=data.target_savings,
     )
 
+    # TODO: instead of using dict as a response, create a Pydantic model for the response
     response = {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],

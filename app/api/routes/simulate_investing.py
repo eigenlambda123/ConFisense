@@ -21,6 +21,7 @@ def simulate_investing_route(data: InvestmentInput):
     - years: Number of years to simulate the investment
     """
 
+    # TODO: Add exception handling for input validation
     if any(x < 0 for x in [data.initial, data.monthly, data.return_rate, data.years]):
         raise ValueError("All inputs must be non-negative values")
     if data.monthly > data.initial:
@@ -36,6 +37,7 @@ def simulate_investing_route(data: InvestmentInput):
         years=data.years,
     )
 
+    # TODO: instead of using dict as a response, create a Pydantic model for the response
     response = {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],

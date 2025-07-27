@@ -48,6 +48,7 @@ def simulate_debt_management_route(data: DebtManagementInput):
         extra_payment=data.extra_payment,
     )
 
+    # TODO: instead of using dict as a response, create a Pydantic model for the response
     response = {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],

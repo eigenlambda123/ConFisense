@@ -48,6 +48,7 @@ def simulate_education_fund_route(data: EducationFundInput):
         inflation_rate=data.inflation_rate
     )
 
+    # TODO: instead of using dict as a response, create a Pydantic model for the response
     response = {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],

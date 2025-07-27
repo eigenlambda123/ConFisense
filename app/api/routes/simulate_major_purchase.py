@@ -23,8 +23,9 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
     - savings_return: Expected annual return rate on the savings
     - loan_rate: Expected annual interest rate on the loan
     - loan_term: Number of years for the loan repayment
-    """
+    """ 
 
+    # TODO: Add exception handling for input validation
     if not (0 <= data.down_pct <= 100):
         raise ValueError("Down payment percentage must be between 0 and 100")
     if any(x < 0 for x in [data.current_savings, data.monthly_contrib, data.savings_return, data.loan_rate]) or \
@@ -44,6 +45,7 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
         loan_term=data.loan_term
     )
 
+    # TODO: instead of using dict as a response, create a Pydantic model for the response
     response = {
         "labels": list(range(1, len(result["data"]) + 1)),
         "values": result["data"],
@@ -59,7 +61,7 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
             output_data=response
         )
         response["ai_explanation"] = ai_explanation
-        
+
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
         # Log the error

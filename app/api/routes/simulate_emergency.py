@@ -19,12 +19,18 @@ def simulate_emergency_route(data: EmergencyFundInput):
     - monthly_contrib: Monthly contribution towards the fund
     - current_savings: Current savings amount
     """
+
+    # TODO: Add exception handling for input validation
+
+
     result = simulate_emergency_fund(
         target=data.target,
         monthly_contrib=data.monthly_contrib,
         current_savings=data.current_savings,
     )
 
+
+    # TODO: instead of using dict as a response, create a Pydantic model for the response
     # labels: sequence numbers for each value in 'values' (currently just [1, 2])
     # values: [current_savings, target]
     # summary is the result of how long it will take to reach the target
@@ -45,7 +51,7 @@ def simulate_emergency_route(data: EmergencyFundInput):
             output_data=response
         )
         response["ai_explanation"] = ai_explanation
-        
+
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
         # Log the error
