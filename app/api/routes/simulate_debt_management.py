@@ -6,6 +6,9 @@ from app.services.simulation_logic import simulate_debt_management
 from app.models.log import SimulationLog
 from app.db.session import get_session
 
+# ai explaination imports
+from app.services.ai_explainer import generate_ai_explanation
+
 router = APIRouter()
 
 @router.post("/simulate/debt-management")
@@ -30,6 +33,16 @@ def simulate_debt_management_route(data: DebtManagementInput):
         "summary": result["summary"],
         "math_explanation": result["math_explanation"]
     }
+
+
+    # Generate AI explanation for the debt management simulation
+    ai_explanation = generate_ai_explanation(
+        scenario="debt_management",
+        input_data=data.model_dump(),
+        output_data=response
+    )
+    response["ai_explanation"] = ai_explanation
+
 
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
