@@ -6,6 +6,10 @@ from app.services.simulation_logic import simulate_debt_management
 from app.models.log import SimulationLog
 from app.db.session import get_session
 
+# Exception imports
+from fastapi import HTTPException
+from fastapi import status
+
 # ai explaination imports
 from app.services.ai_explainer import generate_ai_explanation
 
@@ -20,6 +24,24 @@ def simulate_debt_management_route(data: DebtManagementInput):
     - interest_rate: Annual interest rate on the debt
     - extra_payment: Extra payment towards the debt (if any)
     """
+    # Exception handling for input validation
+    checks = [
+        (data.debt < 0, "Debt must be non-negative"),
+        (data.monthly_payment < 0, "Monthly payment must be non-negative"),
+        (data.interest_rate < 0, "Interest rate must be non-negative"),
+        (data.extra_payment < 0, "Extra payment must be non-negative"),
+        (data.monthly_payment > data.debt, "Monthly payment cannot exceed total debt"),
+        (data.extra_payment > data.monthly_payment, "Extra payment cannot exceed monthly payment"),
+        (data.debt == 0 and data.monthly_payment == 0, "At least one of debt or monthly payment must be greater than zero"),
+        (data.interest_rate > 100, "Interest rate must be between 0 and 100"),
+        (data.extra_payment > 0 and data.monthly_payment == 0, "Monthly payment must be greater than zero if extra payment is made"),
+    ]
+    for condition, message in checks:
+        if condition:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message)
+
+
+
     result = simulate_debt_management(
         debt=data.debt,
         monthly_payment=data.monthly_payment,
@@ -43,7 +65,7 @@ def simulate_debt_management_route(data: DebtManagementInput):
             output_data=response
         )
         response["ai_explanation"] = ai_explanation
-        
+
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
         # Log the error
