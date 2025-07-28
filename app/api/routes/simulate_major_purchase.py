@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.simulation_inputs import MajorPurchaseInput
+from app.schemas.simulation_outputs import SimulationResponse
 from app.services.simulation_logic import simulate_major_purchase
 
 # logging imports
@@ -45,34 +46,35 @@ def simulate_major_purchase_route(data: MajorPurchaseInput):
         loan_term=data.loan_term
     )
 
-    # TODO: instead of using dict as a response, create a Pydantic model for the response
-    response = {
-        "labels": list(range(1, len(result["data"]) + 1)),
-        "values": result["data"],
-        "summary": result["summary"],
-        "math_explanation": result["math_explanation"]
-    }
-
     # Generate AI explanation for the major purchase simulation
     try:
         ai_explanation = generate_ai_explanation(
             scenario="major_purchase",
             input_data=data.model_dump(),
-            output_data=response
+            output_data=result
         )
-        response["ai_explanation"] = ai_explanation
 
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
         # Log the error
         print(f"AI error: {e}")
 
+    
+    # response data
+    response = SimulationResponse(
+        labels=list(range(1, len(result["data"]) + 1)),
+        values=result["data"],
+        summary=result["summary"],
+        math_explanation=result["math_explanation"],
+        ai_explanation=ai_explanation
+    )
+
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
         log = SimulationLog(
             scenario="major_purchase",
             input_data=data.model_dump(),
-            output_data=response,
+            output_data=response.model_dump(),
         )
         session.add(log)
         session.commit()
