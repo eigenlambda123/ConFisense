@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.simulation_inputs import EducationFundInput
+from app.schemas.simulation_outputs import SimulationResponse
 from app.services.simulation_logic import simulate_education_fund
 
 # logging imports
@@ -11,7 +12,7 @@ from app.services.ai_explainer import generate_ai_explanation
 
 router = APIRouter()
 
-@router.post("/simulate/education-fund")
+@router.post("/simulate/education-fund", response_model=SimulationResponse)
 def simulate_education_fund_route(data: EducationFundInput):
     """
     POST endpoint to simulate education fund savings with user inputs:
@@ -48,14 +49,6 @@ def simulate_education_fund_route(data: EducationFundInput):
         inflation_rate=data.inflation_rate
     )
 
-    # TODO: instead of using dict as a response, create a Pydantic model for the response
-    response = {
-        "labels": list(range(1, len(result["data"]) + 1)),
-        "values": result["data"],
-        "summary": result["summary"],
-        "math_explanation": result["math_explanation"]
-    }
-
 
     # Generate AI explanation for the education fund simulation
     try:
@@ -64,7 +57,6 @@ def simulate_education_fund_route(data: EducationFundInput):
             input_data=data.model_dump(),
             output_data=response
         )
-        response["ai_explanation"] = ai_explanation
 
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
@@ -72,13 +64,21 @@ def simulate_education_fund_route(data: EducationFundInput):
         print(f"AI error: {e}")
 
 
+    # response data
+    response = SimulationResponse(
+        labels=list(range(1, len(result["data"]) + 1)),
+        values=result["data"],
+        summary=result["summary"],
+        math_explanation=result["math_explanation"],
+        ai_explanation=ai_explanation
+    )
 
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
         log = SimulationLog(
             scenario="education_fund",
             input_data=data.model_dump(),
-            output_data=response,
+            output_data=response.model_dump(),
         )
         session.add(log)
         session.commit()
