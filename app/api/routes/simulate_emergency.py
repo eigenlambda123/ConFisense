@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.simulation_inputs import EmergencyFundInput
+from app.schemas.simulation_outputs import SimulationResponse
 from app.services.simulation_logic import simulate_emergency_fund
 
 # logging imports
@@ -11,7 +12,7 @@ from app.services.ai_explainer import generate_ai_explanation
 
 router = APIRouter()
 
-@router.post("/simulate/emergency-fund")
+@router.post("/simulate/emergency-fund", response_model=SimulationResponse)
 def simulate_emergency_route(data: EmergencyFundInput):
     """
     POST endpoint to simulate emergency fund growth with user inputs:
@@ -30,27 +31,13 @@ def simulate_emergency_route(data: EmergencyFundInput):
     )
 
 
-    # TODO: instead of using dict as a response, create a Pydantic model for the response
-    # labels: sequence numbers for each value in 'values' (currently just [1, 2])
-    # values: [current_savings, target]
-    # summary is the result of how long it will take to reach the target
-    # math_explanation is the "show my math"
-    response = {
-        "labels": list(range(1, len(result["data"]) + 1)),
-        "values": result["data"],
-        "value_descriptions": ["Current Savings", "Target Amount"],
-        "summary": result["summary"],
-        "math_explanation": result["math_explanation"]
-    }
-
     # Generate AI explanation for the emergency fund simulation
     try:
         ai_explanation = generate_ai_explanation(
             scenario="emergency_fund",
             input_data=data.model_dump(),
-            output_data=response
+            output_data=result
         )
-        response["ai_explanation"] = ai_explanation
 
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
@@ -58,12 +45,22 @@ def simulate_emergency_route(data: EmergencyFundInput):
         print(f"AI error: {e}")
 
 
+    # response data
+    response = SimulationResponse(
+        labels=list(range(1, len(result["data"]) + 1)),
+        values=result["data"],
+        summary=result["summary"],
+        math_explanation=result["math_explanation"],
+        ai_explanation=ai_explanation
+    )
+
+
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
         log = SimulationLog(
             scenario="emergency_fund",
             input_data=data.model_dump(),
-            output_data=response,
+            output_data=response.model_dump()
         )
         session.add(log)
         session.commit()
