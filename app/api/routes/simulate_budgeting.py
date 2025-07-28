@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.simulation_inputs import BudgetInput
-from app.schemas.simulation_outputs import BudgetSimulationResponse
+from app.schemas.simulation_outputs import SimulationResponse
 from app.services.simulation_logic import simulate_budgeting
 import json
 
@@ -18,7 +18,7 @@ from app.services.ai_explainer import generate_ai_explanation
 
 router = APIRouter()
 
-@router.post("/simulate/budgeting", response_model=BudgetSimulationResponse)
+@router.post("/simulate/budgeting", response_model=SimulationResponse)
 def simulate_budgeting_route(data: BudgetInput):
     """
     POST endpoint to simulate budgeting with user inputs:
@@ -68,7 +68,7 @@ def simulate_budgeting_route(data: BudgetInput):
     values = list(result["data"].values())
     math_explanation = result["math_explanation"]
 
-    response = BudgetSimulationResponse(
+    response = SimulationResponse(
         labels=list(range(1, len(values) + 1)),
         values=values,
         summary=result["summary"],
