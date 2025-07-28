@@ -56,7 +56,6 @@ def simulate_debt_management_route(data: DebtManagementInput):
             input_data=data.model_dump(),
             output_data=result
         )
-        response["ai_explanation"] = ai_explanation
 
     except Exception as e:
         ai_explanation = "An AI explanation couldn't be generated at the moment."
@@ -68,7 +67,8 @@ def simulate_debt_management_route(data: DebtManagementInput):
         labels=list(range(1, len(result["data"]) + 1)),
         values=result["data"],
         summary=result["summary"],
-        math_explanation=result["math_explanation"]
+        math_explanation=result["math_explanation"],
+        ai_explanation=ai_explanation
     )
 
 
@@ -77,7 +77,7 @@ def simulate_debt_management_route(data: DebtManagementInput):
         log = SimulationLog(
             scenario="debt_management",
             input_data=data.model_dump(),
-            output_data=response,
+            output_data=response.model_dump(),
         )
         session.add(log)
         session.commit()
