@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.simulation_inputs import DebtManagementInput
+from app.schemas.simulation_outputs import SimulationResponse
 from app.services.simulation_logic import simulate_debt_management
 
 # logging imports
@@ -15,7 +16,7 @@ from app.services.ai_explainer import generate_ai_explanation
 
 router = APIRouter()
 
-@router.post("/simulate/debt-management")
+@router.post("/simulate/debt-management", response_model=SimulationResponse)
 def simulate_debt_management_route(data: DebtManagementInput):
     """
     POST endpoint to simulate debt management with user inputs:
@@ -48,21 +49,12 @@ def simulate_debt_management_route(data: DebtManagementInput):
         extra_payment=data.extra_payment,
     )
 
-    # TODO: instead of using dict as a response, create a Pydantic model for the response
-    response = {
-        "labels": list(range(1, len(result["data"]) + 1)),
-        "values": result["data"],
-        "summary": result["summary"],
-        "math_explanation": result["math_explanation"]
-    }
-
-
     # Generate AI explanation for the debt management simulation
     try:
         ai_explanation = generate_ai_explanation(
             scenario="debt_management",
             input_data=data.model_dump(),
-            output_data=response
+            output_data=result
         )
         response["ai_explanation"] = ai_explanation
 
@@ -70,6 +62,14 @@ def simulate_debt_management_route(data: DebtManagementInput):
         ai_explanation = "An AI explanation couldn't be generated at the moment."
         # Log the error
         print(f"AI error: {e}")
+
+    # response data 
+    response = SimulationResponse(
+        labels=list(range(1, len(result["data"]) + 1)),
+        values=result["data"],
+        summary=result["summary"],
+        math_explanation=result["math_explanation"]
+    )
 
 
     # Log the simulation inputs and outputs to Database
