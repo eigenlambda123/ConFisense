@@ -55,7 +55,7 @@ def simulate_education_fund_route(data: EducationFundInput):
         ai_explanation = generate_ai_explanation(
             scenario="education_fund",
             input_data=data.model_dump(),
-            output_data=response
+            output_data=result
         )
 
     except Exception as e:
