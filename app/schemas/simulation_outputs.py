@@ -2,8 +2,8 @@ from pydantic import BaseModel
 from typing import List, Any, Optional
 
 
-class BudgetSimulationResponse(BaseModel):
-    """Response model for budget simulation"""
+class SimulationResponse(BaseModel):
+    """Base class for simulation responses"""
     labels: List[int]                       
     values: List[float]                     
     summary: str                            
