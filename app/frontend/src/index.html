@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./output.css" rel="stylesheet">
-    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="app.js"></script>
     <title>ConFiSense</title>
 </head>
 <body class="bg-linear-to-b from-[#060e27] to-blue-900 bg-no-repeat bg-fixed bg-cover">
@@ -13,7 +14,7 @@
             <div class="flex flex-row items-center gap-4">
                 <button aria-label="Open menu" class="btn p-1 hover:bg-[#374151]" >
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                    <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                     </svg>
                 </button>
                 <div class="flex flex-col">
@@ -40,7 +41,7 @@
                     <h4 class="text-[#7c8491] text-xs min-[850px]:text-sm lg:text-base">Select a scenario to model outcomes and reduce uncertainty before you act.</h4>
                 </div>
                 <div id="card-grid" class="grid grid-cols-1 min-[550px]:grid-cols-2 min-[850px]:grid-cols-3 gap-6 h-full w-full">
-                    <button class="btn card-btn" onclick="showDashboard(this)" data-scenario="emergency_fund">
+                    <button id="card-btn" class="btn card-btn" data-scenario="emergency_fund">
                         <div class="card-info">
                             <h1 class="scenario-icon">🛡️</h1>
                             <h2 class="scenario-name">Emergency Fund</h2>
@@ -48,7 +49,7 @@
                             <p class="scenario-info scenario-tip">For handling unexpected expenses.</p>
                         </div>
                     </button>
-                    <button class="btn card-btn" onclick="showDashboard(this)" data-scenario="budgeting">
+                    <button id="card-btn" class="btn card-btn" data-scenario="budgeting">
                         <div class="card-info">
                             <h1 class="scenario-icon">📃</h1>
                             <h2 class="scenario-name">Budgeting and Expenses</h2>
@@ -56,7 +57,7 @@
                             <p class="scenario-info scenario-tip">To understand where your money goes.</p>
                         </div>
                     </button>
-                    <button class="btn card-btn" onclick="showDashboard(this)" data-scenario="debt_management">
+                    <button id="card-btn" class="btn card-btn" data-scenario="debt_management">
                         <div class="card-info">
                             <h1 class="scenario-icon">💳</h1>
                             <h2 class="scenario-name">Debt Management</h2>
@@ -64,7 +65,7 @@
                             <p class="scenario-info scenario-tip">For credits and loans.</p>
                         </div>
                     </button>
-                    <button class="btn card-btn" onclick="showDashboard(this)" data-scenario="investing">
+                    <button id="card-btn" class="btn card-btn" data-scenario="investing">
                         <div class="card-info">
                             <h1 class="scenario-icon">📈</h1>
                             <h2 class="scenario-name">Savings and Investment</h2>
@@ -72,7 +73,7 @@
                             <p class="scenario-info scenario-tip">For long-term goals like retirement.</p>
                         </div>
                     </button>
-                    <button class="btn card-btn" onclick="showDashboard(this)" data-scenario="education_funding">
+                    <button id="card-btn" class="btn card-btn" data-scenario="education_funding">
                         <div class="card-info">
                             <h1 class="scenario-icon">🎓</h1>
                             <h2 class="scenario-name">Education Funding</h2>
@@ -80,7 +81,7 @@
                             <p class="scenario-info scenario-tip">For yourself or your children.</p>
                         </div>
                     </button>
-                    <button class="btn card-btn" onclick="showDashboard(this)" data-scenario="major_purchase">
+                    <button id="card-btn" class="btn card-btn" data-scenario="major_purchase">
                         <div class="card-info">
                             <h1 class="scenario-icon">🏡</h1>
                             <h2 class="scenario-name">Major Purchase Planning</h2>
@@ -92,13 +93,15 @@
             </div>
             <!-- Scenario Dashboard -->
             <div id="dashboard" class="flex flex-col gap-8 hidden">
-                <button onclick="showHome()" class="flex flex-row items-center gap-1 btn text-sm hover:text-[#9780e4]">
-                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                    </svg>
-                    <span class="inline text-xs">Back to scenarios</span>
-                </button>
-                <h2 id="scenario-title" class="widget-title"></h2>
+                <div class="flex flex-row">
+                    <button id="back-btn" class="flex flex-row items-center justify-center gap-1 btn text-sm">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        <span class="inline text-xs">Back to scenarios</span>
+                    </button>
+                </div>
+                <h2 id="scenario-title" class="text-lg min-[550px]:text-2xl font-bold"></h2>
                 <div id="widget-grid" class="grid grid-cols-1 min-[850px]:grid-cols-[1.5fr_2fr] grid-rows-[auto_auto_1fr] gap-6 h-full w-full">
                     <div id="simulation-form" class="dashboard-widget">
                         <h2 class="widget-title">Adjust Your Parameters</h2>
@@ -106,14 +109,22 @@
                         <div id="form-fields" class="flex flex-col">
                         </div>
                         <div class="flex flex-row">
-                            <button type="submit" class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
+                            <button type="submit" id="run-simulation-btn" class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1 cursor-not-allowed opacity-50" disabled">
                                 Run Simulation
                             </button>
                         </div>
                     </div>
                     <div id="output" class="dashboard-widget">
                         <h2 class="widget-title">Projected Outcomes</h2>
-                        <div id="chart"></div>
+                        <hr>
+                        <div id="chart" class="block">
+                            <div class="chart-container">
+                                <canvas id="before-chart" class="chart-canvas"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="after-chart" class="chart-canvas"></canvas>
+                            </div>
+                        </div>
                         <div class="flex flex-col min-[550px]:flex-row gap-4">
                             <button class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
                                 Explain with AI
@@ -141,8 +152,6 @@
                     </div>
                 </div>
             </div>
-            
-
         </div>
     </main>
 </body>
