@@ -1,7 +1,9 @@
-import { renderBeforeChart, destroyChart, updateChart } from "./charts.js";
+import { renderBeforeChart, destroyChart, updateBeforeChart, renderAfterChart, updateAfterChart } from "./charts.js";
 
 let currentScenario = '';
 let currentScenarioConfig = {};
+let currentScenarioEndpoint = '';
+let inputValues = {}; // All input values from all fields
 
 const field = (id, label, min, step, def, type) => ({ id, label, min, step, default: def, type });
 
@@ -10,7 +12,7 @@ const scenariosConfig = {
         label: "Building an Emergency Fund",
         endpoint: "/simulate/emergency-fund",
         fields: [
-            field("target_amount", "Target Emergency Fund Amount (₱)", 0, 1000, 100000, 'baseline'),
+            field("target", "Target Emergency Fund Amount (₱)", 0, 1000, 100000, 'baseline'),
             field("current_savings", "Current Emergency Savings (₱)", 0, 1000, 20000, 'baseline'),
             field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 500, 5000, 'actionable'),
         ],
@@ -78,6 +80,7 @@ function showDashboard(buttonElement) {
     currentScenario = scenarioKey;
     const config = scenariosConfig[scenarioKey];
     currentScenarioConfig = config;
+    currentScenarioEndpoint = config.endpoint;
 
     if (!currentScenarioConfig) return;
 
@@ -100,8 +103,8 @@ function showDashboard(buttonElement) {
     paramGroupDiv.appendChild(currentSituationDiv);
     paramGroupDiv.appendChild(actionsGoalsDiv);
 
-    let fieldCounter = 0
-    let baselineFields = {};
+    let fieldCounter = 0 // Counter for baseline fields
+    let fieldInputs = {}; // All baseline field input elements
 
     currentScenarioConfig.fields.forEach(field => {
         const wrapper = document.createElement('div');
@@ -115,10 +118,10 @@ function showDashboard(buttonElement) {
         const input = document.createElement('input');
         input.type = 'number';
         input.min = field.min;
-        // input.max = field.max;
         input.step = field.step;
         input.value = field.default;
         input.id = field.id;
+        input.dataset.type = field.type;
         input.className = 'w-full px-2 py-1 border bg-[#060e27] rounded text-[0.75rem] min-[550px]:text-[0.8rem]';
 
         wrapper.appendChild(label);
@@ -126,8 +129,6 @@ function showDashboard(buttonElement) {
       
         // Dynamically append to the correct section based on 'type'
         if (field.type === 'baseline') {
-            baselineFields[fieldCounter] = input;
-            fieldCounter += 1;
             currentSituationDiv.appendChild(wrapper);
         } else if (field.type === 'actionable') {
             actionsGoalsDiv.appendChild(wrapper);
@@ -135,19 +136,35 @@ function showDashboard(buttonElement) {
             console.warn(`Field ${field.id} has no defined type (baseline/actionable). Appending to main container.`);
             fieldContainer.appendChild(wrapper);
         }
+        
+        fieldInputs[fieldCounter] = input;
+        if (input.dataset.type === 'baseline') fieldCounter += 1;
+
+        inputValues[input.id] = Number(input.value); // get default values for api
 
     });
     
     // Automatically renders before graph with default values
-    let values = Object.values(baselineFields).map(field => Number(field.value));
-    console.log(values);
-    renderBeforeChart(currentScenario, values);
+    let beforeValues = Object.values(fieldInputs)
+        .filter(input => input.dataset.type === 'baseline')
+        .map(input => Number(input.value));
+    renderBeforeChart(currentScenario, beforeValues);
 
+    // Render after chart with no data
+    renderAfterChart(currentScenario);
+        
     // Watches changes in the baseline inputs and updates graph accordingly
-    for (const [index, input] of Object.entries(baselineFields)) {
-        input.addEventListener('input', function() {
-             updateChart(index, Number(input.value));
-        });
+    for (const [index, input] of Object.entries(fieldInputs)) {
+        if (input.dataset.type === 'baseline') {
+            input.addEventListener('input', function() {
+                updateBeforeChart(index, Number(input.value));
+                inputValues[input.id] = Number(input.value); // For API call and formula calculation
+            });
+        } else {
+            input.addEventListener('input', function() {
+                inputValues[input.id] = Number(input.value); // For API call and formula calculation
+            });
+        }
     }
 
     document.getElementById('home').classList.add('hidden');
@@ -160,10 +177,44 @@ function showHome() {
     destroyChart();
 }
 
-document.getElementById('card-btn').addEventListener('click', function() {
-    showDashboard(this);
+async function runSimulation(endpoint, params) {
+    const requestBody = params;
+
+    try {
+        console.log('Running simulation...');
+        const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) throw new Error('Request failed');
+
+        const result = await response.json();
+
+        console.log('Input:', params);
+        console.log('Result:', result.values);
+
+        updateAfterChart(result.values)
+    } catch (err) {
+        console.error('Fetch error:', err);
+    }
+}
+
+document.querySelectorAll('.card-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        showDashboard(this);
+    });
 });
+
 
 document.getElementById('back-btn').addEventListener('click', function() {
     showHome();
+});
+
+document.getElementById('simulation-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    runSimulation(currentScenarioEndpoint, inputValues);
 });
