@@ -177,7 +177,7 @@ function showHome() {
     destroyChart();
 }
 
-async function runSimulation(endpoint, params) {
+async function runSimulation(endpoint, params) {    
     const requestBody = params;
 
     try {
