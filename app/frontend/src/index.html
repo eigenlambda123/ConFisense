@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./output.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="app.js"></script>
     <title>ConFiSense</title>
 </head>
 <body class="bg-linear-to-b from-[#060e27] to-blue-900 bg-no-repeat bg-fixed bg-cover">
@@ -41,7 +39,7 @@
                     <h4 class="text-[#7c8491] text-xs min-[850px]:text-sm lg:text-base">Select a scenario to model outcomes and reduce uncertainty before you act.</h4>
                 </div>
                 <div id="card-grid" class="grid grid-cols-1 min-[550px]:grid-cols-2 min-[850px]:grid-cols-3 gap-6 h-full w-full">
-                    <button id="card-btn" class="btn card-btn" data-scenario="emergency_fund">
+                    <button class="btn card-btn" data-scenario="emergency_fund">
                         <div class="card-info">
                             <h1 class="scenario-icon">🛡️</h1>
                             <h2 class="scenario-name">Emergency Fund</h2>
@@ -49,7 +47,7 @@
                             <p class="scenario-info scenario-tip">For handling unexpected expenses.</p>
                         </div>
                     </button>
-                    <button id="card-btn" class="btn card-btn" data-scenario="budgeting">
+                    <button class="btn card-btn" data-scenario="budgeting">
                         <div class="card-info">
                             <h1 class="scenario-icon">📃</h1>
                             <h2 class="scenario-name">Budgeting and Expenses</h2>
@@ -57,7 +55,7 @@
                             <p class="scenario-info scenario-tip">To understand where your money goes.</p>
                         </div>
                     </button>
-                    <button id="card-btn" class="btn card-btn" data-scenario="debt_management">
+                    <button class="btn card-btn" data-scenario="debt_management">
                         <div class="card-info">
                             <h1 class="scenario-icon">💳</h1>
                             <h2 class="scenario-name">Debt Management</h2>
@@ -65,7 +63,7 @@
                             <p class="scenario-info scenario-tip">For credits and loans.</p>
                         </div>
                     </button>
-                    <button id="card-btn" class="btn card-btn" data-scenario="investing">
+                    <button class="btn card-btn" data-scenario="investing">
                         <div class="card-info">
                             <h1 class="scenario-icon">📈</h1>
                             <h2 class="scenario-name">Savings and Investment</h2>
@@ -73,7 +71,7 @@
                             <p class="scenario-info scenario-tip">For long-term goals like retirement.</p>
                         </div>
                     </button>
-                    <button id="card-btn" class="btn card-btn" data-scenario="education_funding">
+                    <button class="btn card-btn" data-scenario="education_funding">
                         <div class="card-info">
                             <h1 class="scenario-icon">🎓</h1>
                             <h2 class="scenario-name">Education Funding</h2>
@@ -81,7 +79,7 @@
                             <p class="scenario-info scenario-tip">For yourself or your children.</p>
                         </div>
                     </button>
-                    <button id="card-btn" class="btn card-btn" data-scenario="major_purchase">
+                    <button class="btn card-btn" data-scenario="major_purchase">
                         <div class="card-info">
                             <h1 class="scenario-icon">🏡</h1>
                             <h2 class="scenario-name">Major Purchase Planning</h2>
@@ -103,15 +101,17 @@
                 </div>
                 <h2 id="scenario-title" class="text-lg min-[550px]:text-2xl font-bold"></h2>
                 <div id="widget-grid" class="grid grid-cols-1 min-[850px]:grid-cols-[1.5fr_2fr] grid-rows-[auto_auto_1fr] gap-6 h-full w-full">
-                    <div id="simulation-form" class="dashboard-widget">
+                    <div class="dashboard-widget">
                         <h2 class="widget-title">Adjust Your Parameters</h2>
                         <hr>
                         <div id="form-fields" class="flex flex-col">
                         </div>
                         <div class="flex flex-row">
-                            <button type="submit" id="run-simulation-btn" class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1 cursor-not-allowed opacity-50" disabled">
-                                Run Simulation
-                            </button>
+                            <form id="simulation-form">
+                                <button type="submit" id="run-simulation-btn" class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
+                                    Run Simulation
+                                </button>
+                            </form>
                         </div>
                     </div>
                     <div id="output" class="dashboard-widget">
@@ -154,5 +154,7 @@
             </div>
         </div>
     </main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
