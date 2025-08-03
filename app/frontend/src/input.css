@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'HPSimplifiedRegular';
+  src: url('../../assets/fonts/HPSimplifiedRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @layer base {
 
     *, *::before, *::after {
@@ -13,8 +20,8 @@
     }
 
     html {   
-        font-family: Arial;
-        min-height: 100%
+        font-family: 'HPSimplifiedRegular', Arial;
+        min-height: 100%;
     }
 
     body {
@@ -35,7 +42,7 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        background-color: #121d38;
+        background-image: linear-gradient(to top right, #1592DB, #001D5C);
         /* border: #212a40 solid 1px; */
         width: 100%;
         padding: 1.5rem;
@@ -61,22 +68,14 @@
 
     .scenario-name {
         color: white;
-        font-size: var(--text-sm);
-        line-height: var(--text-sm--line-height);
+        font-size: 1rem;
         font-weight: bold;        
     }
 
     .scenario-info {
-        font-size: var(--text-xs);
-        line-height: var(--text-xs--line-height);
-    }
-
-    .scenario-desc {
-        color: #9780e4;
-    }
-
-    .scenario-tip {
-        color: #7c8491;
+        font-size: 0.75rem;
+        line-height: calc(1 / 0.75);
+        color: #b0e7ff;
     }
 
     .dashboard-widget {
@@ -137,13 +136,11 @@
         }
 
         .scenario-name {
-            font-size: var(--text-lg);
-            line-height: var(--text-lg--line-height);  
+            font-size: 1.5rem;
         }
 
         .scenario-info {
             font-size: 0.8rem;
-            line-height: calc(1.25 / 0.8);
         }
 
         .widget-btn {

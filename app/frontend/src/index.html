@@ -6,8 +6,10 @@
     <link href="./output.css" rel="stylesheet">
     <title>ConFiSense</title>
 </head>
-<body class="bg-linear-to-b from-[#060e27] to-blue-900 bg-no-repeat bg-fixed bg-cover">
-    <header class="min-w-[320px] py-4 px-0">
+<body>
+    <div class="fixed inset-0 z-0 bg-radial from-white via-white/5 to-blue-400 bg-no-repeat bg-fixed bg-cover"></div>
+    <div class="relative inset-0 z-1">
+        <header class="min-w-[320px] py-4 px-0">
         <div class="flex flex-row justify-between w-full max-w-full my-0 mx-auto py-0 px-4">
             <div class="flex flex-row items-center gap-4">
                 <button aria-label="Open menu" class="btn p-1 hover:bg-[#374151]" >
@@ -17,7 +19,7 @@
                 </button>
                 <div class="flex flex-col">
                     <h1 class="text-lg min-[550px]:text-2xl min-[850px]:text-3xl font-bold">ConFiSense</h1>
-                    <h4 class="text-[#7c8491] text-xs min-[550px]:text-sm min-[850px]:text-base leading-4">Your AI-Powered Financial Co-Pilot</h4>
+                    <h4 class="text-[#4465a2] text-xs min-[550px]:text-sm min-[850px]:text-base font-bold leading-4">Your AI-Powered Financial Assistant</h4>
                 </div>
             </div>
             <div class="flex flex-row items-center">
@@ -28,133 +30,135 @@
                 </button>
             </div>
         </div>
-    </header>
-    <main class="min-w-[320px] py-8 px-0">
-        <div class="max-w-screen-xl h-full my-0 mx-auto py-0 px-8">
-            
-            <!-- Home -->
-            <div id="home" class="flex flex-col gap-8">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-sm min-[850px]:text-xl lg:text-2xl font-bold">Hello, what would you like to plan for?</h2>
-                    <h4 class="text-[#7c8491] text-xs min-[850px]:text-sm lg:text-base">Select a scenario to model outcomes and reduce uncertainty before you act.</h4>
+        </header>
+        <main class="min-w-[320px] py-8 px-0">
+            <div class="max-w-screen-xl h-full my-0 mx-auto py-0 px-8">
+                
+                <!-- Home -->
+                <div id="home" class="flex flex-col gap-8">
+                    <div class="flex flex-col justify-center items-center gap-1">
+                        <h2 class="text-[#121d38] text-base min-[850px]:text-2xl lg:text-3xl font-bold">Hello! what would you like to plan for?</h2>
+                        <h4 class="text-[#4465a2] text-xs min-[850px]:text-sm lg:text-base text-center font-bold">Select a scenario to model outcomes and reduce uncertainty before you act.</h4>
+                    </div>
+                    <div id="card-grid" class="grid grid-cols-1 min-[550px]:grid-cols-2 min-[850px]:grid-cols-3 gap-6 h-full w-full">
+                        <button class="btn card-btn" data-scenario="emergency_fund">
+                            <div class="card-info">
+                                <!-- <h1 class="scenario-icon"></h1> -->
+                                <h2 class="scenario-name">Emergency Fund</h2>
+                                <p class="scenario-info scenario-desc">Build your financial safety net.</p>
+                                <p class="scenario-info scenario-tip">For handling unexpected expenses.</p>
+                            </div>
+                        </button>
+                        <button class="btn card-btn" data-scenario="budgeting">
+                            <div class="card-info">
+                                <!-- <h1 class="scenario-icon"></h1> -->
+                                <h2 class="scenario-name">Budgeting and Expenses</h2>
+                                <p class="scenario-info scenario-desc">Track and optimize your spending.</p>
+                                <p class="scenario-info scenario-tip">To understand where your money goes.</p>
+                            </div>
+                        </button>
+                        <button class="btn card-btn" data-scenario="debt_management">
+                            <div class="card-info">
+                                <!-- <h1 class="scenario-icon"></h1> -->
+                                <h2 class="scenario-name">Debt Management</h2>
+                                <p class="scenario-info scenario-desc">Become debt-free faster.</p>
+                                <p class="scenario-info scenario-tip">For credits and loans.</p>
+                            </div>
+                        </button>
+                        <button class="btn card-btn" data-scenario="investing">
+                            <div class="card-info">
+                                <!-- <h1 class="scenario-icon"></h1> -->
+                                <h2 class="scenario-name">Savings and Investment</h2>
+                                <p class="scenario-info scenario-desc">Grow your wealth over time.</p>
+                                <p class="scenario-info scenario-tip">For long-term goals like retirement.</p>
+                            </div>
+                        </button>
+                        <button class="btn card-btn" data-scenario="education_funding">
+                            <div class="card-info">
+                                <!-- <h1 class="scenario-icon"></h1> -->
+                                <h2 class="scenario-name">Education Funding</h2>
+                                <p class="scenario-info scenario-desc">Plan for future education costs.</p>
+                                <p class="scenario-info scenario-tip">For yourself or your children.</p>
+                            </div>
+                        </button>
+                        <button class="btn card-btn" data-scenario="major_purchase">
+                            <div class="card-info">
+                                <!-- <h1 class="scenario-icon"></h1> -->
+                                <h2 class="scenario-name">Major Purchase Planning</h2>
+                                <p class="scenario-info scenario-desc">Save for a big-ticket item.</p>
+                                <p class="scenario-info scenario-tip">For a house, car, or other large goal.</p>
+                            </div>
+                        </button>
+                    </div>
                 </div>
-                <div id="card-grid" class="grid grid-cols-1 min-[550px]:grid-cols-2 min-[850px]:grid-cols-3 gap-6 h-full w-full">
-                    <button class="btn card-btn" data-scenario="emergency_fund">
-                        <div class="card-info">
-                            <h1 class="scenario-icon">🛡️</h1>
-                            <h2 class="scenario-name">Emergency Fund</h2>
-                            <p class="scenario-info scenario-desc">Build your financial safety net.</p>
-                            <p class="scenario-info scenario-tip">For handling unexpected expenses.</p>
+                
+                <!-- Scenario Dashboard -->
+                <div id="dashboard" class="flex flex-col gap-8 hidden">
+                    <div class="flex flex-row">
+                        <button id="back-btn" class="flex flex-row items-center justify-center gap-1 btn text-sm">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                            <span class="inline text-[#4465a2] text-sm font-bold">Back to scenarios</span>
+                        </button>
+                    </div>
+                    <h2 id="scenario-title" class="text-[#121d38] text-lg min-[550px]:text-2xl font-bold"></h2>
+                    <div id="widget-grid" class="grid grid-cols-1 min-[850px]:grid-cols-[1.5fr_2fr] grid-rows-[auto_auto_1fr] gap-6 h-full w-full">
+                        <div class="dashboard-widget">
+                            <h2 class="widget-title">Adjust Your Parameters</h2>
+                            <hr>
+                            <div id="form-fields" class="flex flex-col">
+                            </div>
+                            <div class="flex flex-row">
+                                <form id="simulation-form">
+                                    <button type="submit" id="run-simulation-btn" class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
+                                        Run Simulation
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </button>
-                    <button class="btn card-btn" data-scenario="budgeting">
-                        <div class="card-info">
-                            <h1 class="scenario-icon">📃</h1>
-                            <h2 class="scenario-name">Budgeting and Expenses</h2>
-                            <p class="scenario-info scenario-desc">Track and optimize your spending.</p>
-                            <p class="scenario-info scenario-tip">To understand where your money goes.</p>
-                        </div>
-                    </button>
-                    <button class="btn card-btn" data-scenario="debt_management">
-                        <div class="card-info">
-                            <h1 class="scenario-icon">💳</h1>
-                            <h2 class="scenario-name">Debt Management</h2>
-                            <p class="scenario-info scenario-desc">Become debt-free faster.</p>
-                            <p class="scenario-info scenario-tip">For credits and loans.</p>
-                        </div>
-                    </button>
-                    <button class="btn card-btn" data-scenario="investing">
-                        <div class="card-info">
-                            <h1 class="scenario-icon">📈</h1>
-                            <h2 class="scenario-name">Savings and Investment</h2>
-                            <p class="scenario-info scenario-desc">Grow your wealth over time.</p>
-                            <p class="scenario-info scenario-tip">For long-term goals like retirement.</p>
-                        </div>
-                    </button>
-                    <button class="btn card-btn" data-scenario="education_funding">
-                        <div class="card-info">
-                            <h1 class="scenario-icon">🎓</h1>
-                            <h2 class="scenario-name">Education Funding</h2>
-                            <p class="scenario-info scenario-desc">Plan for future education costs.</p>
-                            <p class="scenario-info scenario-tip">For yourself or your children.</p>
-                        </div>
-                    </button>
-                    <button class="btn card-btn" data-scenario="major_purchase">
-                        <div class="card-info">
-                            <h1 class="scenario-icon">🏡</h1>
-                            <h2 class="scenario-name">Major Purchase Planning</h2>
-                            <p class="scenario-info scenario-desc">Save for a big-ticket item.</p>
-                            <p class="scenario-info scenario-tip">For a house, car, or other large goal.</p>
-                        </div>
-                    </button>
-                </div>
-            </div>
-            <!-- Scenario Dashboard -->
-            <div id="dashboard" class="flex flex-col gap-8 hidden">
-                <div class="flex flex-row">
-                    <button id="back-btn" class="flex flex-row items-center justify-center gap-1 btn text-sm">
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                        </svg>
-                        <span class="inline text-xs">Back to scenarios</span>
-                    </button>
-                </div>
-                <h2 id="scenario-title" class="text-lg min-[550px]:text-2xl font-bold"></h2>
-                <div id="widget-grid" class="grid grid-cols-1 min-[850px]:grid-cols-[1.5fr_2fr] grid-rows-[auto_auto_1fr] gap-6 h-full w-full">
-                    <div class="dashboard-widget">
-                        <h2 class="widget-title">Adjust Your Parameters</h2>
-                        <hr>
-                        <div id="form-fields" class="flex flex-col">
-                        </div>
-                        <div class="flex flex-row">
-                            <form id="simulation-form">
-                                <button type="submit" id="run-simulation-btn" class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
-                                    Run Simulation
+                        <div id="output" class="dashboard-widget">
+                            <h2 class="widget-title">Projected Outcomes</h2>
+                            <hr>
+                            <div id="chart" class="block">
+                                <div class="chart-container">
+                                    <canvas id="before-chart" class="chart-canvas"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="after-chart" class="chart-canvas"></canvas>
+                                </div>
+                            </div>
+                            <div class="flex flex-col min-[550px]:flex-row gap-4">
+                                <button class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
+                                    Explain with AI
                                 </button>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="output" class="dashboard-widget">
-                        <h2 class="widget-title">Projected Outcomes</h2>
-                        <hr>
-                        <div id="chart" class="block">
-                            <div class="chart-container">
-                                <canvas id="before-chart" class="chart-canvas"></canvas>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="after-chart" class="chart-canvas"></canvas>
+                                <button class="btn widget-btn bg-green-800">
+                                    Show My Math
+                                </button>
+                                <button class="btn widget-btn bg-amber-600">
+                                    Download Report
+                                </button>                            
                             </div>
                         </div>
-                        <div class="flex flex-col min-[550px]:flex-row gap-4">
-                            <button class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
-                                Explain with AI
-                            </button>
-                            <button class="btn widget-btn bg-green-800">
-                                Show My Math
-                            </button>
-                            <button class="btn widget-btn bg-amber-600">
-                                Download Report
-                            </button>                            
+                        <div class="dashboard-widget col-span-1 min-[850px]:col-span-2">
+                            <h2 class="widget-title">AI-Powered Explanation</h2>
+                            <div id="ai-explanation>"></div>
+                            <div class="flex flex-row">
+                                <button class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
+                                    Suggest Next Steps
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="dashboard-widget col-span-1 min-[850px]:col-span-2">
-                        <h2 class="widget-title">AI-Powered Explanation</h2>
-                        <div id="ai-explanation>"></div>
-                        <div class="flex flex-row">
-                            <button class="btn widget-btn bg-linear-to-r from-blue-700 to-violet-700 p-1">
-                                Suggest Next Steps
-                            </button>
+                        <div class="dashboard-widget col-span-1 min-[850px]:col-span-2">
+                            <h2 class="widget-title">Suggested Action Steps</h2>
+                            <div id="ai-suggest"></div>
                         </div>
-                    </div>
-                    <div class="dashboard-widget col-span-1 min-[850px]:col-span-2">
-                        <h2 class="widget-title">Suggested Action Steps</h2>
-                        <div id="ai-suggest"></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="app.js"></script>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
