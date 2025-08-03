@@ -1,46 +1,111 @@
-import math
-
-
-def simulate_emergency_fund(target, monthly_contrib, current_savings):
+def simulate_emergency_fund(
+    monthly_expenses,
+    months_of_expenses,
+    current_emergency_savings,
+    monthly_savings,
+    annual_interest_rate_percent
+):
     """
-    Simulate the growth of an emergency fund over time
+    Simulate the growth of an emergency fund over time with compounding interest and monthly contributions.
     """
 
-    # if monthly_contrib is 0 and current_savings is less than target, goal is unreachable
-    # if current_savings is greater than or equal to target, time_months is 0
-    # otherwise, calculate time_months as the ceiling of (target - current_savings)
-    if monthly_contrib == 0 and current_savings < target:
-        time_months = None
-    elif current_savings >= target:
-        time_months = 0
+    # 1. Calculate independent values
+    target_amount = monthly_expenses * months_of_expenses
+    remaining_target = max(target_amount - current_emergency_savings, 0)
+    monthly_interest_rate = (annual_interest_rate_percent / 100) / 12
+
+    # 2. Initialize loop variables
+    current_balance = current_emergency_savings
+    current_month = 0
+    balance_history = [round(current_balance, 2)]
+    MAX_MONTHS_TO_SIMULATE = 600
+    time_to_reach_target = None
+
+    # 3. Simulation loop
+    if current_balance >= target_amount:
+        time_to_reach_target = 0
     else:
-        time_months = math.ceil((target - current_savings) / monthly_contrib)
-    
-    return {
-        "data": [current_savings, target],
-        "summary": f"Goal reached in {time_months} months." if time_months is not None else "Goal is unreachable.",
-        "math_explanation": {
-            "title": "The 'Glass Box': How We Calculate",
-            "sections": [
-                {
-                    "heading": "1. Assumptions",
-                    "items": [
-                        f"Target Emergency Fund: ₱{target:,}",
-                        f"Monthly Contribution: ₱{monthly_contrib:,}",
-                        f"Current Savings: ₱{current_savings:,}"
-                    ]
-                },
-                {
-                    "heading": "2. Formula",
-                    # TODO: condition need fixing
-                    "items": [
-                        "Time in Months = (Target - Current) / Monthly Contribution",
-                        "*If contribution is ₱0 and savings < target, goal is unreachable.*"
-                    ]
-                }
-            ]
+        while current_balance < target_amount and current_month < MAX_MONTHS_TO_SIMULATE:
+            current_month += 1
+            # Interest earned this month (for explanation, not used directly)
+            interest_earned = current_balance * monthly_interest_rate
+            # Update balance
+            current_balance = current_balance * (1 + monthly_interest_rate) + monthly_savings
+            # Prevent overshooting the target in the graph
+            balance_history.append(round(min(current_balance, target_amount), 2))
+        if current_balance >= target_amount:
+            time_to_reach_target = current_month
+        else:
+            time_to_reach_target = None  # Unreachable
+
+    # 4. Prepare API response
+    months_labels = list(range(len(balance_history)))
+    summary = (
+        f"Goal reached in {time_to_reach_target} months."
+        if time_to_reach_target is not None
+        else "Goal is unreachable within 600 months."
+    )
+
+    response = {
+        "status": "success",
+        "message": "Emergency Fund simulation successful.",
+        "data": {
+            "target_amount": round(target_amount, 2),
+            "time_to_reach_target_months": time_to_reach_target,
+            "projection_data": {
+                "months_labels": months_labels,
+                "balance_history": balance_history
+            },
+            "summary": summary,
+            "math_explanation": {
+                "title": "The 'Glass Box': How We Calculate Your Emergency Fund",
+                "sections": [
+                    {
+                        "heading": "1. Your Inputs & Goal",
+                        "items": [
+                            f"Your Monthly Expenses: ₱{monthly_expenses:,}",
+                            f"Desired Months Covered: {months_of_expenses} months",
+                            f"--> Calculated Target Emergency Fund: ₱{target_amount:,}",
+                            f"Your Current Savings: ₱{current_emergency_savings:,}",
+                            f"Your Monthly Contribution: ₱{monthly_savings:,}",
+                            f"Expected Annual Interest Rate: {annual_interest_rate_percent}%"
+                        ]
+                    },
+                    {
+                        "heading": "2. The Simulation Process",
+                        "items": [
+                            "We simulate your fund's growth month-by-month.",
+                            "Each month, two things happen:",
+                            "   a. **Interest is Earned:** Your current balance grows by your monthly interest rate "
+                            f"({monthly_interest_rate:.6f} for {annual_interest_rate_percent}% annually).",
+                            f"   b. **Your Contribution is Added:** Your ₱{monthly_savings:,} monthly contribution is added to the balance.",
+                            "This process calculates interest on your growing total, showing the power of compounding.",
+                            "Formula used each month: `New Balance = (Previous Balance × (1 + Monthly Interest Rate)) + Monthly Contribution`"
+                        ]
+                    },
+                    {
+                        "heading": "3. The Outcome",
+                        "items": [
+                            (
+                                f"Based on this simulation, your fund is projected to reach ₱{target_amount:,.0f} "
+                                f"in {time_to_reach_target} months."
+                                if time_to_reach_target is not None
+                                else "Based on this simulation, your fund will not reach the target within 600 months."
+                            )
+                        ]
+                    }
+                ]
+            }
+        },
+        "inputs_received": {
+            "monthly_expenses": monthly_expenses,
+            "months_of_expenses": months_of_expenses,
+            "current_emergency_savings": current_emergency_savings,
+            "monthly_savings": monthly_savings,
+            "annual_interest_rate_percent": annual_interest_rate_percent
         }
     }
+    return response
 
 
 

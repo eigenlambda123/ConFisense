@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.db.base import init_db
 from app.api.routes import (
-    simulate_emergency,
+    simulate_emergency_fund,
     simulate_budgeting,
     simulate_debt_management,
     simulate_investing,
@@ -29,8 +29,7 @@ app.add_middleware(
 def on_startup():
     init_db()
 
-
-app.include_router(simulate_emergency.router)
+app.include_router(simulate_emergency_fund.router)
 app.include_router(simulate_budgeting.router)
 app.include_router(simulate_debt_management.router)
 app.include_router(simulate_investing.router)
