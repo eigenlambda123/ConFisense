@@ -147,3 +147,56 @@ Please explain this result in simple terms:
     )
 
     return response.generations[0].text.strip()
+
+
+
+def generate_ai_suggestions(scenario: str, input_data: dict, output_data: dict) -> list:
+    """
+    Generate a list of AI-powered suggestions based on the scenario and simulation results.
+    """
+    if scenario == "emergency_fund":
+        prompt = f"""
+You are a helpful financial assistant.
+
+Based on the following emergency fund simulation, give 3 short, practical suggestions to help the user reach their goal faster or improve their financial safety net.
+
+User Inputs:
+{input_data}
+
+Simulation Summary:
+{output_data['summary'] if 'summary' in output_data else output_data['data']['summary']}
+
+Math Explanation:
+{output_data['math_explanation']['sections'] if 'math_explanation' in output_data else output_data['data']['math_explanation']['sections']}
+
+Suggestions (as a numbered list):
+"""
+    else:
+        prompt = f"""
+You are a helpful financial assistant.
+
+Based on this simulation, give 3 practical suggestions to help the user improve their financial outcome.
+
+User Inputs:
+{input_data}
+
+Simulation Summary:
+{output_data.get('summary', '')}
+
+Suggestions (as a numbered list):
+"""
+
+    response = co.generate(
+        model="command",
+        prompt=prompt,
+        max_tokens=120,
+        temperature=0.7
+    )
+
+    # Parse the response into a list (assuming Cohere returns a numbered list)
+    suggestions = [
+        line.strip()[3:].strip()  # Remove '1. ', '2. ', etc.
+        for line in response.generations[0].text.strip().split('\n')
+        if line.strip() and line.strip()[0].isdigit()
+    ]
+    return suggestions
