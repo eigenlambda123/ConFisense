@@ -30,7 +30,7 @@ def simulate_emergency_fund_route(data: EmergencyFundInput):
         )
         result["ai_explanation"] = ai_explanation
     except Exception as e:
-        ai_explanation = "An AI explanation couldn't be generated at the moment."
+        result["ai_explanation"] = "An AI explanation couldn't be generated at the moment."
         print(f"AI error: {e}")
     
     
