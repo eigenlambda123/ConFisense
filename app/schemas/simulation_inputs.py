@@ -3,17 +3,25 @@ from typing import Optional
 
 
 class EmergencyFundInput(BaseModel):
-    target: float = Field(
+    monthly_expenses: float = Field(
         ...,
-        description="Target amount for the emergency fund simulation"
+        description="Monthly expenses for the emergency fund simulation"
     )
-    monthly_contrib: float = Field(
+    months_of_expenses: int = Field(
+        ...,
+        description="Number of months to cover with the emergency fund"
+    )
+    current_emergency_savings: float = Field(
+        ...,
+        description="Current emergency savings amount"
+    )
+    monthly_savings: float = Field(
         ...,
         description="Monthly contribution to the emergency fund"
     )
-    current_savings: float = Field(
+    annual_interest_rate_percent: float = Field(
         ...,
-        description="Current savings amount"
+        description="Expected annual interest rate (percent) for the emergency fund"
     )
 
 
