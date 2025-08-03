@@ -33,7 +33,7 @@ Math Explanation:
 Write a short, clear explanation:
 """
 
-    elif scenario == "emergency":
+    elif scenario == "emergency_fund":
         prompt = f"""
 You are a helpful financial assistant.
 
@@ -43,10 +43,10 @@ User Inputs:
 {input_data}
 
 Simulation Summary:
-{output_data['summary']}
+{output_data['data']['summary']}
 
 Math Explanation:
-{output_data['math_explanation']['sections']}
+{output_data['data']['math_explanation']['sections']}
 
 Give a brief explanation of the results:
 """
