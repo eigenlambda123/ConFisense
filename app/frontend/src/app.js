@@ -1,76 +1,86 @@
-import { renderBeforeChart, destroyChart, updateBeforeChart, renderAfterChart, updateAfterChart } from "./charts.js";
+import { renderChart, destroyChart, createDataset } from "./charts.js";
 
 let currentScenario = '';
 let currentScenarioConfig = {};
 let currentScenarioEndpoint = '';
-let inputValues = {}; // All input values from all fields
+let fields = []; // All fields
+let fieldValues = {}; // All field inputs
 
-const field = (id, label, min, step, def, type) => ({ id, label, min, step, default: def, type });
+const field = (id, label, min, step, def, type='number') => ({ id, label, min, step, default: def, type});
 
 const scenariosConfig = {
     emergency_fund: {
         label: "Building an Emergency Fund",
         endpoint: "/simulate/emergency-fund",
         fields: [
-            field("target", "Target Emergency Fund Amount (₱)", 0, 1000, 100000, 'baseline'),
-            field("current_savings", "Current Emergency Savings (₱)", 0, 1000, 20000, 'baseline'),
-            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 500, 5000, 'actionable'),
+            field("monthly_expenses", "Monthly Expenses (₱)", 0, 1000, 10000),
+            field("months_of_expenses", "Desired Months to Cover", 0, 1, 3),
+            field("current_emergency_savings", "Current Emergency Savings (₱)", 0, 500, 5000),
+            field("monthly_savings", "Monthly Savings Contribution (₱)", 0, 500, 500),
+            field("annual_interest_rate_percent", "Annual Interest Rate (%)", 0, 1, 0),
+            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
+            field("scenario_color", "Scenario Color", null, null, "#007bff", 'color'),
         ],
     },
     budgeting: {
         label: "Effective Budgeting and Expense Tracking",
         endpoint: "/simulate/budgeting",
         fields: [
-            field("income", "Monthly Income (₱)", 0, 1000, 40000, 'baseline'),
-            field("fixed_expenses", "Fixed Monthly Expenses (₱)", 0, 500, 15000, 'baseline'),
-            field("target_savings", "Target Monthly Savings (₱)", 0, 1000, 5000, 'baseline'), // This is often a goal, so could be actionable too, but per your plan it's baseline.
-            field("discretionary_pct", "Discretionary Spending (% of Income)", 0, 1, 20, 'actionable'),
+            field("income", "Monthly Income (₱)", 0, 1000, 40000),
+            field("fixed_expenses", "Fixed Monthly Expenses (₱)", 0, 500, 15000),
+            field("target_savings", "Target Monthly Savings (₱)", 0, 1000, 5000),
+            field("discretionary_pct", "Discretionary Spending (% of Income)", 0, 1, 20),
+            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
         ],
     },
     debt_management: {
         label: "Managing and Reducing Debt",
         endpoint: "/simulate/debt-management",
         fields: [
-            field("debt", "Total Debt Amount (₱)", 0, 10000, 200000, 'baseline'),
-            field("interest_rate", "Annual Interest Rate (%)", 0, 0.5, 10, 'baseline'),
-            field("monthly_payment", "Current Monthly Debt Payment (₱)", 0, 1000, 5000, 'baseline'),
-            field("extra_payment", "Additional Monthly Payment (₱)", 0, 500, 2000, 'actionable'),
+            field("debt", "Total Debt Amount (₱)", 0, 10000, 200000),
+            field("interest_rate", "Annual Interest Rate (%)", 0, 0.5, 10),
+            field("monthly_payment", "Current Monthly Debt Payment (₱)", 0, 1000, 5000),
+            field("extra_payment", "Additional Monthly Payment (₱)", 0, 500, 2000),
+            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
         ],
     },
     investing: {
         label: "Starting to Save and Invest for the Future",
         endpoint: "/simulate/investing",
         fields: [
-            field("initial", "Current Investment/Savings Amount (₱)", 0, 10000, 100000, 'baseline'),
-            field("years", "Investment Horizon (Years)", 0, 1, 10, 'baseline'),
-            field("monthly", "Monthly Contribution (₱)", 0, 500, 5000, 'actionable'),
-            field("return_rate", "Expected Annual Return (%)", 0, 0.1, 6, 'actionable'),
+            field("initial", "Current Investment/Savings Amount (₱)", 0, 10000, 100000),
+            field("years", "Investment Horizon (Years)", 0, 1, 10),
+            field("monthly", "Monthly Contribution (₱)", 0, 500, 5000),
+            field("return_rate", "Expected Annual Return (%)", 0, 0.1, 6),
+            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
         ],
     },
     education_funding: {
         label: "Education Funding",
         endpoint: "/simulate/education-fund",
         fields: [
-            field("today_cost", "Target Education Cost (Today) (₱)", 0, 50000, 1000000, 'baseline'),
+            field("today_cost", "Target Education Cost (Today) (₱)", 0, 50000, 1000000),
             field("years", "Years Until Enrollment", 0, 1, 5, 'baseline'),
-            field("current_savings", "Current Education Savings (₱)", 0, 10000, 100000, 'baseline'),
-            field("inflation_rate", "Annual Education Inflation Rate (%)", 0, 0.1, 4, 'baseline'),
-            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 500, 3000, 'actionable'),
-            field("return_rate", "Expected Annual Investment Return (%)", 0, 0.1, 5, 'actionable'),
+            field("current_savings", "Current Education Savings (₱)", 0, 10000, 100000),
+            field("inflation_rate", "Annual Education Inflation Rate (%)", 0, 0.1, 4),
+            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 500, 3000),
+            field("return_rate", "Expected Annual Investment Return (%)", 0, 0.1, 5),
+            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
         ],
     },
     major_purchase: {
         label: "Major Purchase Planning",
         endpoint: "/simulate/major-purchase",
         fields: [
-            field("price", "Target Purchase Price (₱)", 0, 100000, 3000000, 'baseline'),
-            field("down_pct", "Desired Down Payment (%)", 0, 1, 20, 'baseline'),
-            field("years_to_save", "Years to Save for Down Payment", 0, 1, 3, 'baseline'),
-            field("current_savings", "Current Savings (₱)", 0, 10000, 200000, 'baseline'),
-            field("loan_rate", "Loan Interest Rate (Annual %)", 0, 0.1, 8, 'baseline'),
-            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 1000, 10000, 'actionable'),
-            field("savings_return", "Expected Annual Savings Return (%)", 0, 0.1, 3, 'actionable'),
-            field("loan_term", "Loan Term (Years)", 0, 1, 15, 'actionable'),
+            field("price", "Target Purchase Price (₱)", 0, 100000, 3000000),
+            field("down_pct", "Desired Down Payment (%)", 0, 1, 20),
+            field("years_to_save", "Years to Save for Down Payment", 0, 1, 3),
+            field("current_savings", "Current Savings (₱)", 0, 10000, 200000),
+            field("loan_rate", "Loan Interest Rate (Annual %)", 0, 0.1, 8),
+            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 1000, 10000),
+            field("savings_return", "Expected Annual Savings Return (%)", 0, 0.1, 3),
+            field("loan_term", "Loan Term (Years)", 0, 1, 15),
+            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
         ],
     },
 };
@@ -90,85 +100,50 @@ function showDashboard(buttonElement) {
     const fieldContainer = document.getElementById('form-fields');
     fieldContainer.innerHTML = '';
 
-    const paramGroupDiv = document.createElement('div');
-    paramGroupDiv.className = 'flex flex-col justify-equal gap-2 my-2';
+    fields = [];
+    fieldValues = {};
 
-    const currentSituationDiv = document.createElement('div');
-    currentSituationDiv.innerHTML = '<h2 class="widget-title">Your Current Situation</h3>';
-    
-    const actionsGoalsDiv = document.createElement('div');
-    actionsGoalsDiv.innerHTML = '<h2 class="widget-title">Your Actions and Goals</h3>';
-
-    fieldContainer.appendChild(paramGroupDiv);
-    paramGroupDiv.appendChild(currentSituationDiv);
-    paramGroupDiv.appendChild(actionsGoalsDiv);
-
-    let fieldCounter = 0 // Counter for baseline fields
-    let fieldInputs = {}; // All baseline field input elements
+    const fieldTemplate = document.getElementById('field-template');
+    if (!fieldTemplate) {
+        console.error('Field template not found.');
+        return;
+    }
 
     currentScenarioConfig.fields.forEach(field => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'my-4';
+        // Clone the template's content
+        const fieldClone = fieldTemplate.content.cloneNode(true);
+        const wrapper = fieldClone.querySelector('div');
+        const label = fieldClone.querySelector('label');
+        const input = fieldClone.querySelector('input');
 
-        const label = document.createElement('label');
+        // Set label and input attributes from scenario data
         label.textContent = field.label;
         label.htmlFor = field.id;
-        label.className = 'block font-medium text-[0.75rem] min-[550px]:text-[0.8rem] mb-1';
-
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = field.min;
-        input.step = field.step;
+        input.type = field.type;
         input.value = field.default;
         input.id = field.id;
-        input.dataset.type = field.type;
-        input.className = 'w-full px-2 py-1 border bg-[#060e27] rounded text-[0.75rem] min-[550px]:text-[0.8rem]';
 
-        wrapper.appendChild(label);
-        wrapper.appendChild(input);
+        if (field.type === 'number') {
+            input.min = field.min;
+            input.step = field.step;
+        }
+
+        // Event listener to new input for API call and formula calculation
+        input.addEventListener('input', function() {
+            fieldValues[input.id] = input.type === 'number' ? Number(input.value) : input.value;
+        });
       
-        // Dynamically append to the correct section based on 'type'
-        if (field.type === 'baseline') {
-            currentSituationDiv.appendChild(wrapper);
-        } else if (field.type === 'actionable') {
-            actionsGoalsDiv.appendChild(wrapper);
-        } else {
-            console.warn(`Field ${field.id} has no defined type (baseline/actionable). Appending to main container.`);
-            fieldContainer.appendChild(wrapper);
-        }
-        
-        fieldInputs[fieldCounter] = input;
-        if (input.dataset.type === 'baseline') fieldCounter += 1;
+        // Add to list of fields and values
+        fields.push(input);
+        fieldValues[input.id] = input.type === 'number' ? Number(input.value) : input.value;
 
-        inputValues[input.id] = Number(input.value); // get default values for api
-
+        // Append new field to container
+        fieldContainer.appendChild(fieldClone);
     });
-    
-    // Automatically renders before graph with default values
-    let beforeValues = Object.values(fieldInputs)
-        .filter(input => input.dataset.type === 'baseline')
-        .map(input => Number(input.value));
-    renderBeforeChart(currentScenario, beforeValues);
-
-    // Render after chart with no data
-    renderAfterChart(currentScenario);
-        
-    // Watches changes in the baseline inputs and updates graph accordingly
-    for (const [index, input] of Object.entries(fieldInputs)) {
-        if (input.dataset.type === 'baseline') {
-            input.addEventListener('input', function() {
-                updateBeforeChart(index, Number(input.value));
-                inputValues[input.id] = Number(input.value); // For API call and formula calculation
-            });
-        } else {
-            input.addEventListener('input', function() {
-                inputValues[input.id] = Number(input.value); // For API call and formula calculation
-            });
-        }
-    }
 
     document.getElementById('home').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
+    renderChart(currentScenario);
 }
 
 function showHome() {
@@ -179,6 +154,8 @@ function showHome() {
 
 async function runSimulation(endpoint, params) {    
     const requestBody = params;
+    const scenarioTitle = requestBody.scenario_title;
+    const scenarioColor = requestBody.scenario_color;
 
     try {
         console.log('Running simulation...');
@@ -193,14 +170,51 @@ async function runSimulation(endpoint, params) {
         if (!response.ok) throw new Error('Request failed');
 
         const result = await response.json();
+        const data = result.data.projection_data.balance_history;
+        const labels = result.data.projection_data.months_labels;
+        const AIExplanation = result.ai_explanation;
+        const AISuggestion = result.ai_suggestions;
 
+        console.log('Title:', scenarioTitle);
+        console.log('Color:', scenarioColor);
         console.log('Input:', params);
-        console.log('Result:', result.values);
+        console.log('Labels:', labels);
+        console.log('Result:', data);
+        console.log('Explanation:', AIExplanation)
+        console.log('Suggestions:', AISuggestion);
 
-        updateAfterChart(result.values)
+        createDataset(scenarioTitle, scenarioColor, data, labels);
+        renderAIResponses(AIExplanation, AISuggestion);
+
     } catch (err) {
         console.error('Fetch error:', err);
     }
+}
+
+function renderAIResponses(ai_explanation, ai_suggestions) {
+    const ex_wrapper = document.getElementById('ai-explanation');
+    const su_wrapper = document.getElementById('ai-suggest');
+
+    const aiResponseTemplate = document.getElementById('ai-response-template');
+    if (!aiResponseTemplate) {
+        console.error('AI response template not found.');
+        return;
+    }
+
+    // Clear previous AI responses
+    ex_wrapper.innerHTML = '';
+    su_wrapper.innerHTML = '';
+
+    // AI Explanation
+    const explanationNode = aiResponseTemplate.content.cloneNode(true);
+    explanationNode.querySelector('p').textContent = ai_explanation;
+    ex_wrapper.appendChild(explanationNode);
+
+    // AI Suggestions
+    const suggestions = ai_suggestions.join('\n\n');
+    const suggestionNode = aiResponseTemplate.content.cloneNode(true);
+    suggestionNode.querySelector('p').textContent = suggestions;
+    su_wrapper.appendChild(suggestionNode);
 }
 
 document.querySelectorAll('.card-btn').forEach(button => {
@@ -209,12 +223,17 @@ document.querySelectorAll('.card-btn').forEach(button => {
     });
 });
 
-
 document.getElementById('back-btn').addEventListener('click', function() {
     showHome();
 });
 
+document.getElementById('clear-fields-btn').addEventListener('click', function() {
+    fields.forEach((input) => {
+        input.value = null;
+    });
+})
+
 document.getElementById('simulation-form').addEventListener('submit', async (event) => {
     event.preventDefault();
-    runSimulation(currentScenarioEndpoint, inputValues);
+    runSimulation(currentScenarioEndpoint, fieldValues);
 });
