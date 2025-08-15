@@ -4,6 +4,7 @@ from app.services.simulation_logic import simulate_emergency_fund
 from app.models.log import SimulationLog
 from app.db.session import get_session
 from app.services.ai_explainer import generate_ai_explanation, generate_ai_suggestions
+from fastapi import Body
 
 router = APIRouter()
 
@@ -21,30 +22,6 @@ def simulate_emergency_fund_route(data: EmergencyFundInput):
         monthly_savings=data.monthly_savings,
         annual_interest_rate_percent=data.annual_interest_rate_percent,
     )
-
-
-    try:
-        # AI explanation generation
-        ai_explanation = generate_ai_explanation(
-            scenario="emergency_fund",
-            input_data=data.model_dump(),
-            output_data=result
-        )
-        # add ai explanation to the result
-        result["ai_explanation"] = ai_explanation
-
-        # AI suggestions generation
-        ai_suggestions = generate_ai_suggestions(
-            scenario="emergency_fund",
-            input_data=data.model_dump(),
-            output_data=result
-        )
-        # add ai suggestions to the result
-        result["ai_suggestions"] = ai_suggestions
-
-    except Exception as e:
-        result["ai_explanation"] = "An AI explanation couldn't be generated at the moment."
-        print(f"AI error: {e}")
     
     
     # Log the simulation
@@ -58,3 +35,30 @@ def simulate_emergency_fund_route(data: EmergencyFundInput):
         session.commit()
 
     return result
+
+
+@router.post("/simulate/emergency-fund/ai")
+def emergency_fund_ai(data: dict = Body(...)):
+    """
+    Accepts simulation result and returns AI explanation and suggestions.
+    """
+    try:
+        ai_explanation = generate_ai_explanation(
+            scenario="emergency_fund",
+            input_data=data.get("inputs_received", {}),
+            output_data=data.get("data", {})
+        )
+        ai_suggestions = generate_ai_suggestions(
+            scenario="emergency_fund",
+            input_data=data.get("inputs_received", {}),
+            output_data=data.get("data", {})
+        )
+        return {
+            "ai_explanation": ai_explanation,
+            "ai_suggestions": ai_suggestions
+        }
+    except Exception as e:
+        return {
+            "ai_explanation": "An AI explanation couldn't be generated at the moment.",
+            "ai_suggestions": []
+        }
