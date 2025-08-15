@@ -142,7 +142,7 @@ Please explain this result in simple terms:
     response = co.generate(
         model="command",
         prompt=prompt,
-        max_tokens=300,
+        max_tokens=1000,
         temperature=0.7
     )
 
