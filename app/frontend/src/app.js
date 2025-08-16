@@ -1,10 +1,11 @@
 import { renderChart, destroyChart, createDataset } from "./charts.js";
 
-let currentScenario = '';
-let currentScenarioConfig = {};
-let currentScenarioEndpoint = '';
-let fields = []; // All fields
-let fieldValues = {}; // All field inputs
+// Global states
+let currentScenario = ''; // ID of current selected scenario
+let currentScenarioConfig = {}; // Config object of active scenario
+let currentScenarioEndpoint = ''; // API endpoint for simulation
+let fields = []; // DOM input elements (for current scenario)
+let fieldValues = {}; // Store current input values
 
 const field = (id, label, min, step, def, type='number') => ({ id, label, min, step, default: def, type});
 
@@ -60,7 +61,7 @@ const scenariosConfig = {
         endpoint: "/simulate/education-fund",
         fields: [
             field("today_cost", "Target Education Cost (Today) (₱)", 0, 50000, 1000000),
-            field("years", "Years Until Enrollment", 0, 1, 5, 'baseline'),
+            field("years", "Years Until Enrollment", 0, 1, 5),
             field("current_savings", "Current Education Savings (₱)", 0, 10000, 100000),
             field("inflation_rate", "Annual Education Inflation Rate (%)", 0, 0.1, 4),
             field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 500, 3000),
@@ -86,29 +87,40 @@ const scenariosConfig = {
 };
 
 function showDashboard(buttonElement) {
+    // Identify which scenario button was clicked
     const scenarioKey = buttonElement.dataset.scenario;
     currentScenario = scenarioKey;
+
+    // Load scenario-specific configuration
     const config = scenariosConfig[scenarioKey];
     currentScenarioConfig = config;
     currentScenarioEndpoint = config.endpoint;
 
-    if (!currentScenarioConfig) return;
+    if (!config) {
+        console.error(`Configuration for ${scenarioKey} not found.`);
+        return;
+    }
 
+    // Display current scenario title in dashboard
     const scenarioTitleElement = document.getElementById('scenario-title');
     scenarioTitleElement.textContent = currentScenarioConfig.label;
 
+    // Prepare container for form fields (reset old ones if switching scenarios)
     const fieldContainer = document.getElementById('form-fields');
     fieldContainer.innerHTML = '';
 
+    // Reset state for fields and values
     fields = [];
     fieldValues = {};
 
+    // Grab reusable field template from DOM (for each input field)
     const fieldTemplate = document.getElementById('field-template');
     if (!fieldTemplate) {
         console.error('Field template not found.');
         return;
     }
 
+    // Dynamically generate input fields based on scenario config
     currentScenarioConfig.fields.forEach(field => {
         // Clone the template's content
         const fieldClone = fieldTemplate.content.cloneNode(true);
@@ -128,63 +140,72 @@ function showDashboard(buttonElement) {
             input.step = field.step;
         }
 
-        // Event listener to new input for API call and formula calculation
+        // Event listener to input (for API call and formula calculation)
         input.addEventListener('input', function() {
             fieldValues[input.id] = input.type === 'number' ? Number(input.value) : input.value;
         });
       
-        // Add to list of fields and values
+        // Initialize field state
         fields.push(input);
         fieldValues[input.id] = input.type === 'number' ? Number(input.value) : input.value;
 
-        // Append new field to container
+        // Render field into dashboard
         fieldContainer.appendChild(fieldClone);
     });
 
+    // Toggle home to dashboard
     document.getElementById('home').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
-    renderChart(currentScenario);
+
+    renderChart(currentScenario); // Draw scenario-specific chart after form is set up
 }
 
 function showHome() {
+    // Toggle dashboard to home
     document.getElementById('home').classList.remove('hidden');
     document.getElementById('dashboard').classList.add('hidden');
     destroyChart();
 }
 
 async function runSimulation(endpoint, params) {    
+    // Prepare request payload (parameters for simulation scenario)
     const requestBody = params;
+
+    // Extract scenario-specific details fo visualization
     const scenarioTitle = requestBody.scenario_title;
     const scenarioColor = requestBody.scenario_color;
 
     try {
         console.log('Running simulation...');
+
+        // Send a POST request to the FastAPI backend
+        // Using localhost (127.0.0.1:8000) since backend is served by uvicorn
         const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json', // Ensure backend interprets body as JSON
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(requestBody) // Pass scenario parameters to backend
         });
 
+        // Throw error if request didn't succeed
         if (!response.ok) throw new Error('Request failed');
 
+        // Parse backend JSON response (contains simulation results)
         const result = await response.json();
+
+        // Extrac what inputs the backend received (for debugging & validation)
+        const inputsReceived = result.inputs_received;
+        console.log('Inputs Received: ', inputsReceived);
+
+        // Extract simulation outputs for frontend
         const data = result.data.projection_data.balance_history;
         const labels = result.data.projection_data.months_labels;
-        const AIExplanation = result.ai_explanation;
-        const AISuggestion = result.ai_suggestions;
-
-        console.log('Title:', scenarioTitle);
-        console.log('Color:', scenarioColor);
-        console.log('Input:', params);
-        console.log('Labels:', labels);
-        console.log('Result:', data);
-        console.log('Explanation:', AIExplanation)
-        console.log('Suggestions:', AISuggestion);
-
-        createDataset(scenarioTitle, scenarioColor, data, labels);
-        renderAIResponses(AIExplanation, AISuggestion);
+        const summary = result.data.summary;
+        
+        // Feed proceessed data into chart layer
+        // Each new scenario gets a unique color + title for comparison
+        createDataset(scenarioTitle, scenarioColor, data, labels, summary);
 
     } catch (err) {
         console.error('Fetch error:', err);
@@ -192,48 +213,57 @@ async function runSimulation(endpoint, params) {
 }
 
 function renderAIResponses(ai_explanation, ai_suggestions) {
-    const ex_wrapper = document.getElementById('ai-explanation');
-    const su_wrapper = document.getElementById('ai-suggest');
+    // Prepare container for AI responses
+    const exContainer = document.getElementById('ai-explanation');
+    const suContainer = document.getElementById('ai-suggest');
 
+    // Clear previous AI responses before injecting new ones
+    exContainer.innerHTML = '';
+    suContainer.innerHTML = '';
+
+    // Grab reusable AI response template from DOM (for explanation and suggestions)
     const aiResponseTemplate = document.getElementById('ai-response-template');
     if (!aiResponseTemplate) {
         console.error('AI response template not found.');
         return;
     }
 
-    // Clear previous AI responses
-    ex_wrapper.innerHTML = '';
-    su_wrapper.innerHTML = '';
-
-    // AI Explanation
+    // AI explanation
     const explanationNode = aiResponseTemplate.content.cloneNode(true);
     explanationNode.querySelector('p').textContent = ai_explanation;
-    ex_wrapper.appendChild(explanationNode);
+    exContainer.appendChild(explanationNode);
 
-    // AI Suggestions
+    // AI suggestions
     const suggestions = ai_suggestions.join('\n\n');
     const suggestionNode = aiResponseTemplate.content.cloneNode(true);
     suggestionNode.querySelector('p').textContent = suggestions;
-    su_wrapper.appendChild(suggestionNode);
+    suContainer.appendChild(suggestionNode);
 }
 
+// Attach click handler to all scenario card buttons at home
 document.querySelectorAll('.card-btn').forEach(button => {
     button.addEventListener('click', function() {
         showDashboard(this);
     });
 });
 
+// Handle navigation back to home
 document.getElementById('back-btn').addEventListener('click', function() {
     showHome();
 });
 
+// Reset all form fields to empty
 document.getElementById('clear-fields-btn').addEventListener('click', function() {
     fields.forEach((input) => {
-        input.value = null;
+        if (input.type === 'color') input.value = '#000000';
+        else input.value = null;
     });
 })
 
+// Run simulation when form is submitted
 document.getElementById('simulation-form').addEventListener('submit', async (event) => {
+    // Prevent default page reload
     event.preventDefault();
+    // Pass chosen scenario and collected input values to backend
     runSimulation(currentScenarioEndpoint, fieldValues);
 });
