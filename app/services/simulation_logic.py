@@ -8,10 +8,8 @@ def simulate_emergency_fund(
     """
     Simulate the growth of an emergency fund over time with compounding interest and monthly contributions.
     """
-
     # Calculate independent values
     target_amount = monthly_expenses * months_of_expenses
-    remaining_target = max(target_amount - current_emergency_savings, 0)
     monthly_interest_rate = (annual_interest_rate_percent / 100) / 12
 
     # Initialize loop variables
@@ -21,27 +19,25 @@ def simulate_emergency_fund(
     MAX_MONTHS_TO_SIMULATE = 600
     time_to_reach_target = None
 
-    # Simulation loop
+    # Edge case: already enough savings
     if current_balance >= target_amount:
         time_to_reach_target = 0
+    elif monthly_savings == 0 and monthly_interest_rate == 0:
+        # Cannot grow without savings or interest
+        time_to_reach_target = None
     else:
+        # Simulation loop
         while current_balance < target_amount and current_month < MAX_MONTHS_TO_SIMULATE:
             current_month += 1
-            # Interest earned this month (for explanation, not used directly)
-            interest_earned = current_balance * monthly_interest_rate
-            # Update balance
             current_balance = current_balance * (1 + monthly_interest_rate) + monthly_savings
-            # Prevent overshooting the target in the graph
             balance_history.append(round(min(current_balance, target_amount), 2))
         if current_balance >= target_amount:
             time_to_reach_target = current_month
-        else:
-            time_to_reach_target = None  # Unreachable
 
-    # Prepare API response
+    # Prepare response
     months_labels = list(range(len(balance_history)))
     summary = (
-        f"Goal reached in {time_to_reach_target} months."
+        f"Goal reached in {time_to_reach_target:,} months."
         if time_to_reach_target is not None
         else "Goal is unreachable within 600 months."
     )
@@ -76,11 +72,9 @@ def simulate_emergency_fund(
                         "items": [
                             "We simulate your fund's growth month-by-month.",
                             "Each month, two things happen:",
-                            "   a. **Interest is Earned:** Your current balance grows by your monthly interest rate "
-                            f"({monthly_interest_rate:.6f} for {annual_interest_rate_percent}% annually).",
-                            f"   b. **Your Contribution is Added:** Your ₱{monthly_savings:,} monthly contribution is added to the balance.",
-                            "This process calculates interest on your growing total, showing the power of compounding.",
-                            "Formula used each month: `New Balance = (Previous Balance × (1 + Monthly Interest Rate)) + Monthly Contribution`"
+                            f"   a. **Interest is Earned:** Balance × {monthly_interest_rate:.6f} (monthly rate).",
+                            f"   b. **Contribution is Added:** ₱{monthly_savings:,} is added.",
+                            "Formula: `New Balance = (Previous Balance × (1 + Monthly Interest Rate)) + Monthly Contribution`"
                         ]
                     },
                     {
@@ -88,7 +82,7 @@ def simulate_emergency_fund(
                         "items": [
                             (
                                 f"Based on this simulation, your fund is projected to reach ₱{target_amount:,.0f} "
-                                f"in {time_to_reach_target} months."
+                                f"in {time_to_reach_target:,} months."
                                 if time_to_reach_target is not None
                                 else "Based on this simulation, your fund will not reach the target within 600 months."
                             )
@@ -106,6 +100,7 @@ def simulate_emergency_fund(
         }
     }
     return response
+
 
 
 
