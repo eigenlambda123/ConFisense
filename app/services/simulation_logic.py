@@ -9,19 +9,19 @@ def simulate_emergency_fund(
     Simulate the growth of an emergency fund over time with compounding interest and monthly contributions.
     """
 
-    # 1. Calculate independent values
+    # Calculate independent values
     target_amount = monthly_expenses * months_of_expenses
     remaining_target = max(target_amount - current_emergency_savings, 0)
     monthly_interest_rate = (annual_interest_rate_percent / 100) / 12
 
-    # 2. Initialize loop variables
+    # Initialize loop variables
     current_balance = current_emergency_savings
     current_month = 0
     balance_history = [round(current_balance, 2)]
     MAX_MONTHS_TO_SIMULATE = 600
     time_to_reach_target = None
 
-    # 3. Simulation loop
+    # Simulation loop
     if current_balance >= target_amount:
         time_to_reach_target = 0
     else:
@@ -38,7 +38,7 @@ def simulate_emergency_fund(
         else:
             time_to_reach_target = None  # Unreachable
 
-    # 4. Prepare API response
+    # Prepare API response
     months_labels = list(range(len(balance_history)))
     summary = (
         f"Goal reached in {time_to_reach_target} months."
