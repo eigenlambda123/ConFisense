@@ -14,6 +14,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'NunitoSans';
+  src: url('../assets/fonts/NunitoSans.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @layer base {
 
     *, *::before, *::after {
@@ -61,11 +68,11 @@
     }
 
     .hover-darken {
-        transition: filter 0.3s ease-in-out;
+        transition: filter 0.2s ease-in-out;
     }
 
     .hover-darken:hover {
-        filter: brightness(0.75);
+        filter: brightness(0.6);
     }
 
     .semi-rounded {
@@ -74,6 +81,19 @@
 
     .full-rounded {
         border-radius: 100%
+    }
+
+    .title {
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        color: #121d38;
+        font-size: 0.75rem;
+        font-weight: bold;
+        line-height: 1rem;
     }
 
     .main-greeting {
@@ -141,7 +161,6 @@
         border-radius: 10px;
         min-width: 100%;
         width: 100%;
-        height: 100%;
         padding: 1rem;
         filter: drop-shadow(0px 2px 6px black);
     }
@@ -151,7 +170,18 @@
         font-weight: bold;
     }
 
-    .widget-btn {
+    .icon-widget-btn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        height: 2rem;
+        width: 2rem;
+        padding: 0.25rem;
+    }
+
+    .text-widget-btn {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -177,7 +207,38 @@
         left: 0;
     }
 
+    #form-fields {
+        display: flex;
+        flex-direction: column;
+        max-height: 350px;
+        padding-right: 1rem;
+        overflow-y: auto;
+    }
+
+    #form-fields::-webkit-scrollbar {
+        width: 6px;
+        background-color: transparent;
+    }
+
+    #form-fields::-webkit-scrollbar-track {
+        background-color: #121d38;
+        border-radius: 10px;
+    }
+
+    #form-fields::-webkit-scrollbar-thumb {
+        background-color: #99a1af;
+        border-radius: 10px;
+    }
+
     @media (width >= 550px) {
+
+        .title {
+            font-size: 1.5rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+        }
 
         .main-greeting {
             font-size: 1.5rem
@@ -195,6 +256,14 @@
 
     @media (width >= 850px) {
 
+        .title {
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+        }
+
         .main-greeting {
             font-size: 2.25rem
         }
@@ -211,7 +280,7 @@
             font-size: 1rem;
         }
 
-        .widget-btn {
+        .text-widget-btn {
             width: 8rem;
         }
 
