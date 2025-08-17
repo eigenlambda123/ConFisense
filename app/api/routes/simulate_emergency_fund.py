@@ -80,3 +80,9 @@ def save_emergency_fund(data: EmergencyFundInput):
         session.commit()
         return {"id": scenario.id, "message": "Scenario saved"}
     
+
+@router.get("/emergency-fund/all")
+def get_all_emergency_fund():
+    with get_session() as session:
+        scenarios = session.query(EmergencyFund).all()
+        return [s.dict() for s in scenarios]
