@@ -93,7 +93,7 @@ Simulation Summary:
 
 Math Explanation:
 {math_str}
-
+    
 Write a short, clear explanation:
 """)
 
