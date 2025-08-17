@@ -5,6 +5,7 @@ from app.models.log import SimulationLog
 from app.db.session import get_session
 from app.services.ai_explainer import generate_ai_explanation, generate_ai_suggestions
 from fastapi import Body
+from app.models.emergency_fund import EmergencyFund
 
 router = APIRouter()
 
@@ -62,3 +63,20 @@ def emergency_fund_ai(data: dict = Body(...)):
             "ai_explanation": "An AI explanation couldn't be generated at the moment.",
             "ai_suggestions": []
         }
+
+
+@router.post("/emergency-fund/save")
+def save_emergency_fund(data: EmergencyFundInput):
+    with get_session() as session:
+        scenario = EmergencyFund(
+            scenario_title=data.scenario_title,
+            monthly_expenses=data.monthly_expenses,
+            months_of_expenses=data.months_of_expenses,
+            current_emergency_savings=data.current_emergency_savings,
+            monthly_savings=data.monthly_savings,
+            annual_interest_rate_percent=data.annual_interest_rate_percent,
+        )
+        session.add(scenario)
+        session.commit()
+        return {"id": scenario.id, "message": "Scenario saved"}
+    
