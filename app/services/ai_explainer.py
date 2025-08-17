@@ -169,14 +169,16 @@ Suggestions (as a numbered list):
 
 # DIRECT PESO CALL
 def generate_peso_response(prompt: str) -> str:
-    """Generic Cohere call ensuring pesos in output."""
     peso_prompt = peso_wrap_prompt(prompt)
+    prompt_tokens = count_tokens(peso_prompt)
+    available = MAX_CONTEXT_TOKENS - prompt_tokens
+    max_output_tokens = min(1200, available)  # be conservative
+
     response = co.generate(
         model="command",
         prompt=peso_prompt,
-        max_tokens=3000,
+        max_tokens=max_output_tokens,
         temperature=0.7,
-        stop_sequences=["\n\n"],
-        truncate="NONE"
+        truncate="END"
     )
     return response.generations[0].text.strip()
