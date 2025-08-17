@@ -80,22 +80,21 @@ def emergency_fund_ai_explanation():
         scenario_descriptions = []
         for s in scenarios:
             scenario_descriptions.append(
-                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}):\n"
-                f"- Monthly Expenses: ₱{s.monthly_expenses}\n"
-                f"- Months of Expenses: {s.months_of_expenses}\n"
-                f"- Current Emergency Savings: ₱{s.current_emergency_savings}\n"
-                f"- Monthly Savings: ₱{s.monthly_savings}\n"
-                f"- Annual Interest Rate: {s.annual_interest_rate_percent}%\n"
-                f"- Target Amount: ₱{s.monthly_expenses * s.months_of_expenses}\n"
+                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): Target ₱{s.monthly_expenses * s.months_of_expenses}, Savings ₱{s.current_emergency_savings}"
             )
 
         prompt = (
-            "You are a financial advisor. Below are multiple emergency fund scenarios, each with their variables listed. "
-            "Write a short, clear explanation comparing these scenarios, highlighting monetary differences, progress, and calculated target amounts. "
+            "You are a financial advisor. Below are several emergency fund scenarios. "
+            "Compare these scenarios directly. Do not introduce the summary or repeat the prompt. "
+            "Start with the comparison, referencing each scenario by its number and title, mentioning the target amount and current savings, and highlighting key differences. "
+            "Keep the summary concise and do not list every variable. "
             "Express all amounts in Philippine pesos (₱).\n\n"
             + "\n".join(scenario_descriptions)
+            + "\nExample:\nScenario 1 (Basic): Target ₱60,000, Savings ₱20,000. Scenario 2 (Advanced): Target ₱120,000, Savings ₱50,000. The advanced scenario has higher expenses and savings, showing more progress toward a larger target."
         )
-
+        print(prompt)
+        print("Prompt length:", len(prompt))
+        print("Prompt tokens:", count_tokens(prompt))
         explanation = generate_peso_response(prompt)
         return {"ai_explanation": explanation}
 

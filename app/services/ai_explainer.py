@@ -174,7 +174,7 @@ def generate_peso_response(prompt: str) -> str:
     response = co.generate(
         model="command",
         prompt=peso_prompt,
-        max_tokens=2000,
+        max_tokens=3000,
         temperature=0.7,
         stop_sequences=["\n\n"],
         truncate="NONE"
