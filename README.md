@@ -70,10 +70,12 @@ Then open this in your browser:
 app/frontend/src/index.html
 ```
 
-**Optional (recommended):** Serve the frontend with a local server:
+**S the frontend with a local server:**
+
+- Go to `app/frontend` and then run:
 
 ```bash
-npx serve src
+npx serve .
 ```
 
 > This will run at something like:  
