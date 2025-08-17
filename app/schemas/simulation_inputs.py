@@ -3,6 +3,10 @@ from typing import Optional
 
 
 class EmergencyFundInput(BaseModel):
+    scenario_title: Optional[str] = Field(
+        None,
+        description="Optional title for the emergency fund scenario"
+    )
     monthly_expenses: float = Field(
         ...,
         description="Monthly expenses for the emergency fund simulation"
