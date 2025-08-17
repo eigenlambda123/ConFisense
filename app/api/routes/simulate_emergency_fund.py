@@ -3,10 +3,8 @@ from app.schemas.simulation_inputs import EmergencyFundInput
 from app.services.simulation_logic import simulate_emergency_fund
 from app.models.log import SimulationLog
 from app.db.session import get_session
-from app.services.ai_explainer import generate_ai_explanation, generate_ai_suggestions
-from fastapi import Body
 from app.models.emergency_fund import EmergencyFund
-from app.services.ai_explainer import generate_peso_response, count_tokens
+from app.services.ai_explainer import generate_response, count_tokens
 
 
 router = APIRouter()
@@ -80,7 +78,12 @@ def emergency_fund_ai_explanation():
         scenario_descriptions = []
         for s in scenarios:
             scenario_descriptions.append(
-                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): Target ₱{s.monthly_expenses * s.months_of_expenses}, Savings ₱{s.current_emergency_savings}"
+                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): "
+                f"Target ₱{s.monthly_expenses * s.months_of_expenses}, "
+                f"Current Savings ₱{s.current_emergency_savings}, "
+                f"Monthly Savings ₱{s.monthly_savings}, "
+                f"Months of Expenses {s.months_of_expenses}, "
+                f"Annual Interest Rate {s.annual_interest_rate_percent}%"
             )
 
         prompt = (
@@ -96,7 +99,7 @@ def emergency_fund_ai_explanation():
         print(prompt)
         print("Prompt length:", len(prompt))
         print("Prompt tokens:", count_tokens(prompt))
-        explanation = generate_peso_response(prompt)
+        explanation = generate_response(prompt)
         print(explanation)
         return {"ai_explanation": explanation}
 
@@ -115,13 +118,14 @@ def emergency_fund_ai_suggestions():
         scenario_descriptions = []
         for s in scenarios:
             scenario_descriptions.append(
-                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}):\n"
-                f"- Monthly Expenses: ₱{s.monthly_expenses}\n"
-                f"- Months of Expenses: {s.months_of_expenses}\n"
-                f"- Current Emergency Savings: ₱{s.current_emergency_savings}\n"
-                f"- Monthly Savings: ₱{s.monthly_savings}\n"
-                f"- Annual Interest Rate: {s.annual_interest_rate_percent}%\n"
-                f"- Target Amount: ₱{s.monthly_expenses * s.months_of_expenses}\n"
+                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): "
+                f"Monthly Expenses ₱{s.monthly_expenses}, "
+                f"Months of Expenses {s.months_of_expenses}, "
+                f"Current Emergency Savings ₱{s.current_emergency_savings}, "
+                f"Monthly Savings ₱{s.monthly_savings}, "
+                f"Annual Interest Rate {s.annual_interest_rate_percent}%, "
+                f"Target ₱{s.monthly_expenses * s.months_of_expenses}, "
+                f"Current Savings ₱{s.current_emergency_savings}"
             )
 
         prompt = (
@@ -133,7 +137,7 @@ def emergency_fund_ai_suggestions():
             + "\n".join(scenario_descriptions)
         )
 
-        suggestions_text = generate_peso_response(prompt)
+        suggestions_text = generate_response(prompt)
         # Optionally, split suggestions into a list
         suggestions = [line.strip("- ").strip() for line in suggestions_text.split("\n") if line.strip()]
         return {"ai_suggestions": suggestions}
@@ -203,5 +207,5 @@ def emergency_fund_summary():
         print(prompt)
         print("Prompt length:", len(prompt))
         print("Prompt tokens:", count_tokens(prompt))
-        summary = generate_peso_response(prompt)
+        summary = generate_response(prompt)
         return {"summary": summary}

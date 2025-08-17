@@ -167,8 +167,8 @@ Suggestions (as a numbered list):
         if line.strip() and line.strip()[0].isdigit()
     ]
 
-# DIRECT PESO CALL
-def generate_peso_response(prompt: str) -> str:
+# AI response Settings
+def generate_response(prompt: str) -> str:
     peso_prompt = peso_wrap_prompt(prompt)
     prompt_tokens = count_tokens(peso_prompt)
     available = MAX_CONTEXT_TOKENS - prompt_tokens
