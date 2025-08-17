@@ -86,3 +86,40 @@ def get_all_emergency_fund():
     with get_session() as session:
         scenarios = session.query(EmergencyFund).all()
         return [s.dict() for s in scenarios]
+    
+
+from app.services.ai_explainer import generate_peso_response
+
+@router.get("/emergency-fund/summary")
+def emergency_fund_summary():
+    """
+    Fetch all emergency fund scenarios and generate an AI summary.
+    """
+    with get_session() as session:
+        scenarios = session.query(EmergencyFund).all()
+        if not scenarios:
+            return {"summary": "No emergency fund scenarios found."}
+
+        # scenario descriptions
+        scenario_descriptions = []
+        for s in scenarios:
+            scenario_descriptions.append(
+                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): "
+                f"Monthly Expenses: ₱{s.monthly_expenses}, "
+                f"Months of Expenses: {s.months_of_expenses}, "
+                f"Current Emergency Savings: ₱{s.current_emergency_savings}, "
+                f"Monthly Savings: ₱{s.monthly_savings}, "
+                f"Annual Interest Rate: {s.annual_interest_rate_percent}%"
+            )
+
+        # AI prompt
+        prompt = (
+            "Below are multiple emergency fund scenarios. For each, the variables are listed. "
+            "Summarize and compare these scenarios in a short, clear paragraph. "
+            "Highlight monetary differences, progress, and calculated target amounts. "
+            "Express all amounts in Philippine pesos (₱).\n\n"
+            + "\n".join(scenario_descriptions)
+        )
+        print(prompt)
+        summary = generate_peso_response(prompt)
+        return {"summary": summary}
