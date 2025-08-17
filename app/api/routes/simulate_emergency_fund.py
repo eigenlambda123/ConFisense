@@ -84,18 +84,20 @@ def emergency_fund_ai_explanation():
             )
 
         prompt = (
-            "You are a financial advisor. Below are several emergency fund scenarios. "
-            "Compare these scenarios directly. Do not introduce the summary or repeat the prompt. "
-            "Start with the comparison, referencing each scenario by its number and title, mentioning the target amount and current savings, and highlighting key differences. "
-            "Keep the summary concise and do not list every variable. "
-            "Express all amounts in Philippine pesos (₱).\n\n"
+            "Compare the emergency fund scenarios below. "
+            "For each, mention the scenario number and title, target amount, and current savings. "
+            "Highlight the main differences. Keep it concise and clear. "
+            "Express all amounts in Philippine pesos (₱). "
+            "Do not introduce the summary or repeat the prompt. "
+            "Start your summary immediately after this sentence.\n\n"
             + "\n".join(scenario_descriptions)
-            + "\nExample:\nScenario 1 (Basic): Target ₱60,000, Savings ₱20,000. Scenario 2 (Advanced): Target ₱120,000, Savings ₱50,000. The advanced scenario has higher expenses and savings, showing more progress toward a larger target."
+            + "\nExample: Scenario 1 (Basic): Target ₱60,000, Savings ₱20,000. Scenario 2 (Advanced): Target ₱120,000, Savings ₱50,000. The advanced scenario has higher expenses and savings, showing more progress toward a larger target."
         )
         print(prompt)
         print("Prompt length:", len(prompt))
         print("Prompt tokens:", count_tokens(prompt))
         explanation = generate_peso_response(prompt)
+        print(explanation)
         return {"ai_explanation": explanation}
 
 
