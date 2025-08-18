@@ -211,7 +211,7 @@ async function runSimulation(endpoint, params) {
         
         // Save the Emergency Fund scenario to the db
         const savedScenario =await saveEmergencyFundScenarioToDB(params);
-        
+
         // Feed proceessed data into chart layer
         // Each new scenario gets a unique color + title for comparison
         createDataset(scenarioTitle, scenarioColor, data, labels, summary, savedScenario.id);
