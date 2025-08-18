@@ -1,4 +1,6 @@
 import { renderChart, destroyChart, createDataset } from "./charts.js";
+import {saveEmergencyFundScenarioToDB} from './emergency-fund.js';
+
 
 // Global states
 let currentScenario = ''; // ID of current selected scenario
@@ -168,27 +170,6 @@ function showHome() {
 
 }
 
-// Function that saves the Emergency Fund scenario to the database
-async function saveEmergencyFundScenarioToDB(params) {
-    try {
-        const response = await fetch('http://127.0.0.1:8000/emergency-fund/save', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(params)
-        });
-
-        // Check if the response is okay
-        if (!response.ok) throw new Error('Failed to save scenario');
-
-        // Log the result if successful
-        const result = await response.json();
-        console.log('Scenario saved:', result);
-    } catch (err) {
-        console.error('Fetch error:', err);
-    }
-}
 
 
 async function runSimulation(endpoint, params) {
@@ -226,13 +207,14 @@ async function runSimulation(endpoint, params) {
         const data = result.data.projection_data.balance_history;
         const labels = result.data.projection_data.months_labels;
         const summary = result.data.summary;
+
+        
+        // Save the Emergency Fund scenario to the db
+        const savedScenario =await saveEmergencyFundScenarioToDB(params);
         
         // Feed proceessed data into chart layer
         // Each new scenario gets a unique color + title for comparison
-        createDataset(scenarioTitle, scenarioColor, data, labels, summary);
-
-        // Save the Emergency Fund scenario to the db
-        await saveEmergencyFundScenarioToDB(params);
+        createDataset(scenarioTitle, scenarioColor, data, labels, summary, savedScenario.id);
 
     } catch (err) {
         console.error('Fetch error:', err);
