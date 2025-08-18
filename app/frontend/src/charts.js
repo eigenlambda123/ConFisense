@@ -1,3 +1,5 @@
+import {deleteEmergencyFundScenarioToDB} from './emergency-fund.js';
+
 // Global Chart.js defaults applied to all charts for consistent styles and typography
 Chart.defaults.set({
     font: {
@@ -154,21 +156,8 @@ let datasetCounter = 1;
 const activeScenariosContainer = document.getElementById('active-scenarios');
 
 
-// Function that will delete the emergency fund scenario from the database
-async function deleteEmergencyFundScenarioToDB(scenarioId) {
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/emergency-fund/${scenarioId}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) throw new Error('Failed to delete scenario');
-        const result = await response.json();
-        console.log('Scenario deleted:', result);
-    } catch (err) {
-        console.error('Delete error:', err);
-    }
-}
 
-export function createDataset(title, color, data, labels, summary) {
+export function createDataset(title, color, data, labels, summary, scenarioId) {
     if (!chart) {
         console.error('Chart not initialized.')
         return;
@@ -180,7 +169,8 @@ export function createDataset(title, color, data, labels, summary) {
         data: data,
         fill: false,
         borderColor: color, // Scenario color picked by user
-        tension: 0.1 // Curve smoothing for readability
+        tension: 0.1, // Curve smoothing for readability
+        scenarioId: scenarioId // ID identifier for the scenario
     };
     
     // Update chart title dynamically with scenario summary
@@ -219,8 +209,10 @@ export function createDataset(title, color, data, labels, summary) {
         console.log(chart.data.datasets);
         updateChart(chart.data.labels);
 
+
         // Delete emergency fund scenario from database
-        deleteEmergencyFundScenarioToDB(scenarioId);
+        console.log("Deleting dataset with ID:", newDataset.scenarioId);
+        deleteEmergencyFundScenarioToDB(newDataset.scenarioId);
     };
 
     activeScenariosContainer.appendChild(tabClone); // Append to "active scenarios" container
