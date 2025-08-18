@@ -153,6 +153,21 @@ export function renderChart(scenario) {
 let datasetCounter = 1;
 const activeScenariosContainer = document.getElementById('active-scenarios');
 
+
+// Function that will delete the emergency fund scenario from the database
+async function deleteEmergencyFundScenarioToDB(scenarioId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/emergency-fund/${scenarioId}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete scenario');
+        const result = await response.json();
+        console.log('Scenario deleted:', result);
+    } catch (err) {
+        console.error('Delete error:', err);
+    }
+}
+
 export function createDataset(title, color, data, labels, summary) {
     if (!chart) {
         console.error('Chart not initialized.')
@@ -203,6 +218,9 @@ export function createDataset(title, color, data, labels, summary) {
         tabWrapper.remove();
         console.log(chart.data.datasets);
         updateChart(chart.data.labels);
+
+        // Delete emergency fund scenario from database
+        deleteEmergencyFundScenarioToDB(scenarioId);
     };
 
     activeScenariosContainer.appendChild(tabClone); // Append to "active scenarios" container
