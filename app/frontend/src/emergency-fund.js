@@ -35,3 +35,19 @@ export async function saveEmergencyFundScenarioToDB(params) {
         console.error('Fetch error:', err);
     }
 }
+
+export async function getEmergencyFundAISuggestion() {
+    const response = await fetch('http://127.0.0.1:8000/emergency-fund/ai-suggestions');
+    if (!response.ok) throw new Error('Failed to fetch AI suggestion');
+    const result = await response.json();
+    console.log('AI Suggestion:', result);
+    return result;
+}
+
+export async function getEmergencyFundAIExplaination() {
+    const response = await fetch('http://127.0.0.1:8000/emergency-fund/ai-explanation');
+    if (!response.ok) throw new Error('Failed to fetch AI explanation');
+    const result = await response.json();
+    console.log('AI Explanation:', result);
+    return result;
+}
