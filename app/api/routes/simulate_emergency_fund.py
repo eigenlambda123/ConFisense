@@ -217,7 +217,7 @@ def delete_emergency_fund_scenario(scenario_id: int):
     with get_session() as session:
         scenario = session.get(EmergencyFund, scenario_id)
         if not scenario:
-            raise HTTPException(status_code=404, detail="Scenario not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
         session.delete(scenario)
         session.commit()
         return {"message": "Scenario deleted"}
