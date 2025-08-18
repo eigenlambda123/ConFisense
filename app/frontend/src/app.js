@@ -165,9 +165,33 @@ function showHome() {
     document.getElementById('home').classList.remove('hidden');
     document.getElementById('dashboard').classList.add('hidden');
     destroyChart();
+
 }
 
-async function runSimulation(endpoint, params) {    
+// Function that saves the Emergency Fund scenario to the database
+async function saveEmergencyFundScenarioToDB(params) {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/emergency-fund/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params)
+        });
+
+        // Check if the response is okay
+        if (!response.ok) throw new Error('Failed to save scenario');
+
+        // Log the result if successful
+        const result = await response.json();
+        console.log('Scenario saved:', result);
+    } catch (err) {
+        console.error('Fetch error:', err);
+    }
+}
+
+
+async function runSimulation(endpoint, params) {
     // Prepare request payload (parameters for simulation scenario)
     const requestBody = params;
 
@@ -206,6 +230,9 @@ async function runSimulation(endpoint, params) {
         // Feed proceessed data into chart layer
         // Each new scenario gets a unique color + title for comparison
         createDataset(scenarioTitle, scenarioColor, data, labels, summary);
+
+        // Save the Emergency Fund scenario to the db
+        await saveEmergencyFundScenarioToDB(params);
 
     } catch (err) {
         console.error('Fetch error:', err);
@@ -267,3 +294,5 @@ document.getElementById('simulation-form').addEventListener('submit', async (eve
     // Pass chosen scenario and collected input values to backend
     runSimulation(currentScenarioEndpoint, fieldValues);
 });
+
+
