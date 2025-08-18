@@ -88,6 +88,11 @@ const scenariosConfig = {
     },
 };
 
+const home = document.getElementById('home');
+const homeGreetings = document.getElementById('greetings');
+const dashboard = document.getElementById('dashboard');
+const scenarioTitleElement = document.getElementById('scenario-title');
+
 function showDashboard(buttonElement) {
     // Identify which scenario button was clicked
     const scenarioKey = buttonElement.dataset.scenario;
@@ -104,7 +109,6 @@ function showDashboard(buttonElement) {
     }
 
     // Display current scenario title in dashboard
-    const scenarioTitleElement = document.getElementById('scenario-title');
     scenarioTitleElement.textContent = currentScenarioConfig.label;
 
     // Prepare container for form fields (reset old ones if switching scenarios)
@@ -156,16 +160,22 @@ function showDashboard(buttonElement) {
     });
 
     // Toggle home to dashboard
-    document.getElementById('home').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
+    console.log("Opening dashboard...");
+    homeGreetings.classList.replace("h-full", "h-0");
+    home.classList.replace("w-full", "w-[25%]");
+    dashboard.classList.replace("w-0", "w-[75%]");
 
     renderChart(currentScenario); // Draw scenario-specific chart after form is set up
 }
 
 function showHome() {
     // Toggle dashboard to home
-    document.getElementById('home').classList.remove('hidden');
-    document.getElementById('dashboard').classList.add('hidden');
+    console.log("Closing dashboard...");
+    homeGreetings.classList.replace("h-0", "h-full");
+    home.classList.replace("w-[25%]", "w-full");
+    dashboard.classList.replace("w-[75%]", "w-0");
+    scenarioTitleElement.textContent = '';
+    
     destroyChart();
 
 }
