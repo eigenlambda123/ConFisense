@@ -157,6 +157,7 @@ def save_emergency_fund(data: EmergencyFundInput):
         )
         session.add(scenario)
         session.commit()
+        session.refresh(scenario)
         return {"id": scenario.id, "message": "Scenario saved"}
     
 
