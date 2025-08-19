@@ -3,7 +3,7 @@ from app.schemas.simulation_inputs import EmergencyFundInput
 from app.services.simulation_logic import simulate_emergency_fund
 from app.models.log import SimulationLog
 from app.db.session import get_session
-from app.models.emergency_fund import EmergencyFund
+from app.models.emergency_fund import EmergencyFundModel
 from app.services.ai_explainer import generate_response, count_tokens
 
 
@@ -71,7 +71,7 @@ def emergency_fund_ai_explanation():
     Generate an AI explanation based on all emergency fund scenarios in the database.
     """
     with get_session() as session:
-        scenarios = session.query(EmergencyFund).all()
+        scenarios = session.query(EmergencyFundModel).all()
         if not scenarios:
             return {"ai_explanation": "No emergency fund scenarios found."}
 
@@ -111,7 +111,7 @@ def emergency_fund_ai_suggestions():
     Generate AI suggestions based on all emergency fund scenarios in the database.
     """
     with get_session() as session:
-        scenarios = session.query(EmergencyFund).all()
+        scenarios = session.query(EmergencyFundModel).all()
         if not scenarios:
             return {"ai_suggestions": ["No emergency fund scenarios found."]}
 
@@ -147,7 +147,7 @@ def emergency_fund_ai_suggestions():
 @router.post("/emergency-fund/save")
 def save_emergency_fund(data: EmergencyFundInput):
     with get_session() as session:
-        scenario = EmergencyFund(
+        scenario = EmergencyFundModel(
             scenario_title=data.scenario_title,
             monthly_expenses=data.monthly_expenses,
             months_of_expenses=data.months_of_expenses,
@@ -163,7 +163,7 @@ def save_emergency_fund(data: EmergencyFundInput):
 @router.get("/emergency-fund/all")
 def get_all_emergency_fund():
     with get_session() as session:
-        scenarios = session.query(EmergencyFund).all()
+        scenarios = session.query(EmergencyFundModel).all()
         return [s.dict() for s in scenarios]
     
 
@@ -174,7 +174,7 @@ def emergency_fund_summary():
     Fetch all emergency fund scenarios and generate an AI summary.
     """
     with get_session() as session:
-        scenarios = session.query(EmergencyFund).all()
+        scenarios = session.query(EmergencyFundModel).all()
         if not scenarios:
             return {"summary": "No emergency fund scenarios found."}
 
@@ -215,7 +215,7 @@ def emergency_fund_summary():
 @router.delete("/emergency-fund/{scenario_id}")
 def delete_emergency_fund_scenario(scenario_id: int):
     with get_session() as session:
-        scenario = session.get(EmergencyFund, scenario_id)
+        scenario = session.get(EmergencyFundModel, scenario_id)
         if not scenario:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
         session.delete(scenario)
