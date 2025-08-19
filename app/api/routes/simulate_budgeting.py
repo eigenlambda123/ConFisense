@@ -48,4 +48,7 @@ def simulate_budgeting_route(data: BudgetInput):
 
     return result
 
-
+@router.post("/budgeting/save")
+def save_budgeting(data: BudgetInput):
+    with get_session() as session:
+        scenario = B
