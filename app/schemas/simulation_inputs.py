@@ -30,6 +30,10 @@ class EmergencyFundInput(BaseModel):
 
 
 class BudgetInput(BaseModel):
+    scenario_title: Optional[str] = Field(
+        None,
+        description="Optional title for the budgeting scenario"
+    )
     monthly_net_income: float = Field(
         ...,
         description="Monthly net income for the budget simulation"
