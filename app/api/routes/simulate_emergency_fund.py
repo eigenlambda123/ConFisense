@@ -65,6 +65,43 @@ def simulate_emergency_fund_route(data: EmergencyFundInput):
 #         }
 
 
+@router.post("/emergency-fund/save")
+def save_emergency_fund(data: EmergencyFundInput):
+    with get_session() as session:
+        scenario = EmergencyFundModel(
+            scenario_title=data.scenario_title,
+            monthly_expenses=data.monthly_expenses,
+            months_of_expenses=data.months_of_expenses,
+            current_emergency_savings=data.current_emergency_savings,
+            monthly_savings=data.monthly_savings,
+            annual_interest_rate_percent=data.annual_interest_rate_percent,
+        )
+        session.add(scenario)
+        session.commit()
+        session.refresh(scenario)
+        return {"id": scenario.id, "message": "Scenario saved"}
+    
+
+@router.get("/emergency-fund/all")
+def get_all_emergency_fund():
+    with get_session() as session:
+        scenarios = session.query(EmergencyFundModel).all()
+        return [s.dict() for s in scenarios]
+    
+
+@router.delete("/emergency-fund/{scenario_id}")
+def delete_emergency_fund_scenario(scenario_id: int):
+    with get_session() as session:
+        scenario = session.get(EmergencyFundModel, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
+        session.delete(scenario)
+        session.commit()
+        session.refresh(scenario)
+        return {"message": "Scenario deleted"}
+    
+
+
 @router.get("/emergency-fund/ai-explanation")
 def emergency_fund_ai_explanation():
     """
@@ -143,32 +180,6 @@ def emergency_fund_ai_suggestions():
         return {"ai_suggestions": suggestions}
     
 
-
-@router.post("/emergency-fund/save")
-def save_emergency_fund(data: EmergencyFundInput):
-    with get_session() as session:
-        scenario = EmergencyFundModel(
-            scenario_title=data.scenario_title,
-            monthly_expenses=data.monthly_expenses,
-            months_of_expenses=data.months_of_expenses,
-            current_emergency_savings=data.current_emergency_savings,
-            monthly_savings=data.monthly_savings,
-            annual_interest_rate_percent=data.annual_interest_rate_percent,
-        )
-        session.add(scenario)
-        session.commit()
-        session.refresh(scenario)
-        return {"id": scenario.id, "message": "Scenario saved"}
-    
-
-@router.get("/emergency-fund/all")
-def get_all_emergency_fund():
-    with get_session() as session:
-        scenarios = session.query(EmergencyFundModel).all()
-        return [s.dict() for s in scenarios]
-    
-
-
 @router.get("/emergency-fund/summary")
 def emergency_fund_summary():
     """
@@ -211,15 +222,3 @@ def emergency_fund_summary():
         summary = generate_response(prompt)
         return {"summary": summary}
     
-
-
-@router.delete("/emergency-fund/{scenario_id}")
-def delete_emergency_fund_scenario(scenario_id: int):
-    with get_session() as session:
-        scenario = session.get(EmergencyFundModel, scenario_id)
-        if not scenario:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
-        session.delete(scenario)
-        session.commit()
-        session.refresh(scenario)
-        return {"message": "Scenario deleted"}
