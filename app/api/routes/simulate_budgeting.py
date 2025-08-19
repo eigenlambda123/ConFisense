@@ -17,73 +17,35 @@ from app.services.ai_explainer import generate_ai_explanation
 
 router = APIRouter()
 
-@router.post("/simulate/budgeting", response_model=SimulationResponse)
+@router.post("/simulate/budgeting")
 def simulate_budgeting_route(data: BudgetInput):
-    """
-    POST endpoint to simulate budgeting with user inputs:
-    - income: Monthly income for the budget simulation
-    - fixed_expenses: Monthly fixed expenses for the budget simulation
-    - discretionary_pct: Percentage of income allocated to discretionary spending
-    - target_savings: Target savings amount for the budget simulation
-    """
-
-    # Exception handling for input validation
-    if data.income <= 0:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Income must be greater than zero")
-    
-    if data.fixed_expenses < 0:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Fixed expenses must be non-negative")
-    
-    if data.discretionary_pct < 0 or data.discretionary_pct > 100:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Discretionary percentage must be between 0 and 100")
-    
-    if data.income < 0 or data.fixed_expenses < 0 or data.target_savings < 0:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Income, fixed expenses, and target savings must be non-negative")
-
 
     result = simulate_budgeting(
-        income=data.income,
-        fixed_expenses=data.fixed_expenses,
-        discretionary_pct=data.discretionary_pct,
-        target_savings=data.target_savings,
+        monthly_net_income=data.monthly_net_income,
+        housing_expense=data.housing_expense,
+        food_grocery_expense=data.food_grocery_expense,
+        utilities_expense=data.utilities_expense,
+        transportation_expense=data.transportation_expense,
+        debt_payments_expense=data.debt_payments_expense,
+        medical_healthcare_expense=data.medical_healthcare_expense,
+        education_expense=data.education_expense,
+        household_supplies_maintenance_expense=data.household_supplies_maintenance_expense,
+        personal_care_shopping_expense=data.personal_care_shopping_expense,
+        entertainment_recreation_expense=data.entertainment_recreation_expense,
+        gifts_donations_expense=data.gifts_donations_expense,
+        savings_investment_contribution=data.savings_investment_contribution
     )
-
-
-    # Generate AI explanation for the budgeting simulation
-    try:
-        ai_explanation = generate_ai_explanation(
-            scenario="budgeting",
-            input_data=data.model_dump(),
-            output_data=result
-        )
-
-    except Exception as e:
-        ai_explanation = "An AI explanation couldn't be generated at the moment."
-        # Log the error
-        print(f"AI error: {e}")
-
-
-    # response data 
-    values = list(result["data"].values())
-    math_explanation = result["math_explanation"]
-
-    response = SimulationResponse(
-        labels=list(range(1, len(values) + 1)),
-        values=values,
-        summary=result["summary"],
-        math_explanation=math_explanation,
-        ai_explanation=ai_explanation,
-    )
-
 
     # Log the simulation inputs and outputs to Database
     with get_session() as session:
         log = SimulationLog(
             scenario="budgeting",
             input_data=data.model_dump(),
-            output_data=response.model_dump(),
+            output_data=result,
         )
         session.add(log)
         session.commit()
 
-    return response
+    return result
+
+
