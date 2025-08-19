@@ -13,8 +13,7 @@ from fastapi import HTTPException
 from fastapi import status
 
 # ai explaination imports
-from app.services.ai_explainer import generate_ai_explanation
-
+from app.services.ai_explainer import generate_response, count_tokens
 
 router = APIRouter()
 
@@ -92,3 +91,48 @@ def delete_budgeting_scenario(scenario_id: int):
         session.commit()
         session.refresh(scenario)
         return {"message": "Scenario deleted"}
+    
+
+@router.get("/budgeting/ai-explanation")
+def budgeting_ai_explanation():
+    """
+    Generate an AI explanation based on all budgeting scenarios in the database.
+    """
+    with get_session() as session:
+        scenarios = session.query(BudgetingModel).all()
+        if not scenarios:
+            return {"ai_explanation": "No budgeting scenarios found."}
+
+        scenario_descriptions = []
+        for s in scenarios:
+            scenario_descriptions.append(
+                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): "
+                f"Monthly Net Income ₱{s.monthly_net_income}, "
+                f"Housing Expense ₱{s.housing_expense}, "
+                f"Food & Grocery Expense ₱{s.food_grocery_expense}, "
+                f"Utilities Expense ₱{s.utilities_expense}, "
+                f"Transportation Expense ₱{s.transportation_expense}, "
+                f"Debt Payments Expense ₱{s.debt_payments_expense}, "
+                f"Medical & Healthcare Expense ₱{s.medical_healthcare_expense}, "
+                f"Education Expense ₱{s.education_expense}, "
+                f"Household Supplies & Maintenance Expense ₱{s.household_supplies_maintenance_expense}, "
+                f"Personal Care & Shopping Expense ₱{s.personal_care_shopping_expense}, "
+                f"Entertainment & Recreation Expense ₱{s.entertainment_recreation_expense}, "
+                f"Gifts & Donations Expense ₱{s.gifts_donations_expense}, "
+                f"Savings & Investment Contribution ₱{s.savings_investment_contribution}"
+            )
+
+        prompt = (
+            "Compare the budgeting scenarios below. "
+            "For each, mention the scenario number and title, and all expense categories. "
+            "Highlight the main differences. Keep it concise and clear. "
+            "Express all amounts in Philippine pesos (₱). "
+            "Do not introduce the summary or repeat the prompt. "
+            "Start your summary immediately after this sentence.\n\n"
+            + "\n".join(scenario_descriptions)
+            + "\nExample: Scenario 1 (Basic): Monthly Net Income ₱50,000, Housing Expense ₱15,000, Food & Grocery Expense ₱10,000. Scenario 2 (Advanced): Monthly Net Income ₱100,000, Housing Expense ₱30,000, Food & Grocery Expense ₱20,000. The advanced scenario has higher income and expenses, showing more complexity."
+        )
+        print(prompt)
+        explanation = generate_response(prompt)
+        print(explanation)
+        return {"ai_explanation": explanation}
