@@ -180,3 +180,51 @@ def budgeting_ai_suggestions():
     suggestions_text = generate_response(prompt)
     suggestions = [line.strip("- ").strip() for line in suggestions_text.split("\n") if line.strip()]
     return {"ai_suggestions": suggestions}
+
+
+@router.get("/budgeting/summary")
+def budgeting_summary():
+    """
+    Fetch all budgeting scenarios and generate an AI summary.
+    """
+
+    with get_session() as session:
+        scenarios = session.query(BudgetingModel).all()
+        if not scenarios:
+            return {"summary": "No budgeting scenarios found."}
+    
+    scenario_descriptions = []
+    for s in scenarios:
+        scenario_descriptions.append(
+            f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): "
+            f"Monthly Net Income ₱{s.monthly_net_income}, "
+            f"Housing Expense ₱{s.housing_expense}, "
+            f"Food & Grocery Expense ₱{s.food_grocery_expense}, "
+            f"Utilities Expense ₱{s.utilities_expense}, "
+            f"Transportation Expense ₱{s.transportation_expense}, "
+            f"Debt Payments Expense ₱{s.debt_payments_expense}, "
+            f"Medical & Healthcare Expense ₱{s.medical_healthcare_expense}, "
+            f"Education Expense ₱{s.education_expense}, "
+            f"Household Supplies & Maintenance Expense ₱{s.household_supplies_maintenance_expense}, "
+            f"Personal Care & Shopping Expense ₱{s.personal_care_shopping_expense}, "
+            f"Entertainment & Recreation Expense ₱{s.entertainment_recreation_expense}, "
+            f"Gifts & Donations Expense ₱{s.gifts_donations_expense}, "
+            f"Savings & Investment Contribution ₱{s.savings_investment_contribution}"
+        )
+
+    prompt = (
+            "You are a financial advisor. Below are several emergency fund scenarios. "
+            "Write a short, clear summary that compares these scenarios. "
+            "Do not introduce the summary or repeat the prompt. "
+            "Reference each scenario by its number and title, mention the target amount and current savings, and highlight key differences. "
+            "Keep the summary concise and do not list every variable. "
+            "Express all amounts in Philippine pesos (₱). "
+            "Start your summary immediately after this sentence.\n\n"
+            + "\n".join(scenario_descriptions)
+            + "For example: Scenario 1 (Basic): Target ₱60,000, Savings ₱20,000. Scenario 2 (Advanced): Target ₱120,000, Savings ₱50,000. The advanced scenario has higher expenses and savings, showing more progress toward a larger target."
+        )
+
+    print(prompt)
+    summary = generate_response(prompt)
+    return {"summary": summary}
+    
