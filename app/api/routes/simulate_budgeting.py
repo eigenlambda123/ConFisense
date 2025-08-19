@@ -73,3 +73,15 @@ def save_budgeting(data: BudgetInput):
     session.commit()
     session.refresh(scenario)
     return {"id": scenario.id, "message": "Scenario saved"}
+
+
+@router.delete("/budgeting/{scenario_id}")
+def delete_budgeting_scenario(scenario_id: int):
+    with get_session() as session:
+        scenario = session.get(BudgetingModel, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
+        session.delete(scenario)
+        session.commit()
+        session.refresh(scenario)
+        return {"message": "Scenario deleted"}
