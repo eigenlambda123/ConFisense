@@ -69,3 +69,17 @@ export async function getBudgetingAIExplaination() {
         throw error;
     }
 }
+
+export async function getBudgetingAISummary() {
+    console.log("getBudgetingAISummary called");
+    try {
+        const response = await fetch('http://127.0.0.1:8000/budgeting/ai-summary');
+        if (!response.ok) throw new Error('Failed to fetch AI summary');
+        const result = await response.json();
+        console.log('AI Summary:', result);
+        return result;
+    } catch (error) {
+        console.error('Error getting AI summary:', error);
+        throw error;
+    }
+}
