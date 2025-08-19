@@ -136,3 +136,47 @@ def budgeting_ai_explanation():
         explanation = generate_response(prompt)
         print(explanation)
         return {"ai_explanation": explanation}
+    
+
+@router.get("/budgeting/ai-suggestions")
+def budgeting_ai_suggestions():
+    """
+    Generate AI suggestions based on all budgeting scenarios in the database.
+    """
+    with get_session() as session:
+        scenarios = session.query(BudgetingModel).all()
+        if not scenarios:
+            return {"ai_suggestions": ["No budgeting scenarios found."]}
+        
+    scenario_descriptions = []
+    for s in scenarios:
+        scenario_descriptions.append(
+                f"Scenario {s.id} ({s.scenario_title or 'Untitled'}): "
+                f"Monthly Net Income ₱{s.monthly_net_income}, "
+                f"Housing Expense ₱{s.housing_expense}, "
+                f"Food & Grocery Expense ₱{s.food_grocery_expense}, "
+                f"Utilities Expense ₱{s.utilities_expense}, "
+                f"Transportation Expense ₱{s.transportation_expense}, "
+                f"Debt Payments Expense ₱{s.debt_payments_expense}, "
+                f"Medical & Healthcare Expense ₱{s.medical_healthcare_expense}, "
+                f"Education Expense ₱{s.education_expense}, "
+                f"Household Supplies & Maintenance Expense ₱{s.household_supplies_maintenance_expense}, "
+                f"Personal Care & Shopping Expense ₱{s.personal_care_shopping_expense}, "
+                f"Entertainment & Recreation Expense ₱{s.entertainment_recreation_expense}, "
+                f"Gifts & Donations Expense ₱{s.gifts_donations_expense}, "
+                f"Savings & Investment Contribution ₱{s.savings_investment_contribution}"
+            )
+        
+
+    prompt = (
+        "You are a financial advisor. Below are multiple budgeting scenarios, each with their variables listed. "
+        "Based on all scenarios, give 3 specific, practical suggestions to improve the user's budgeting outcomes. "
+        "Be direct and actionable. Express all amounts in Philippine pesos (₱). "
+        "Do not repeat the prompt or introduce the suggestions, just list them as:\n"
+        "1. ...\n2. ...\n3. ...\n\n"
+        + "\n".join(scenario_descriptions)
+    )
+
+    suggestions_text = generate_response(prompt)
+    suggestions = [line.strip("- ").strip() for line in suggestions_text.split("\n") if line.strip()]
+    return {"ai_suggestions": suggestions}
