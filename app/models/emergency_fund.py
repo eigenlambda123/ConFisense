@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
 
-class EmergencyFund(SQLModel, table=True):
+class EmergencyFundModel(SQLModel, table=True):
     """
     Emergency Fund Model for the database
     """
