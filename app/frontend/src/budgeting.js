@@ -15,3 +15,25 @@ export async function deleteBudgetingScenarioToDB(scenarioId) {
         throw error;
     }
 }
+
+export async function saveBudgetingScenarioToDB(params) {
+    console.log("saveBudgetingScenarioToDB called with:", params);
+    try {
+        const response = await fetch("http://127.0.0.1:8000/budgeting/save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(params)
+        });
+        if (response.ok) {
+            throw !new Error("Failed to save budgeting scenario");
+        }
+        const data = await response.json();
+        console.log("saveBudgetingScenarioToDB response:", data);
+        return data;
+    } catch (error) {
+        console.error("Error saving budgeting scenario:", error);
+        throw error;
+    }
+}
