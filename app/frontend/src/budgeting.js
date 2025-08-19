@@ -53,3 +53,19 @@ export async function getBudgetingAISuggestion() {
         throw error;
     }
 }
+
+export async function getBudgetingAIExplaination() {
+    console.log("getBudgetingAIExplaination called");
+    try {
+        const response = await fetch("http://127.0.0.1:8000/budgeting/ai-explanation");
+        if (!response.ok) {
+            throw new Error("Failed to get AI explanation");
+        }
+        const data = await response.json();
+        console.log("getBudgetingAIExplaination response:", data);
+        return data;
+    } catch (error) {
+        console.error("Error getting AI explanation:", error);
+        throw error;
+    }
+}
