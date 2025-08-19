@@ -37,3 +37,19 @@ export async function saveBudgetingScenarioToDB(params) {
         throw error;
     }
 }
+
+export async function getBudgetingAISuggestion() {
+    console.log("getBudgetingAISuggestion called");
+    try {
+        const response = await fetch("http://127.0.0.1:8000/budgeting/ai-suggestions");
+        if (!response.ok) {
+            throw new Error("Failed to get AI suggestions");
+        }
+        const data = await response.json();
+        console.log("getBudgetingAISuggestion response:", data);
+        return data;
+    } catch (error) {
+        console.error("Error getting AI suggestions:", error);
+        throw error;
+    }
+}
