@@ -49,6 +49,13 @@ def simulate_budgeting_route(data: BudgetInput):
 
     return result
 
+@router.get("/budgeting/all")
+def get_all_budgeting_scenarios():
+    with get_session() as session:
+        scenarios = session.query(BudgetingModel).all()
+        return [s.dict() for s in scenarios]
+
+
 @router.post("/budgeting/save")
 def save_budgeting(data: BudgetInput):
     with get_session() as session:
