@@ -1,230 +1,132 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="src/output.css" rel="stylesheet">
     <title>ConFiSense</title>
+    <link href="src/style.css" rel="stylesheet">
 </head>
 <body>
-    <div class="fixed inset-0 z-0 bg-radial from-white via-white/5 to-blue-400 bg-no-repeat bg-fixed bg-cover"></div>
-    <div class="relative inset-0 z-10 flex flex-col h-screen">
-        
-        <!-- Header -->
-        <header class="flex-none sticky top-0 z-30 min-w-[320px] h-[80px] py-4 px-0">
-        <div class="flex flex-row justify-between w-full max-w-full my-0 mx-auto py-0 px-4">
-            <div class="flex flex-row items-center gap-4">
-                <button aria-label="Open menu" class="btn semi-rounded hover-bg p-1 text-white">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div class="flex flex-col">
-                    <h1 class="title">ConFiSense</h1>
-                    <h4 class="subtitle">Your AI-Powered Financial Assistant</h4>
-                </div>
+
+    <header>
+        <div id="header-container">
+            <h1 id="title">ConFiSense</h1>
+            <h2 id="subtitle">Your AI-Powered Financial Assistant</h2>
+        </div>
+    </header>
+
+    <main id="home">
+        <div id="home-container">
+            <div id="greetings-container">
+                <h2 id="main-greeting">What would you like to plan for?</h2>
+                <h3 id="main-tip">Select a scenario to model outcomes and reduce uncertainty before you act.</h3>
             </div>
-            <div class="flex flex-row items-center">
-                <button class="btn full-rounded hover-bg flex flex-row items-center gap-1 text-sm font-bold p-1">
-                    <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                    </svg>
+            <div id="card-grid">
+                <button class="card-btn" data-scenario="emergency_fund">
+                    <h3 class="scenario-name">Emergency Fund</h3>
+                    <p class="scenario-desc">Build your financial safety net.</p>
+                </button>
+                <button class="card-btn" data-scenario="budgeting">
+                    <h3 class="scenario-name">Budgeting and Cash Flow</h3>
+                    <p class="scenario-desc">Track and optimize your spending.</p>
+                </button>
+                <button class="card-btn" data-scenario="debt_management">
+                    <h3 class="scenario-name">Savings and Investment</p>
+                    <p class="scenario-desc">Grow your wealth over time.</p>
+                </button>
+                <button class="card-btn" data-scenario="investing">
+                    <h3 class="scenario-name">Debt Management</h3>
+                    <p class="scenario-desc">Become debt-free faster.</p>
+                </button>
+                <button class="card-btn" data-scenario="education_funding">
+                    <h3 class="scenario-name">Education Funding</h3>
+                    <p class="scenario-desc">Plan for future education costs.</p>
+                </button>
+                <button class="card-btn" data-scenario="major_purchase">
+                    <h3 class="scenario-name">Major Purchase Planning</h3>
+                    <p class="scenario-desc">Save for a big-ticket item.</p>
                 </button>
             </div>
         </div>
-        </header>
-        <div id="main-container" class="flex-grow max-w-full min-w-[320px] w-full relative flex flex-row my-0 mx-auto px-4 overflow-hidden">
-            
-            <!-- Home -->
-            <main id="home" class="max-h-full w-full flex flex-col gap-8 self-start p-4 transition-[width] duration-1000 ease-in-out overflow-y-auto">
-                <div id="greetings" class="flex flex-col justify-center items-center gap-1 w-full h-full transition-[height] duration-1000 ease-in-out overflow-hidden">
-                    <h2 class="main-greeting">Hello! What would you like to plan for?</h2>
-                    <h4 class="main-tip">Select a scenario to model outcomes and reduce uncertainty before you act.</h4>
-                </div>
-                <div id="card-grid" class="flex flex-row flex-wrap items-stretch justify-center gap-6 h-auto">
-                    <button class="btn semi-rounded card-btn" data-scenario="emergency_fund">
-                        <div class="card-info">
-                            <div class="card-texts">
-                                <h2 class="scenario-name">Emergency Fund</h2>
-                                <p class="scenario-info scenario-desc">Build your financial safety net.</p>
-                                <p class="scenario-info scenario-tip">For handling unexpected expenses.</p>
-                            </div>
-                            <div class="card-icon">
-                                <img class="scenario-icon" src="assets/icons/shield.svg" alt="shield icon">
-                            </div>
-                        </div>
-                    </button>
-                    <button class="btn semi-rounded card-btn" data-scenario="budgeting">
-                        <div class="card-info">
-                            <div class="card-texts">
-                                <h2 class="scenario-name">Budgeting and Expenses</h2>
-                                <p class="scenario-info scenario-desc">Track and optimize your spending.</p>
-                                <p class="scenario-info scenario-tip">To understand where your money goes.</p>
-                            </div>
-                            <div class="card-icon">
-                                <img class="scenario-icon" src="assets/icons/receipt.svg" alt="receipt icon">
-                            </div>
-                        </div>
-                    </button>
-                    <button class="btn semi-rounded card-btn" data-scenario="debt_management">
-                        <div class="card-info">
-                            <div class="card-texts">
-                                <h2 class="scenario-name">Debt Management</h2>
-                                <p class="scenario-info scenario-desc">Become debt-free faster.</p>
-                                <p class="scenario-info scenario-tip">For credits and loans.</p>
-                            </div>
-                            <div class="card-icon">
-                                <img class="scenario-icon" src="assets/icons/credit-cards.svg" alt="credit cards icon">
-                            </div>
-                        </div>
-                    </button>
-                    <button class="btn semi-rounded card-btn" data-scenario="investing">
-                        <div class="card-info">
-                            <div class="card-texts">
-                                <h2 class="scenario-name">Savings and Investment</h2>
-                                <p class="scenario-info scenario-desc">Grow your wealth over time.</p>
-                                <p class="scenario-info scenario-tip">For long-term goals like retirement.</p>
-                            </div>
-                            <div class="card-icon">
-                                <img class="scenario-icon" src="assets/icons/rising-stock.svg" alt="arrow icon">
-                            </div>
-                        </div>
-                    </button>
-                    <button class="btn semi-rounded card-btn" data-scenario="education_funding">
-                        <div class="card-info">
-                            <div class="card-texts">
-                                <h2 class="scenario-name">Education Funding</h2>
-                                <p class="scenario-info scenario-desc">Plan for future education costs.</p>
-                                <p class="scenario-info scenario-tip">For yourself or your children.</p>
-                            </div>
-                            <div class="card-icon">
-                                <img class="scenario-icon" src="assets/icons/grad-cap.svg" alt="graduation cap and diploma icon">
-                            </div>
-                        </div>
-                    </button>
-                    <button class="btn semi-rounded card-btn" data-scenario="major_purchase">
-                        <div class="card-info">
-                            <div class="card-texts">
-                                <h2 class="scenario-name">Major Purchase Planning</h2>
-                                <p class="scenario-info scenario-desc">Save for a big-ticket item.</p>
-                                <p class="scenario-info scenario-tip">For a house, car, or other large goal.</p>
-                            </div>
-                            <div class="card-icon">
-                                <img class="scenario-icon" src="assets/icons/wallet.svg" alt="wallet icon">
-                            </div>
-                        </div>
-                    </button>
-                </div>
-            </main>
+    </main>
 
-            <!-- Dashboard -->
-            <aside id="dashboard" class="max-h-full w-0 h-auto transition-[width] duration-1000 ease-in-out overflow-x-hidden">
-                <div class="flex flex-col gap-4 p-4">
-                    <div class="flex flex-row">
-                        <button id="back-btn" class="flex flex-row items-center justify-center gap-1 text-sm">
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4465a2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                            </svg>
-                            <span class="btn inline text-[#4465a2] text-base font-bold">Hide Dashboard</span>
+    <aside id="dashboard">
+        <div id="dashboard-container">
+            <div id="dashboard-header">
+                <button id="back-btn">
+                    <span>Close Dashboard</span>
+                </button>
+                <h2 id="scenario-title"></h2>
+            </div>
+            <div id="widget-grid">
+                <div id="parameters" class="dashboard-widget">
+                    <h2 class="widget-title">Adjust Your Parameters</h2>
+                    <hr>
+                    <div id="field-container"></div>
+                    <div class="widget-btns">
+                        <button id="clear-btn" class="widget-btn">
+                            Clear
+                        </button>
+                        <button id="simulate-btn" class="widget-btn main-btns">
+                            Run Simulation
                         </button>
                     </div>
-                    <h2 id="scenario-title" class="text-[#121d38] text-lg min-[550px]:text-2xl font-bold"></h2>
-                    <div id="widget-grid" class="grid grid-cols-1 min-[850px]:grid-cols-[1fr_2fr] gap-6 w-full">
-                        
-                        <!-- Fields -->
-                        <div class="dashboard-widget">
-                            <h2 class="widget-title">Adjust Your Parameters</h2>
-                            <hr>
-                            <div id="form-fields">
-                            </div>
-                            <div class="mt-auto">
-                                <form id="simulation-form" class="flex flex-row gap-2">
-                                    <button type="button" id="clear-fields-btn" class="btn semi-rounded icon-widget-btn bg-red-700 hover-darken">
-                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-                                    </button> 
-                                    <button type="submit" id="run-simulation-btn" class="btn semi-rounded text-widget-btn bg-linear-to-r from-blue-700 to-violet-700 hover-darken">
-                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
-                                        </svg>
-                                        <span>Run Simulation</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                        <!-- Chart -->
-                        <div id="output" class="dashboard-widget min-h-[500px] min-[850px]:self-start">
-                            <h2 class="widget-title">Projected Outcomes</h2>
-                            <hr>
-                            <div id="active-scenarios" class="flex flex-row flex-wrap gap-2"></div>
-                            <div id="chart" class="chart-container">
-                                <canvas id="chart-canvas" class="chart-canvas"></canvas>
-                            </div>
-                            <div class="grid grid-cols-[1fr_auto] gap-2 min-[550px]:flex min-[550px]:flex-row mt-auto">
-                                <button class="col-span-2 min-[550px]:col-span-1 btn semi-rounded text-widget-btn bg-linear-to-r from-blue-700 to-violet-700 hover-darken">
-                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-                                    </svg>
-                                    <span>Explain with AI</span>
-                                </button>
-                                <button class="col-span-1 min-[550px]:col-span-1 btn semi-rounded text-widget-btn bg-blue-800 hover-darken">
-                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V13.5Zm0 2.25h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V18Zm2.498-6.75h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V13.5Zm0 2.25h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V18Zm2.504-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5Zm0 2.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V18Zm2.498-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5ZM8.25 6h7.5v2.25h-7.5V6ZM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0 0 12 2.25Z" />
-                                    </svg>
-                                    <span>Show My Math</span>
-                                </button>
-                                <button class="col-span-1 min-[550px]:col-span-1 btn semi-rounded icon-widget-btn bg-green-800 hover-darken">
-                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                    </svg>
-                                </button>                            
-                            </div>
-                        </div>
-                        
-                        <!-- AI  -->
-                        <div class="dashboard-widget col-span-1 min-[850px]:col-span-2">
-                            <h2 class="widget-title">AI-Powered Explanation</h2>
-                            <div id="ai-explanation"></div>
-                            <div class="flex flex-row">
-                                <button class="btn semi-rounded text-widget-btn bg-linear-to-r from-blue-700 to-violet-700 hover-darken">
-                                    Suggest Next Steps
-                                </button>
-                            </div>
-                        </div>
-                        <div class="dashboard-widget col-span-1 min-[850px]:col-span-2">
-                            <h2 class="widget-title">Suggested Action Steps</h2>
-                            <div id="ai-suggest"></div>
-                        </div>
+                </div>
+                <div id="chart" class="dashboard-widget">
+                    <h2 class="widget-title">Projected Outcomes</h2>
+                    <hr>
+                    <div id="active-graphs"></div>
+                    <div id="chart-container">
+                        <canvas id="chart-canvas"></canvas>
+                    </div>
+                    <div class="widget-btns">
+                        <button id="explain-btn" class="widget-btn main-btns">
+                            Explain with AI
+                        </button>
+                        <button id="math-btn" class="widget-btn">
+                            Show My Math
+                        </button>
+                        <button id="download-btn" class="widget-btn">
+                            Download Report
+                        </button>
                     </div>
                 </div>
-            </aside>
+                <div id="explain" class="dashboard-widget">
+                    <h2 class="widget-title">AI-Powered Explanation</h2>
+                    <hr>
+                </div>
+                <div id="suggest" class="dashboard-widget">
+                    <h2 class="widget-title">Suggested Action Steps</h2>
+                    <hr>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <!-- Templates for JS backend -->
-    <template id="scenario-tab-template">
-        <div class="semi-rounded flex flex-row items-center justify-between gap-0.5 p-1">
-            <label class="text-white font-medium text-[0.75rem] min-[550px]:text-[0.8rem]"></label>
-            <button type="button" class="full-rounded text-white hover:bg-[#374151]">
-                <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        
+
+    </aside>
+
+    <template id="graph-tab-template">
+        <div class="tab-container">
+            <label class="tab-label"></label>
+            <button class="tab-dlt-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
     </template>
     <template id="field-template">
-        <div class="my-2">
-            <label class="block mb-1 font-normal text-[0.75rem] min-[550px]:text-[1rem] text-[#99a1af]"></label>
-            <input class="w-full px-2 py-1 border bg-[#060e27] rounded text-[0.75rem] min-[550px]:text-[0.8rem] text-[#99a1af]">
+        <div>
+            <label class="input-label"></label>
+            <input class="input-field">
         </div>
     </template>
     <template id="ai-response-template">
-        <p class="font-normal text-[0.75rem] min-[550px]:text-[1rem] text-gray-500"></p>
+        <div>
+            <p></p>
+        </div>
     </template>
-    
-    <!-- JS Scripts -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="src/app.js"></script>
 </body>

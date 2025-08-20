@@ -1,0 +1,352 @@
+:root{
+  --dark-blue: #121d38;
+  --darker-blue: #060e27;
+  --azure-blue: #4465a2;;
+  --light-blue: #b0e7ff;
+  --gray-blue: #99a1af;
+}
+
+@font-face {
+  font-family: HPSimplified;
+  font-weight: normal;
+  src: url(assets/fonts/HPSimplifiedRegular.woff);
+}
+
+@font-face {
+  font-family: HPSimplified;
+  font-weight: bold;
+  src: url(assets/fonts/HPSimplifiedBold.woff);
+}
+
+@font-face {
+  font-family: NunitoSans;
+  font-weight: normal;
+  src: url(assets/fonts/NunitoSans.ttf);
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    position: relative;
+    height: 100vh;
+    background-image: radial-gradient(white, #ffffff17, #50adf4);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+h1, h2, h3, h4, p {
+    /* font-family: "HPSimplifiedRegular", Arial, Helvetica, sans-serif; */
+    font-size: 1rem;
+    line-height: 1;
+}
+
+button {
+    padding: 1rem 0;
+}
+
+header {
+    padding: 1.5rem 2rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+#title {
+    color: white;
+    font-size: 2rem;
+    
+}
+
+#subtitle {
+    color: var(--dark-blue);
+    font-size: 1.25rem;
+}
+
+main {
+    max-width: 100%;
+    width: 100%;
+    transition: width 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+#home-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 6rem 6rem 6rem;
+}
+
+#greetings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+#main-greeting {
+    color: var(--dark-blue);
+    font-size: 2rem;
+}
+
+#main-tip {
+    color: var(--azure-blue);
+    font-size: 1.25rem;
+}
+
+#card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.card-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    background-image: linear-gradient(to top right, #1592DB, #001D5C);
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: start;
+    filter: drop-shadow(0px 2px 4px var(--dark-blue));
+    transition: transform 0.3s ease-in-out;
+}
+
+.card-btn:hover {
+    transform: translateY(-5px);
+}
+
+.scenario-name {
+    color: white;
+    font-size: 1.75rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+.scenario-desc {
+    color: var(--light-blue);
+    font-size: 1.25rem;
+    font-family: "HPSimplified";
+    font-weight: normal;
+}
+
+aside {
+    position: absolute;
+    top: 5.5rem;
+    right: 0;
+    max-width: 100%;
+    width: 0;
+    height: auto;
+    top: 5.5rem;
+    transition: width 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+#dashboard-container {
+    /* background-color: white; */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 6rem 6rem 6rem;
+}
+
+#dashboard-header {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 1rem;
+}
+
+#back-btn {
+    background-color: transparent;
+    border: 0;
+    color: var(--azure-blue);
+    font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#scenario-title {
+    font-size: 1.5rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+#widget-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+}
+
+.dashboard-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--dark-blue);
+    border-radius: 10px;
+    filter: drop-shadow(0px 2px 6px black);
+}
+
+.widget-title {
+    color: white;
+    font-size: 1.5rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+#field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 1rem;
+    margin: 1rem 0;
+    max-height: 320px;
+    font-family: "HPSimplified";
+    font-weight: normal;
+    overflow-y: auto;
+}
+
+#field-container::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+}
+
+#field-container::-webkit-scrollbar-track {
+    background-color: #121d38;
+    border-radius: 10px;
+}
+
+#field-container::-webkit-scrollbar-thumb {
+    background-color: #99a1af;
+    border-radius: 10px;
+}
+
+.input-label {
+    display: block;
+    padding: 0.5rem 0;
+    color: var(--gray-blue);
+    font-size: 1rem;
+}
+
+.input-field {
+    border: 1px solid white;
+    display: block;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--darker-blue);
+    border-radius: 10px;
+    color: var(--gray-blue);
+    font-size: 1rem;
+}
+
+.widget-btns {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.widget-btn {
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-radius: 10px;
+    color: white;
+    font-family: "HPSimplified";
+    font-weight: normal;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: filter 0.2s ease-in-out;
+}
+
+.widget-btn:hover {
+    filter: brightness(0.6);
+}
+
+.main-btns {
+    background-image: linear-gradient(to right, #2727b4, #8000a4);
+}
+
+#clear-btn {
+    background-color: red;
+}
+
+#active-graphs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tab-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 10px;
+}
+
+.tab-label {
+    color: white;
+    font-family: "HPSimplified";
+    font-weight: normal;
+}
+
+.tab-dlt-btn {
+    background-color: transparent;
+    padding: 0.05rem;
+    border: 0;
+    border-radius: 9999px;
+}
+
+.tab-dlt-btn svg {
+    width: 1rem;
+    height: 1rem;
+    color: white;
+}
+
+.tab-dlt-btn:hover {
+    background-color: var(--gray-blue);
+}
+
+#chart-container {
+    border: 1px solid black;
+    width: 100%;
+    height: 320px;
+    position: relative;
+}
+
+#chart-canvas {
+    border: 1px solid var(--gray-blue);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+#math-btn {
+    background-color: blue;
+}
+
+#download-btn {
+    background-color: green;
+}
+
+#explain {
+    grid-row: 2;
+    grid-column: 1 / span 2;
+}
+
+#suggest {
+    grid-row: 3;
+    grid-column: 1 / span 2;
+}
