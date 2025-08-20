@@ -9,19 +9,19 @@
 @font-face {
   font-family: HPSimplified;
   font-weight: normal;
-  src: url(assets/fonts/HPSimplifiedRegular.woff);
+  src: url(../assets/fonts/HPSimplifiedRegular.woff);
 }
 
 @font-face {
   font-family: HPSimplified;
   font-weight: bold;
-  src: url(assets/fonts/HPSimplifiedBold.woff);
+  src: url(../assets/fonts/HPSimplifiedBold.woff);
 }
 
 @font-face {
   font-family: NunitoSans;
   font-weight: normal;
-  src: url(assets/fonts/NunitoSans.ttf);
+  src: url(../assets/fonts/NunitoSans.ttf);
 }
 
 * {
