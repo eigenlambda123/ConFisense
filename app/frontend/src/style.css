@@ -4,6 +4,7 @@
   --azure-blue: #4465a2;;
   --light-blue: #b0e7ff;
   --gray-blue: #99a1af;
+  --dark-gray-blue: #4f5259;
 }
 
 @font-face {
@@ -31,12 +32,14 @@
 }
 
 body {
+    min-width: 320px;
     position: relative;
     height: 100vh;
-    background-image: radial-gradient(white, #ffffff17, #50adf4);
+    background-color: white;
+    /* background-image: radial-gradient(white, #ffffff17, #50adf4);
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: cover;
+    background-size: cover; */
 }
 
 h1, h2, h3, h4, p {
@@ -50,23 +53,36 @@ button {
 }
 
 header {
-    padding: 1.5rem 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: white;
+    border-bottom: 1px solid gray;
+    padding: 0.5rem 2rem;
+    height: 4rem;
+    width: 100%;
     font-family: "HPSimplified";
     font-weight: bold;
 }
 
+.accent-gradient-text {
+    background: linear-gradient(to top right, #1592DB, #001D5C);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+}
+
 #title {
-    color: white;
-    font-size: 2rem;
-    
+    font-size: 1.75rem;
 }
 
 #subtitle {
     color: var(--dark-blue);
-    font-size: 1.25rem;
+    font-size: 1rem;
 }
 
 main {
+    padding-top: 4rem;
     max-width: 100%;
     width: 100%;
     transition: width 0.5s ease-in-out;
@@ -77,7 +93,30 @@ main {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1rem 6rem 6rem 6rem;
+    padding: 1rem 3rem 6rem 3rem;
+}
+
+#fixed-main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+#fixed-main::-webkit-scrollbar {
+    width: 0;
+    background-color: transparent;
+}
+
+#fixed-main::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 0;
+}
+
+#fixed-main::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 0;
 }
 
 #greetings-container {
@@ -85,24 +124,34 @@ main {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    padding: 1rem;
+    width: 100%;
+    max-height: 5rem;
     font-family: "HPSimplified";
     font-weight: bold;
+    transition: max-height 0.5s ease-in-out;
+    overflow-y: hidden;
 }
 
 #main-greeting {
+    text-align: center;
     color: var(--dark-blue);
     font-size: 2rem;
 }
 
 #main-tip {
+    text-align: center;
     color: var(--azure-blue);
     font-size: 1.25rem;
 }
 
 #card-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: 33.33%;
+    justify-content: center;
+    align-items: center;
+    /* display: grid;
+    grid-template-columns: repeat(3, 1fr); */
     gap: 1.5rem;
 }
 
@@ -111,13 +160,16 @@ main {
     flex-direction: column;
     gap: 0.25rem;
     padding: 1.5rem;
+    min-height: 9rem;
+    max-width: 25rem;
+    width: 25rem;
     background-image: linear-gradient(to top right, #1592DB, #001D5C);
     border: 0;
     border-radius: 10px;
     cursor: pointer;
     text-align: start;
-    filter: drop-shadow(0px 2px 4px var(--dark-blue));
-    transition: transform 0.3s ease-in-out;
+    filter: drop-shadow(0px 3px 1px var(--dark-blue));
+    transition: transform 0.3s ease-in-out, width 0.5s ease-in-out, min-height 0.5s ease-in-out;
 }
 
 .card-btn:hover {
@@ -129,6 +181,7 @@ main {
     font-size: 1.75rem;
     font-family: "HPSimplified";
     font-weight: bold;
+    transition: font-size 0.5s ease-in-out;
 }
 
 .scenario-desc {
@@ -136,26 +189,26 @@ main {
     font-size: 1.25rem;
     font-family: "HPSimplified";
     font-weight: normal;
+    transition: font-size 0.5s ease-in-out;
 }
 
 aside {
     position: absolute;
-    top: 5.5rem;
+    top: 4rem;
     right: 0;
     max-width: 100%;
     width: 0;
     height: auto;
-    top: 5.5rem;
     transition: width 0.5s ease-in-out;
     overflow: hidden;
 }
 
 #dashboard-container {
-    /* background-color: white; */
+    background-color: #E0E0E0;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1rem 6rem 6rem 6rem;
+    padding: 1rem 3rem 6rem 3rem;
 }
 
 #dashboard-header {
@@ -199,13 +252,13 @@ aside {
     flex-direction: column;
     gap: 1rem;
     padding: 1.5rem;
-    background-color: var(--dark-blue);
+    background-color: #f1f1f1;
     border-radius: 10px;
-    filter: drop-shadow(0px 2px 6px black);
+    filter: drop-shadow(0px 3px 0px gray);
 }
 
 .widget-title {
-    color: white;
+    color: var(--dark-blue);
     font-size: 1.5rem;
     font-family: "HPSimplified";
     font-weight: bold;
@@ -229,29 +282,33 @@ aside {
 }
 
 #field-container::-webkit-scrollbar-track {
-    background-color: #121d38;
+    background-color: transparent;
     border-radius: 10px;
 }
 
 #field-container::-webkit-scrollbar-thumb {
-    background-color: #99a1af;
+    background-color: var(--dark-blue);
     border-radius: 10px;
 }
 
 .input-label {
     display: block;
-    padding: 0.5rem 0;
-    color: var(--gray-blue);
+    padding: 0 0 0.5rem 0;
+    color: var(--dark-blue);
     font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
 }
 
 .input-field {
-    border: 1px solid white;
+    border: 0;
     display: block;
     width: 100%;
-    background-color: var(--darker-blue);
-    color: var(--gray-blue);
+    background-color: var(--gray-blue);
+    color: var(--dark-blue);
     font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: normal;
 }
 
 .non-color-input {
@@ -282,11 +339,11 @@ aside {
 }
 
 .main-btn {
-    background-image: linear-gradient(to right, #2727b4, #8000a4);
+    background-image: linear-gradient(to top right, #1592DB, #001D5C);
 }
 
 #clear-btn {
-    background-color: red;
+    background-color: #901212;
 }
 
 #active-graphs {
@@ -319,7 +376,8 @@ aside {
 .tab-dlt-btn svg {
     width: 1rem;
     height: 1rem;
-    color: white;
+    color: var(--dark-gray-blue);
+    vertical-align: middle;
 }
 
 .tab-dlt-btn:hover {
@@ -327,28 +385,28 @@ aside {
 }
 
 #chart-container {
-    border: 1px solid black;
     width: 100%;
     height: 400px;
     position: relative;
 }
 
 #chart-canvas {
-    border: 1px solid var(--gray-blue);
+    border-radius: 10px;
+    background-color: var(--gray-blue);;
     position: absolute;
     top: 0;
     left: 0;
+    padding: 1rem;
     width: 100%;
     height: 100%;
 }
 
-
 #math-btn {
-    background-color: blue;
+    background-color: #131372;
 }
 
 #download-btn {
-    background-color: green;
+    background-color: #034a03;
 }
 
 #explain {
@@ -361,8 +419,14 @@ aside {
     grid-column: 1 / span 2;
 }
 
+.ai-text-container {
+    border-radius: 10px;
+    padding: 1rem;
+    background-color: var(--gray-blue);
+}
+
 .ai-text {
-    color: var(--gray-blue);
+    color: var(--dark-gray-blue);
     font-family: "HPSimplified";
     font-weight: normal;
     font-size: 1rem;
