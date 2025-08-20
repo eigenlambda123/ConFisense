@@ -1,11 +1,16 @@
-import { renderChart, destroyChart, createDataset, updateChartTitle } from "./charts.js";
+import { 
+    renderChart, 
+    destroyChart, 
+    createDataset, 
+    updateChartTitle 
+} from "./charts.js";
+
 import { 
     saveEmergencyFundScenarioToDB,
     getEmergencyFundAISuggestion,
     getEmergencyFundAIExplaination,
     getEmergencyFundAISummary 
 } from './emergency-fund.js';
-
 
 // Global states
 let currentScenario = ''; // ID of current selected scenario
@@ -14,7 +19,7 @@ let currentScenarioEndpoint = ''; // API endpoint for simulation
 let fields = []; // DOM input elements (for current scenario)
 let fieldValues = {}; // Store current input values
 
-const field = (id, label, min, step, def, type='number') => ({ id, label, min, step, default: def, type});
+const field = (id, label, min, step, def, type='number') => ({id, label, min, step, default: def, type});
 
 const scenariosConfig = {
     emergency_fund: {
@@ -148,6 +153,10 @@ function showDashboard(buttonElement) {
         input.type = field.type;
         input.value = field.default;
         input.id = field.id;
+
+        if (field.type !== 'color') {
+            input.classList.add('non-color-input');
+        }
 
         if (field.type === 'number') {
             input.min = field.min;
