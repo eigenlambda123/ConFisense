@@ -99,6 +99,10 @@ const scenariosConfig = {
 };
 
 const home = document.getElementById('home');
+const greetingsContainer = document.getElementById(('greetings-container'));
+const cardButton = document.getElementsByClassName('card-btn');
+const scenarioName = document.getElementsByClassName('scenario-name');
+const scenarioDescription = document.getElementsByClassName('scenario-desc');
 const dashboard = document.getElementById('dashboard');
 const scenarioTitleElement = document.getElementById('scenario-title');
 
@@ -178,8 +182,23 @@ function showDashboard(buttonElement) {
 
     // Toggle home to dashboard
     console.log('Opening dashboard...');
-    dashboard.style.width = '100%';
-    home.style.width = '0';
+    greetingsContainer.style.maxHeight = '0';
+
+    for (let i = 0; i < cardButton.length; i++) {
+        cardButton[i].style.minHeight = '6rem';
+    }
+
+    for (let i = 0; i < scenarioName.length; i++) {
+        scenarioName[i].style.fontSize = '1.25rem';
+    }
+
+    for (let i = 0; i < scenarioDescription.length; i++) {
+        scenarioDescription[i].style.fontSize = '0.75rem';
+    }
+
+    dashboard.style.width = '75%';
+    home.style.width = '25%';
+    home.id = 'fixed-main';
 
     renderChart(currentScenario); // Draw scenario-specific chart after form is set up
 }
@@ -188,8 +207,23 @@ function showHome() {
     // Toggle dashboard to home
     console.log('Closing dashboard...');
 
+    greetingsContainer.style.maxHeight = '5rem';
+
+    for (let i = 0; i < cardButton.length; i++) {
+        cardButton[i].style.minHeight = '9rem';
+    }
+
+    for (let i = 0; i < scenarioName.length; i++) {
+        scenarioName[i].style.fontSize = '1.75rem';
+    }
+
+    for (let i = 0; i < scenarioDescription.length; i++) {
+        scenarioDescription[i].style.fontSize = '1.25rem';
+    }
+
     dashboard.style.width = '0';
     home.style.width = '100%';
+    home.id = null;
     scenarioTitleElement.textContent = '';
 
     clearAIResponses();
@@ -270,7 +304,7 @@ async function fetchAndRenderAIExplanation() {
             return;
         }
 
-        clearAIResponses();
+        exContainer.innerHTML = '';
 
         const explanationNode = aiResponseTemplate.content.cloneNode(true);
         explanationNode.querySelector('p').textContent = ai_explanation;
@@ -295,7 +329,7 @@ async function fetchAndRenderAISuggestions() {
             return;
         }
 
-        clearAIResponses();
+        suContainer.innerHTML = '';
 
         // AI suggestions
         const suggestionsNode = aiResponseTemplate.content.cloneNode(true);
