@@ -249,11 +249,14 @@ aside {
     border: 1px solid white;
     display: block;
     width: 100%;
-    padding: 0.25rem 0.5rem;
     background-color: var(--darker-blue);
-    border-radius: 10px;
     color: var(--gray-blue);
     font-size: 1rem;
+}
+
+.non-color-input {
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
 }
 
 .widget-btns {
