@@ -182,7 +182,7 @@ export function renderChart(scenario) {
 let datasetCounter = 1;
 const activeScenariosContainer = document.getElementById('active-graphs');
 
-export function createDataset(title, color, data, labels, summary, scenarioId) {
+export function createDataset(title, color, data, labels, scenarioId) {
     if (!chart) {
         console.error('Chart not initialized.')
         return;
@@ -197,10 +197,6 @@ export function createDataset(title, color, data, labels, summary, scenarioId) {
         tension: 0.1, // Curve smoothing for readability
         scenarioId: scenarioId // ID identifier for the scenario
     };
-    
-    // Update chart title dynamically with scenario summary
-    const chartTitle = chart.options.plugins.title;
-    chartTitle.text = summary;
 
     // Push dataset into chart's data collection
     chart.data.datasets.push(newDataset);
@@ -240,7 +236,24 @@ export function createDataset(title, color, data, labels, summary, scenarioId) {
     };
 
     activeScenariosContainer.appendChild(tabClone); // Append to "active scenarios" container
-    updateChart(labels); // Trigger chart update with latest labels
+    updateChart(labels); // Trigger chart update with latest labels)
+}
+
+export function updateChartTitle(summary) {
+    // Update chart title dynamically with scenario summary
+    if (chart) {
+        const chartTitle = chart.options.plugins.title;
+        chartTitle.text = summary;
+        chart.update();
+    }
+}
+
+export function clearChartTitle() {
+    if (chart) {
+        // Clear chart title when exiting dashboard
+        chartTitle.text = null;
+        chart.update();
+    }
 }
 
 export function updateChart(labels) {
