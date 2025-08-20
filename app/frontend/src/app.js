@@ -1,5 +1,5 @@
 import { renderChart, destroyChart, createDataset } from "./charts.js";
-import {saveEmergencyFundScenarioToDB} from './emergency-fund.js';
+import { saveEmergencyFundScenarioToDB } from './emergency-fund.js';
 
 
 // Global states
@@ -89,7 +89,7 @@ const scenariosConfig = {
 };
 
 const home = document.getElementById('home');
-const homeGreetings = document.getElementById('greetings');
+// const homeGreetings = document.getElementById('greetings');
 const dashboard = document.getElementById('dashboard');
 const scenarioTitleElement = document.getElementById('scenario-title');
 
@@ -112,7 +112,7 @@ function showDashboard(buttonElement) {
     scenarioTitleElement.textContent = currentScenarioConfig.label;
 
     // Prepare container for form fields (reset old ones if switching scenarios)
-    const fieldContainer = document.getElementById('form-fields');
+    const fieldContainer = document.getElementById('field-container');
     fieldContainer.innerHTML = '';
 
     // Reset state for fields and values
@@ -160,27 +160,23 @@ function showDashboard(buttonElement) {
     });
 
     // Toggle home to dashboard
-    console.log("Opening dashboard...");
-    homeGreetings.classList.replace("h-full", "h-0");
-    home.classList.replace("w-full", "w-[25%]");
-    dashboard.classList.replace("w-0", "w-[75%]");
+    console.log('Opening dashboard...');
+    dashboard.style.width = '100%';
+    home.style.width = '0';
 
     renderChart(currentScenario); // Draw scenario-specific chart after form is set up
 }
 
 function showHome() {
     // Toggle dashboard to home
-    console.log("Closing dashboard...");
-    homeGreetings.classList.replace("h-0", "h-full");
-    home.classList.replace("w-[25%]", "w-full");
-    dashboard.classList.replace("w-[75%]", "w-0");
+    console.log('Closing dashboard...');
+
+    dashboard.style.width = '0';
+    home.style.width = '100%';
     scenarioTitleElement.textContent = '';
-    
+
     destroyChart();
-
 }
-
-
 
 async function runSimulation(endpoint, params) {
     // Prepare request payload (parameters for simulation scenario)
@@ -209,7 +205,7 @@ async function runSimulation(endpoint, params) {
         // Parse backend JSON response (contains simulation results)
         const result = await response.json();
 
-        // Extrac what inputs the backend received (for debugging & validation)
+        // Extract what inputs the backend received (for debugging & validation)
         const inputsReceived = result.inputs_received;
         console.log('Inputs Received: ', inputsReceived);
 
@@ -218,9 +214,8 @@ async function runSimulation(endpoint, params) {
         const labels = result.data.projection_data.months_labels;
         const summary = result.data.summary;
 
-        
         // Save the Emergency Fund scenario to the db
-        const savedScenario =await saveEmergencyFundScenarioToDB(params);
+        const savedScenario = await saveEmergencyFundScenarioToDB(params);
 
         // Feed proceessed data into chart layer
         // Each new scenario gets a unique color + title for comparison
@@ -233,8 +228,8 @@ async function runSimulation(endpoint, params) {
 
 function renderAIResponses(ai_explanation, ai_suggestions) {
     // Prepare container for AI responses
-    const exContainer = document.getElementById('ai-explanation');
-    const suContainer = document.getElementById('ai-suggest');
+    const exContainer = document.getElementById('explain');
+    const suContainer = document.getElementById('suggest');
 
     // Clear previous AI responses before injecting new ones
     exContainer.innerHTML = '';
@@ -256,7 +251,6 @@ function renderAIResponses(ai_explanation, ai_suggestions) {
     const suggestions = ai_suggestions.join('\n\n');
     const suggestionNode = aiResponseTemplate.content.cloneNode(true);
     suggestionNode.querySelector('p').textContent = suggestions;
-    suContainer.appendChild(suggestionNode);
 }
 
 // Attach click handler to all scenario card buttons at home
@@ -272,7 +266,8 @@ document.getElementById('back-btn').addEventListener('click', function() {
 });
 
 // Reset all form fields to empty
-document.getElementById('clear-fields-btn').addEventListener('click', function() {
+document.getElementById('clear-btn').addEventListener('click', function() {
+    console.log("Fields cleared.")
     fields.forEach((input) => {
         if (input.type === 'color') input.value = '#000000';
         else input.value = null;
@@ -280,9 +275,8 @@ document.getElementById('clear-fields-btn').addEventListener('click', function()
 })
 
 // Run simulation when form is submitted
-document.getElementById('simulation-form').addEventListener('submit', async (event) => {
+document.getElementById('simulate-btn').addEventListener('click', async (event) => {
     // Prevent default page reload
-    event.preventDefault();
     // Pass chosen scenario and collected input values to backend
     runSimulation(currentScenarioEndpoint, fieldValues);
 });

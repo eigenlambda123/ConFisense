@@ -30,7 +30,7 @@ let chart = null;
 // Different scenarios may use different visualizations
 const chartTypeConfig = {
     emergency_fund: 'line',
-    budgeting: '',
+    budgeting: 'bar',
     debt_management: '',
     investing: '',
     education_funding: '',
@@ -51,11 +51,21 @@ const chartDataConfig = {
     },
     budgeting: {
         labels: [],
-        datasets: [],
+        datasets: [
+            {
+                // Placeholder until API provides real data
+                data: [],
+            },
+        ],
     },
     debt_management: {
         labels: [],
-        datasets: [],
+        datasets: [
+            {
+                // Placeholder until API provides real data
+                data: [],
+            },
+        ],
     },
     investing: {
         labels: [],
@@ -109,32 +119,43 @@ const chartSettingsConfig = {
     },
     
     budgeting: {
-
+        responsive: true,
+        maintainAspectRatio: false,
     },
 
     debt_management: {
-
+        responsive: true,
+        maintainAspectRatio: false,
     },
 
     investing: {
-
+        responsive: true,
+        maintainAspectRatio: false,
     },
 
     education_funding: {
-
+        responsive: true,
+        maintainAspectRatio: false,
     },
 
     major_purchase: {
-
+        responsive: true,
+        maintainAspectRatio: false,
     }
 
 };
 
 export function renderChart(scenario) {
+    console.log(scenario);
     const ctx = document.getElementById('chart-canvas');
 
     if (chart) {
         destroyChart(); // Destroy existing chart if switching scenarios
+    }
+
+    if (!ctx) {
+        console.error("Canvas element with ID 'chart-canvas' not found.");
+        return;
     }
 
     console.log('Rendering chart...')
@@ -143,6 +164,12 @@ export function renderChart(scenario) {
     chartType = chartTypeConfig[scenario];
     chartData = chartDataConfig[scenario];
     chartSettings = chartSettingsConfig[scenario];
+
+    // Check if chartType is valid
+    if (!chartType) {
+        console.error(`Error: Chart type for scenario '${scenario}' is undefined or empty. Please define it in chartTypeConfig.`);
+        chartType = 'line'; // Fallback to 'line' to prevent "not a registered controller" error
+    }
 
     // Create new Chart.js instance bound to canvas
     chart = new Chart(ctx, {
@@ -153,9 +180,7 @@ export function renderChart(scenario) {
 }
 
 let datasetCounter = 1;
-const activeScenariosContainer = document.getElementById('active-scenarios');
-
-
+const activeScenariosContainer = document.getElementById('active-graphs');
 
 export function createDataset(title, color, data, labels, summary, scenarioId) {
     if (!chart) {
@@ -184,7 +209,7 @@ export function createDataset(title, color, data, labels, summary, scenarioId) {
     datasetCounter++;
 
     // Build UI tab for dataset so user can identfy/remove it
-    const tabTemplate = document.getElementById('scenario-tab-template');
+    const tabTemplate = document.getElementById('graph-tab-template');
     if (!tabTemplate) {
         console.error('Scenario tab template not found.');
         return;
@@ -209,7 +234,6 @@ export function createDataset(title, color, data, labels, summary, scenarioId) {
         console.log(chart.data.datasets);
         updateChart(chart.data.labels);
 
-
         // Delete emergency fund scenario from database
         console.log("Deleting dataset with ID:", newDataset.scenarioId);
         deleteEmergencyFundScenarioToDB(newDataset.scenarioId);
@@ -228,12 +252,27 @@ export function updateChart(labels) {
 }
 
 export function destroyChart() {
-    console.log('Destroying chart...')
-    if (!chart) {
-        console.log("Chart is already destroyed.");
-        return;
+    console.log('Destroying chart...');
+    if (chart) {
+        chart.destroy(); // Properly dispose Chart.js instance
+        console.log('Chart instance destroyed.');
+        chart = null; // Explicitly set to null immediately after destruction
+    } 
+    else {
+        console.log('No chart to destroy.');
     }
-    chart.destroy(); // Properly dispose Chart.js instance
-    chart.data.datasets = []; // **Remove if want datasets to persist even after going to home**
-    chart = null;
+
+    // Always clear the global chartData's datasets and labels
+    chartData.datasets = [];
+    chartData.labels = [];
+
+    // Clear the content of the active scenarios container to prevent old tabs from lingering
+    const activeScenariosContainer = document.getElementById('active-graphs');
+    if (activeScenariosContainer) {
+        activeScenariosContainer.innerHTML = '';
+        console.log('Active scenarios tabs cleared.');
+    }
+    
+    // Reset datasetCounter for a fresh start when new datasets are added
+    datasetCounter = 1;
 }
