@@ -207,13 +207,14 @@ def emergency_fund_summary():
         prompt = (
             "You are a financial advisor. Below are several emergency fund scenarios. "
             "Write a short, clear summary that compares these scenarios. "
+            "Make it 10 words max."
             "Do not introduce the summary or repeat the prompt. "
             "Reference each scenario by its number and title, mention the target amount and current savings, and highlight key differences. "
             "Keep the summary concise and do not list every variable. "
             "Express all amounts in Philippine pesos (₱). "
             "Start your summary immediately after this sentence.\n\n"
+            "Again Make it 10 words max"
             + "\n".join(scenario_descriptions)
-            + "For example: Scenario 1 (Basic): Target ₱60,000, Savings ₱20,000. Scenario 2 (Advanced): Target ₱120,000, Savings ₱50,000. The advanced scenario has higher expenses and savings, showing more progress toward a larger target."
         )
 
         print(prompt)
