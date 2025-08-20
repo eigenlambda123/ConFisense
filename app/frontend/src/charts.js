@@ -8,7 +8,7 @@ Chart.defaults.set({
     },
     plugins: {
         title: {
-            color: 'white',
+            color: '#060e27',
             font: {
                 size: 16,
                 weight: 'bold',
@@ -17,6 +17,56 @@ Chart.defaults.set({
                 top: 10,
                 bottom: 30
             },
+        }
+    },
+    scales: {
+        // Default settings for ALL x-axes
+        x: {
+            title: {
+                display: true,
+                color: '#3b3b3b',
+                font: {
+                    size: 14,
+                    weight: 'bold'
+                }
+            },
+            ticks: {
+                color: '#3b3b3b' // Default color for x-axis tick labels
+            },
+            grid: {
+                color: '#636363', // Default color for x-axis grid lines
+                lineWidth: 1, // Default width for x-axis grid lines
+                // You can also set tickColor here if you want it different from grid.color
+                // tickColor: 'green'
+            },
+            border: {
+                color: '#636363', // Default color for the x-axis line itself
+                width: 1, // Default width for the x-axis line
+            }
+        },
+        // Default settings for ALL y-axes
+        y: {
+            title: {
+                display: true,
+                color: '#3b3b3b',
+                font: {
+                    size: 14,
+                    weight: 'bold'
+                }
+            },
+            ticks: {
+                color: '#3b3b3b' // Default color for y-axis tick labels
+            },
+            grid: {
+                color: '#636363', // Default color for y-axis grid lines
+                lineWidth: 1, // Default width for y-axis grid lines
+                // You can also set tickColor here if you want it different from grid.color
+                // tickColor: 'orange'
+            },
+            border: {
+                color: '#636363', // Default color for the y-axis line itself
+                width: 1, // Default width for the y-axis line
+            }
         }
     }
 });
@@ -104,14 +154,16 @@ const chartSettingsConfig = {
         },
         scales: {
             x: {
+                ...Chart.defaults.scales.x,
                 title: {
-                    display: true,
+                    ...Chart.defaults.scales.x.title,
                     text: 'Time (Months)'
                 }
             },
             y: {
+                ...Chart.defaults.scales.y,
                 title: {
-                    display: true,
+                    ...Chart.defaults.scales.y.title,
                     text: 'Total Savings ($)'
                 }
             }
@@ -219,6 +271,7 @@ export function createDataset(title, color, data, labels, scenarioId) {
 
     // Populate cloned elements with dynamic data
     label.textContent = newDataset.label;
+    label.style.color = color;
     tabWrapper.style.border = `2px solid ${color}`;
 
     // Delete button removes dataset from chart and UI
