@@ -1,5 +1,10 @@
-import { renderChart, destroyChart, createDataset } from "./charts.js";
-import { saveEmergencyFundScenarioToDB } from './emergency-fund.js';
+import { renderChart, destroyChart, createDataset, updateChartTitle } from "./charts.js";
+import { 
+    saveEmergencyFundScenarioToDB,
+    getEmergencyFundAISuggestion,
+    getEmergencyFundAIExplaination,
+    getEmergencyFundAISummary 
+} from './emergency-fund.js';
 
 
 // Global states
@@ -89,9 +94,12 @@ const scenariosConfig = {
 };
 
 const home = document.getElementById('home');
-// const homeGreetings = document.getElementById('greetings');
 const dashboard = document.getElementById('dashboard');
 const scenarioTitleElement = document.getElementById('scenario-title');
+
+// Prepare container for AI responses
+const exContainer = document.getElementById('explanation');
+const suContainer = document.getElementById('suggestions');
 
 function showDashboard(buttonElement) {
     // Identify which scenario button was clicked
@@ -175,6 +183,7 @@ function showHome() {
     home.style.width = '100%';
     scenarioTitleElement.textContent = '';
 
+    clearAIResponses();
     destroyChart();
 }
 
@@ -212,45 +221,106 @@ async function runSimulation(endpoint, params) {
         // Extract simulation outputs for frontend
         const data = result.data.projection_data.balance_history;
         const labels = result.data.projection_data.months_labels;
-        const summary = result.data.summary;
 
         // Save the Emergency Fund scenario to the db
         const savedScenario = await saveEmergencyFundScenarioToDB(params);
 
         // Feed proceessed data into chart layer
         // Each new scenario gets a unique color + title for comparison
-        createDataset(scenarioTitle, scenarioColor, data, labels, summary, savedScenario.id);
+        createDataset(scenarioTitle, scenarioColor, data, labels, savedScenario.id);
+        fetchAndRenderAISummary();
 
     } catch (err) {
         console.error('Fetch error:', err);
     }
 }
 
-function renderAIResponses(ai_explanation, ai_suggestions) {
-    // Prepare container for AI responses
-    const exContainer = document.getElementById('explain');
-    const suContainer = document.getElementById('suggest');
+async function fetchAndRenderAISummary() {
+    try {
+        console.log('Fetching AI Summary...');
+        const summaryResult = await getEmergencyFundAISummary();
+        const ai_summary = summaryResult.summary || "No summary available.";
+        updateChartTitle(ai_summary);
+        console.log('New chart title set.');
 
+    } catch (error) {
+        console.error('Error fetching AI summary:', error);
+    }
+}
+
+async function fetchAndRenderAIExplanation() {
+    try {
+        console.log('Fetching AI Explanation...');
+        const explanationResult = await getEmergencyFundAIExplaination();
+        const ai_explanation = explanationResult.ai_explanation || 'No explanation available.';
+
+        // Grab reusable AI response template from DOM (for explanation and suggestions)
+        const aiResponseTemplate = document.getElementById('ai-response-template');
+        if (!aiResponseTemplate) {
+            console.error('AI response template not found.');
+            return;
+        }
+
+        clearAIResponses();
+
+        const explanationNode = aiResponseTemplate.content.cloneNode(true);
+        explanationNode.querySelector('p').textContent = ai_explanation;
+        exContainer.appendChild(explanationNode);
+    }
+
+    catch (error) {
+        console.error('Error fetching AI explanation:', error);
+    }
+}
+
+async function fetchAndRenderAISuggestions() {
+    try {
+        console.log('Fetching AI Suggestions...');
+        const suggestionResult = await getEmergencyFundAISuggestion();
+        const ai_suggestions = suggestionResult.ai_suggestions || [];
+
+        // Grab reusable AI response template from DOM (for explanation and suggestions)
+        const aiResponseTemplate = document.getElementById('ai-response-template');
+        if (!aiResponseTemplate) {
+            console.error('AI response template not found.');
+            return;
+        }
+
+        clearAIResponses();
+
+        // AI suggestions
+        const suggestionsNode = aiResponseTemplate.content.cloneNode(true);
+        suggestionsNode.querySelector('p').textContent = Array.isArray(ai_suggestions) && ai_suggestions.length > 0
+            ? ai_suggestions.join('\n\n\n') // Joins array elements with two newlines for readability
+            : "No specific suggestions available at this time."; // Fallback if array is empty or not an array
+        suContainer.appendChild(suggestionsNode);
+    }
+
+    catch (error) {
+        console.error('Error fetching AI suggestions:', error);
+    }
+}
+
+function clearAIResponses() {
     // Clear previous AI responses before injecting new ones
     exContainer.innerHTML = '';
     suContainer.innerHTML = '';
+    console.log('AI responses cleared.');
+}
 
-    // Grab reusable AI response template from DOM (for explanation and suggestions)
-    const aiResponseTemplate = document.getElementById('ai-response-template');
-    if (!aiResponseTemplate) {
-        console.error('AI response template not found.');
-        return;
+function areInputFieldsEmpty() {
+    for (const field of fields) {
+        // Trim whitespace for text inputs before checking for emptiness
+        if (field.type === 'text' || field.type === 'color') {
+            if (field.value.trim() === '') {
+                return true;
+            }
+        } else if (field.value === null || field.value === '') {
+            // For number inputs, an empty string or null can indicate emptiness
+            return true;
+        }
     }
-
-    // AI explanation
-    const explanationNode = aiResponseTemplate.content.cloneNode(true);
-    explanationNode.querySelector('p').textContent = ai_explanation;
-    exContainer.appendChild(explanationNode);
-
-    // AI suggestions
-    const suggestions = ai_suggestions.join('\n\n');
-    const suggestionNode = aiResponseTemplate.content.cloneNode(true);
-    suggestionNode.querySelector('p').textContent = suggestions;
+    return false;
 }
 
 // Attach click handler to all scenario card buttons at home
@@ -265,20 +335,29 @@ document.getElementById('back-btn').addEventListener('click', function() {
     showHome();
 });
 
-// Reset all form fields to empty
 document.getElementById('clear-btn').addEventListener('click', function() {
-    console.log("Fields cleared.")
+    // Reset all form fields to empty
     fields.forEach((input) => {
         if (input.type === 'color') input.value = '#000000';
         else input.value = null;
     });
+    console.log("Fields cleared.");
 })
 
-// Run simulation when form is submitted
 document.getElementById('simulate-btn').addEventListener('click', async (event) => {
-    // Prevent default page reload
     // Pass chosen scenario and collected input values to backend
+    if (areInputFieldsEmpty()) {
+        alert("Please fill in all input fields before running the simulation.");
+        console.warn("Simulation prevented: Some input fields are empty.");
+        return; // Stop the function if fields are empty
+    }
     runSimulation(currentScenarioEndpoint, fieldValues);
 });
 
+document.getElementById('explain-btn').addEventListener('click', async (event) => {
+    await fetchAndRenderAIExplanation();
+});
 
+document.getElementById('suggest-btn').addEventListener('click', async (event) => {
+    await fetchAndRenderAISuggestions();
+});
