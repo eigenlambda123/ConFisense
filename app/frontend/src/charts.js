@@ -34,13 +34,13 @@ Chart.defaults.set({
                 color: '#3b3b3b' // Default color for x-axis tick labels
             },
             grid: {
-                color: '#636363', // Default color for x-axis grid lines
+                color: 'gray', // Default color for x-axis grid lines
                 lineWidth: 1, // Default width for x-axis grid lines
                 // You can also set tickColor here if you want it different from grid.color
                 // tickColor: 'green'
             },
             border: {
-                color: '#636363', // Default color for the x-axis line itself
+                color: 'gray', // Default color for the x-axis line itself
                 width: 1, // Default width for the x-axis line
             }
         },
@@ -58,13 +58,13 @@ Chart.defaults.set({
                 color: '#3b3b3b' // Default color for y-axis tick labels
             },
             grid: {
-                color: '#636363', // Default color for y-axis grid lines
+                color: 'gray', // Default color for y-axis grid lines
                 lineWidth: 1, // Default width for y-axis grid lines
                 // You can also set tickColor here if you want it different from grid.color
                 // tickColor: 'orange'
             },
             border: {
-                color: '#636363', // Default color for the y-axis line itself
+                color: 'gray', // Default color for the y-axis line itself
                 width: 1, // Default width for the y-axis line
             }
         }
@@ -295,17 +295,18 @@ export function createDataset(title, color, data, labels, scenarioId) {
 export function updateChartTitle(summary) {
     // Update chart title dynamically with scenario summary
     if (chart) {
-        const chartTitle = chart.options.plugins.title;
-        chartTitle.text = summary;
+        chart.options.plugins.title.text = summary;
         chart.update();
+        console.log('Chart title updated.')
     }
 }
 
 export function clearChartTitle() {
     if (chart) {
         // Clear chart title when exiting dashboard
-        chartTitle.text = null;
+        chart.options.plugins.title.text = '';
         chart.update();
+        console.log('Chart title cleared.')
     }
 }
 
