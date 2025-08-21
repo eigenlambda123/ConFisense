@@ -29,9 +29,4 @@ app.add_middleware(
 def on_startup():
     init_db()
 
-app.include_router(simulate_emergency_fund.router, tags=["Emergency Fund Simulation"])
 app.include_router(simulate_budgeting.router, tags=["Budgeting Simulation"])
-app.include_router(simulate_debt_management.router, tags=["Debt Management Simulation"])
-app.include_router(simulate_investing.router, tags=["Investing Simulation"])
-app.include_router(simulate_education_fund.router, tags=["Education Fund Simulation"])
-app.include_router(simulate_major_purchase.router, tags=["Major Purchase Simulation"])
