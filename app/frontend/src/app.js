@@ -2,7 +2,8 @@ import {
     renderChart, 
     destroyChart, 
     createDataset, 
-    updateChartTitle 
+    updateChartTitle, 
+    clearChartTitle
 } from "./charts.js";
 
 import { 
@@ -98,6 +99,7 @@ const scenariosConfig = {
     },
 };
 
+// Prepare DOM elements
 const home = document.getElementById('home');
 const greetingsContainer = document.getElementById(('greetings-container'));
 const cardButton = document.getElementsByClassName('card-btn');
@@ -105,10 +107,40 @@ const scenarioName = document.getElementsByClassName('scenario-name');
 const scenarioDescription = document.getElementsByClassName('scenario-desc');
 const dashboard = document.getElementById('dashboard');
 const scenarioTitleElement = document.getElementById('scenario-title');
-
-// Prepare container for AI responses
 const exContainer = document.getElementById('explanation');
 const suContainer = document.getElementById('suggestions');
+const messageBox = document.getElementById('msg-box');
+const messageText = document.getElementById('msg-text');
+
+// Helper function to show custom message box
+function showMessage(message) {
+    messageText.textContent = message;
+    messageBox.style.display = 'block';
+}
+
+function openDashboard() {
+    dashboard.classList.add('active');
+    home.classList.add('active');
+    greetingsContainer.classList.add('active');
+
+    for (let i=0; i<cardButton.length; i++) {
+        cardButton[i].classList.add('active');
+        scenarioName[i].classList.add('active');
+        scenarioDescription[i].classList.add('active');
+    }
+}
+
+function closeDashboard() {
+    dashboard.classList.remove('active');
+    home.classList.remove('active');
+    greetingsContainer.classList.remove('active');
+
+    for (let i=0; i<cardButton.length; i++) {
+        cardButton[i].classList.remove('active');
+        scenarioName[i].classList.remove('active');
+        scenarioDescription[i].classList.remove('active');
+    }
+}
 
 function showDashboard(buttonElement) {
     // Identify which scenario button was clicked
@@ -182,50 +214,18 @@ function showDashboard(buttonElement) {
 
     // Toggle home to dashboard
     console.log('Opening dashboard...');
-    greetingsContainer.style.maxHeight = '0';
-
-    for (let i = 0; i < cardButton.length; i++) {
-        cardButton[i].style.minHeight = '6rem';
-    }
-
-    for (let i = 0; i < scenarioName.length; i++) {
-        scenarioName[i].style.fontSize = '1.25rem';
-    }
-
-    for (let i = 0; i < scenarioDescription.length; i++) {
-        scenarioDescription[i].style.fontSize = '0.75rem';
-    }
-
-    dashboard.style.width = '75%';
-    home.style.width = '25%';
-    home.id = 'fixed-main';
-
+    openDashboard();
+    clearChartTitle();
+    clearAIResponses();
     renderChart(currentScenario); // Draw scenario-specific chart after form is set up
 }
 
 function showHome() {
     // Toggle dashboard to home
     console.log('Closing dashboard...');
-
-    greetingsContainer.style.maxHeight = '5rem';
-
-    for (let i = 0; i < cardButton.length; i++) {
-        cardButton[i].style.minHeight = '9rem';
-    }
-
-    for (let i = 0; i < scenarioName.length; i++) {
-        scenarioName[i].style.fontSize = '1.75rem';
-    }
-
-    for (let i = 0; i < scenarioDescription.length; i++) {
-        scenarioDescription[i].style.fontSize = '1.25rem';
-    }
-
-    dashboard.style.width = '0';
-    home.style.width = '100%';
-    home.id = null;
     scenarioTitleElement.textContent = '';
-
+    closeDashboard();
+    clearChartTitle();
     clearAIResponses();
     destroyChart();
 }
@@ -284,7 +284,6 @@ async function fetchAndRenderAISummary() {
         const summaryResult = await getEmergencyFundAISummary();
         const ai_summary = summaryResult.summary || "No summary available.";
         updateChartTitle(ai_summary);
-        console.log('New chart title set.');
 
     } catch (error) {
         console.error('Error fetching AI summary:', error);
@@ -351,6 +350,7 @@ function clearAIResponses() {
     console.log('AI responses cleared.');
 }
 
+// Helper function to check if any input fields are empty
 function areInputFieldsEmpty() {
     for (const field of fields) {
         // Trim whitespace for text inputs before checking for emptiness
@@ -390,7 +390,7 @@ document.getElementById('clear-btn').addEventListener('click', function() {
 document.getElementById('simulate-btn').addEventListener('click', async (event) => {
     // Pass chosen scenario and collected input values to backend
     if (areInputFieldsEmpty()) {
-        alert("Please fill in all input fields before running the simulation.");
+        showMessage("Please fill in all input fields before running the simulation.");
         console.warn("Simulation prevented: Some input fields are empty.");
         return; // Stop the function if fields are empty
     }
@@ -403,4 +403,8 @@ document.getElementById('explain-btn').addEventListener('click', async (event) =
 
 document.getElementById('suggest-btn').addEventListener('click', async (event) => {
     await fetchAndRenderAISuggestions();
+});
+
+document.getElementById('close-msg-btn').addEventListener('click', function() {
+    messageBox.style.display = 'none';
 });
