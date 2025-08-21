@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from app.schemas.simulation_inputs import BudgetInput
-from app.schemas.simulation_outputs import SimulationResponse
 from app.services.simulation_logic import simulate_budgeting
 from app.models.budgeting import BudgetingModel
 

@@ -58,3 +58,5 @@ class BudgetInput(BaseModel):
         ...,
         description="Monthly savings and investment contribution for the budget simulation"
     )
+
+
