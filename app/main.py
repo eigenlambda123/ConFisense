@@ -25,5 +25,4 @@ app.add_middleware(
 def on_startup():
     init_db()
 
-app.include_router(simulate_budgeting.router, tags=["Budgeting Simulation"])
 app.include_router(simulate_budget_optimization.router, tags=["Budget Optimization"])
