@@ -23,79 +23,72 @@ let fieldValues = {}; // Store current input values
 const field = (id, label, min, step, def, type='number') => ({id, label, min, step, default: def, type});
 
 const scenariosConfig = {
-    emergency_fund: {
+    budget_optimization: {
         label: "Manage My Family's Budget",
-        endpoint: "/simulate/emergency-fund",
+        endpoint: "/simulate/budget-optimization",
         fields: [
-            field("monthly_expenses", "Monthly Expenses (₱)", 0, 1000, 10000),
-            field("months_of_expenses", "Desired Months to Cover", 0, 1, 3),
-            field("current_emergency_savings", "Current Emergency Savings (₱)", 0, 500, 5000),
-            field("monthly_savings", "Monthly Savings Contribution (₱)", 0, 500, 500),
-            field("annual_interest_rate_percent", "Annual Interest Rate (%)", 0, 1, 0),
+            // General Parameters
+            field("projection_months", "Projection Months", 12, 1, 12),
+
+            // Income Fields
+            field("income_monthly_net_income", "Monthly Net Income (₱)", 0, 1000, 50000),
+            field("income_other_monthly_income", "Other Monthly Income (₱)", 0, 500, 0),
+
+            // Fixed Needs Expenses
+            field("expenses_fixed_needs_rent_mortgage", "Rent / Mortgage (₱)", 0, 1000, 15000),
+            field("expenses_fixed_needs_utilities", "Utilities (₱)", 0, 500, 4000),
+            field("expenses_fixed_needs_loan_payments", "Loan Payments (₱)", 0, 100, 0),
+            field("expenses_fixed_needs_insurance_premiums", "Insurance Premiums (₱)", 0, 100, 0),
+            field("expenses_fixed_needs_tuition_fees", "Tuition & Fees (₱)", 0, 1000, 0),
+            field("expenses_fixed_needs_groceries", "Groceries (₱)", 0, 500, 8000),
+            field("expenses_fixed_needs_transportation", "Transportation (₱)", 0, 500, 3000),
+            
+            // Variable Needs Expenses
+            field("expenses_variable_needs_household_supplies", "Household Supplies (₱)", 0, 100, 500),
+            field("expenses_variable_needs_medical_health", "Medical & Health (₱)", 0, 100, 0),
+            field("expenses_variable_needs_misc_needs", "Miscellaneous Needs (₱)", 0, 100, 0),
+
+            // Wants & Discretionary Expenses
+            field("expenses_wants_discretionary_dining_out", "Dining Out (₱)", 0, 100, 2500),
+            field("expenses_wants_discretionary_entertainment_hobbies", "Entertainment & Hobbies (₱)", 0, 100, 1500),
+            field("expenses_wants_discretionary_personal_care", "Personal Care (₱)", 0, 100, 0),
+            field("expenses_wants_discretionary_shopping_leisure", "Shopping & Leisure (₱)", 0, 100, 0),
+            field("expenses_wants_discretionary_travel_vacation", "Travel & Vacation (₱)", 0, 1000, 0),
+            field("expenses_wants_discretionary_misc_wants", "Miscellaneous Wants (₱)", 0, 100, 0),
+
+            // Savings Goals Fields
+            field("savings_goals_target_monthly_savings", "Target Monthly Savings (₱)", 0, 100, 5000),
+            field("savings_goals_emergency_fund_target", "Emergency Fund Target (₱)", 0, 1000, 120000),
+
+            // Scenario Display Fields
             field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
             field("scenario_color", "Scenario Color", null, null, "#007bff", 'color'),
         ],
     },
     budgeting: {
         label: "Plan Business Growth & Debt",
-        endpoint: "/simulate/budgeting",
-        fields: [
-            field("income", "Monthly Income (₱)", 0, 1000, 40000),
-            field("fixed_expenses", "Fixed Monthly Expenses (₱)", 0, 500, 15000),
-            field("target_savings", "Target Monthly Savings (₱)", 0, 1000, 5000),
-            field("discretionary_pct", "Discretionary Spending (% of Income)", 0, 1, 20),
-            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
-        ],
+        endpoint: "/simulate/",
+        fields: [],
     },
     debt_management: {
         label: "Grow My Client's Wealth",
-        endpoint: "/simulate/debt-management",
-        fields: [
-            field("debt", "Total Debt Amount (₱)", 0, 10000, 200000),
-            field("interest_rate", "Annual Interest Rate (%)", 0, 0.5, 10),
-            field("monthly_payment", "Current Monthly Debt Payment (₱)", 0, 1000, 5000),
-            field("extra_payment", "Additional Monthly Payment (₱)", 0, 500, 2000),
-            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
-        ],
+        endpoint: "/simulate/",
+        fields: [],
     },
     investing: {
         label: "Plan for the Future",
-        endpoint: "/simulate/investing",
-        fields: [
-            field("initial", "Current Investment/Savings Amount (₱)", 0, 10000, 100000),
-            field("years", "Investment Horizon (Years)", 0, 1, 10),
-            field("monthly", "Monthly Contribution (₱)", 0, 500, 5000),
-            field("return_rate", "Expected Annual Return (%)", 0, 0.1, 6),
-            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
-        ],
+        endpoint: "/simulate/",
+        fields: [],
     },
     education_funding: {
         label: "Manage My Capital",
-        endpoint: "/simulate/education-fund",
-        fields: [
-            field("today_cost", "Target Education Cost (Today) (₱)", 0, 50000, 1000000),
-            field("years", "Years Until Enrollment", 0, 1, 5),
-            field("current_savings", "Current Education Savings (₱)", 0, 10000, 100000),
-            field("inflation_rate", "Annual Education Inflation Rate (%)", 0, 0.1, 4),
-            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 500, 3000),
-            field("return_rate", "Expected Annual Investment Return (%)", 0, 0.1, 5),
-            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
-        ],
+        endpoint: "/simulate/",
+        fields: [],
     },
     major_purchase: {
         label: "Analyze Client Portfolios",
-        endpoint: "/simulate/major-purchase",
-        fields: [
-            field("price", "Target Purchase Price (₱)", 0, 100000, 3000000),
-            field("down_pct", "Desired Down Payment (%)", 0, 1, 20),
-            field("years_to_save", "Years to Save for Down Payment", 0, 1, 3),
-            field("current_savings", "Current Savings (₱)", 0, 10000, 200000),
-            field("loan_rate", "Loan Interest Rate (Annual %)", 0, 0.1, 8),
-            field("monthly_contrib", "Monthly Savings Contribution (₱)", 0, 1000, 10000),
-            field("savings_return", "Expected Annual Savings Return (%)", 0, 0.1, 3),
-            field("loan_term", "Loan Term (Years)", 0, 1, 15),
-            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
-        ],
+        endpoint: "/simulate/",
+        fields: [],
     },
 };
 
