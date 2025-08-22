@@ -10,6 +10,7 @@ from fastapi import status
 from fastapi import HTTPException
 
 from sqlmodel import select
+import json
 
 
 router = APIRouter()
@@ -149,7 +150,7 @@ def get_ai_suggestions():
             if chart_data and lowest_cash_value else "N/A"
         )
 
-        # Get the latest AI insight (reuse the explanation prompt logic)
+        # Get the latest AI insight
         insight_prompt = (
             "As an expert financial advisor for Filipino MSMEs, analyze the provided business cash flow projection. "
             "Focus on how revenues, operating expenses, and debt payments impact the net cash position. "
@@ -162,9 +163,10 @@ def get_ai_suggestions():
         )
         ai_insight = generate_response(insight_prompt)
 
-        # Build suggestion prompt
+        # Build suggestion prompt, instructing the AI to return JSON
         suggestion_prompt = (
             "Based on the cash flow insights and the planned growth initiative, recommend actionable, next steps for this Filipino MSME to optimize their debt and capital structure and ensure sufficient liquidity. Suggestions should be specific to business operations and financing.\n\n"
+            "Return your answer as a JSON array of objects with keys: priority, title, description.\n"
             f"Inputs:\n"
             f"Insight: {ai_insight}\n"
             f"Projected data: AI suggests improving cash position by ₱{lowest_cash_value:,.2f} by addressing the Month {lowest_cash_month_idx} cash crunch.\n"
@@ -173,26 +175,21 @@ def get_ai_suggestions():
 
         raw_suggestions = generate_response(suggestion_prompt)
 
+        # Try to parse the AI output as JSON
+        try:
+            actionable_recommendations = json.loads(raw_suggestions)
+        except Exception:
+            # fallback: wrap the raw text in a single recommendation
+            actionable_recommendations = [{
+                "priority": "Info",
+                "title": "AI Suggestion",
+                "description": raw_suggestions
+            }]
+
         return {
             "status": "success",
             "data": {
-                "actionable_recommendations": [
-                    {
-                        "priority": "High",
-                        "title": "Optimize Receivables",
-                        "description": "Implement a stricter collection policy for outstanding invoices. Aim to reduce your average collection period by 5-7 days to accelerate cash inflow."
-                    },
-                    {
-                        "priority": "High",
-                        "title": "Explore Pre-Approved Credit Lines",
-                        "description": "Before Month 12, secure a flexible business credit line of at least ₱150,000.00. This acts as a safety net for any unexpected shortfalls during your growth phase."
-                    },
-                    {
-                        "priority": "Medium",
-                        "title": "Review Growth Initiative Phasing",
-                        "description": "Assess if the ₱100,000.00 growth initiative can be phased or slightly delayed to spread out the capital outflow and reduce the strain on your Month 12 cash reserves."
-                    }
-                ],
+                "actionable_recommendations": actionable_recommendations,
                 "model_info": {
                     "model_name": "cohere-command",
                     "prompt_version": "v1.0.0"
