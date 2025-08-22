@@ -267,6 +267,10 @@ aside.active { width: 100%; }
     font-weight: bold;
 }
 
+.widget-line {
+    border: 2px solid var(--gray-blue);
+}
+
 #field-container {
     display: flex;
     flex-direction: column;
@@ -292,6 +296,17 @@ aside.active { width: 100%; }
 #field-container::-webkit-scrollbar-thumb {
     background-color: var(--gray-blue);
     border-radius: 10px;
+}
+
+.category-label {
+    background: linear-gradient(to top right, #1592DB, #001D5C);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    font-size: 1.25rem;
+}
+
+.category-line {
+    border: 2px dashed var(--gray-blue);
 }
 
 .input-label {
@@ -408,16 +423,16 @@ aside.active { width: 100%; }
 }
 
 #clear-btn {
-    background-color: #901212;
+    background-color: #a53535;
 }
 
 #math-btn {
-    background-color: #131372;
+    background-color: #3160ac;
     color: white;
 }
 
 #download-btn {
-    background-color: #034a03;
+    background-color: #399139;
 }
 
 #download-btn svg, #clear-btn svg {
@@ -480,7 +495,6 @@ aside.active { width: 100%; }
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: red;
     color: white;
     padding: 20px;
     border-radius: 10px;
@@ -492,7 +506,6 @@ aside.active { width: 100%; }
 #msg-box p {
     font-family: "HPSimplified";
     font-size: 1.25rem;
-    text-align: center;
 }
 
 #msg-box button {
@@ -510,8 +523,15 @@ aside.active { width: 100%; }
 
 #msg-box button:hover {
     background-color: white;
-    color: red;
 }
+
+.empty-field-msg-box { background-color: #a53535 }
+.empty-field-msg-box:hover { color: #a53535 }
+.empty-field-msg-box p { text-align: center }
+
+.math-msg-box { background-color: #3160ac }
+.math-msg-box:hover { color: #3160ac }
+.math-msg-box p { text-align: left }
 
 @keyframes skeleton-loading {
     0% { background-color: var(--dark-gray-blue) }
