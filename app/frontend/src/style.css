@@ -67,6 +67,22 @@ header {
     font-weight: bold;
 }
 
+#header-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+#header-container div {
+    display: flex;
+    flex-direction: column;
+}
+
+#header-container img {
+    width: 2.5rem;
+    height: auto;
+}
+
 .accent-gradient-text {
     background: linear-gradient(to top right, #1592DB, #001D5C);
     -webkit-text-fill-color: transparent;
