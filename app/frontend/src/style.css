@@ -4,6 +4,7 @@
   --azure-blue: #4465a2;;
   --light-blue: #b0e7ff;
   --gray-blue: #99a1af;
+  --medium-gray-blue: #707274;
   --dark-gray-blue: #4f5259;
 }
 
@@ -137,7 +138,6 @@ main.active { width: 0; }
 
 .card-btn {
     display: flex;
-    flex-direction: column;
     gap: 0.25rem;
     padding: 1.5rem;
     min-height: 9rem;
@@ -158,6 +158,11 @@ main.active { width: 0; }
 
 .card-btn:active { transform: translateY(5px) }
 
+.scenario-texts {
+    display: flex;
+    flex-direction: column;
+}
+
 .scenario-name {
     color: white;
     font-size: 1.25rem;
@@ -174,11 +179,18 @@ main.active { width: 0; }
     transition: font-size 0.5s ease-in-out;
 }
 
-/* .scenario-name {  } */
+.scenario-icon {
+    margin-left: auto;
+    width: 6rem;
+    height: auto;
+    transition: width 0.5s ease-in-out;
+}
+
 .scenario-name.active { font-size: 1.25rem }
 
-/* .scenario-desc.active {  }*/
 .scenario-desc.active { font-size: 0.75rem }
+
+.scenario-icon.active { width: 4rem }
 
 aside {
     position: absolute;
@@ -292,10 +304,10 @@ aside.active { width: 100%; }
 }
 
 .input-field {
-    border: 0;
+    border: 2px solid var(--gray-blue);
     display: block;
     width: 100%;
-    background-color: var(--gray-blue);
+    background-color: white;
     color: var(--dark-blue);
     font-size: 1rem;
     font-family: "HPSimplified";
@@ -315,15 +327,14 @@ aside.active { width: 100%; }
 }
 
 .widget-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
     border: 0;
     border-radius: 10px;
-    color: white;
     font-family: "HPSimplified";
     font-weight: normal;
-    font-size: 1rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: filter 0.2s ease-in-out, transform 0.3s ease-in-out;
+    transition: filter 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .widget-btn:hover {
@@ -334,14 +345,6 @@ aside.active { width: 100%; }
 .widget-btn:active {
     filter: brightness(0.6);
     transform: translateY(1px);
-}
-
-.main-btn {
-    background-image: linear-gradient(to top right, #1592DB, #001D5C);
-}
-
-#clear-btn {
-    background-color: #901212;
 }
 
 #active-graphs {
@@ -389,8 +392,8 @@ aside.active { width: 100%; }
 }
 
 #chart-canvas {
+    border: 2px solid var(--gray-blue);
     border-radius: 10px;
-    background-color: var(--gray-blue);;
     position: absolute;
     top: 0;
     left: 0;
@@ -399,12 +402,31 @@ aside.active { width: 100%; }
     height: 100%;
 }
 
+.main-btn {
+    background-image: linear-gradient(to top right, #1592DB, #001D5C);
+    color: white;
+}
+
+#clear-btn {
+    background-color: #901212;
+}
+
 #math-btn {
     background-color: #131372;
+    color: white;
 }
 
 #download-btn {
     background-color: #034a03;
+}
+
+#download-btn svg, #clear-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke-width: 2px;
+    stroke: white;
+    vertical-align: middle;
 }
 
 #explain {
@@ -418,19 +440,41 @@ aside.active { width: 100%; }
 }
 
 .ai-text-container {
+    border: 1px solid black;
     border-radius: 10px;
     padding: 1rem;
-    background-color: var(--gray-blue);
+    height: 7rem;
 }
 
 .ai-text {
-    color: var(--dark-gray-blue);
+    display: none;
+    color: var(--medium-gray-blue);
     font-family: "HPSimplified";
     font-weight: normal;
     font-size: 1rem;
 }
 
-/* Message Box styles */
+.skeleton {
+    opacity: 0.7;
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skeleton-text {
+    width: 100%;
+    height: 1rem;
+    border-radius: 0.25rem;
+}
+
+.skeleton-text:last-child {
+    width: 80%;
+}
+
 #msg-box {
     position: fixed;
     top: 50%;
@@ -442,7 +486,7 @@ aside.active { width: 100%; }
     border-radius: 10px;
     z-index: 1000;
     box-shadow: 0 4px 6px black;
-    display: none; /* Initially hidden */
+    display: none;
 }
 
 #msg-box p {
@@ -469,20 +513,21 @@ aside.active { width: 100%; }
     color: red;
 }
 
+@keyframes skeleton-loading {
+    0% { background-color: var(--dark-gray-blue) }
+    100% { background-color: var(--gray-blue) }
+}
+
 /* For medium screens */
 @media (min-width: 426px) {
     #main-greeting { font-size: 2rem }
-
     #main-tip { font-size: 1.25rem }
 
     .scenario-name { font-size: 1.75rem }
-
     .scenario-desc { font-size: 1.25rem }
 
     #scenario-title { font-size: 1.5rem }
-
     .widget-title { font-size: 1.5rem }
-
     #widget-grid { grid-template-columns: 1fr 2fr }
 
     .widget-btns {
