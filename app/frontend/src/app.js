@@ -55,9 +55,9 @@ const scenariosConfig = {
             field("emergency_fund_target", "Emergency Fund Target (₱)", "Goals", 0, 1000, 120000),
 
             // What-if Factors
-            field('income_growth_rate', 'Income Growth Rate (%)', "What-If Factors", 0, 100, 0),
-            field('wants_reduction_rate', 'Wants Reduction Rate (%)', "What-If Factors", 0, 100, 0),
-            field('savings_increase_rate', 'Savings Increase Rate (%)', "What-If Factors", 0, 100, 0)
+            field('income_growth_rate', 'Income Growth Rate (%)', "What-If Factors (Monthly)", 0, 100, 0),
+            field('wants_reduction_rate', 'Wants Reduction Rate (%)', "What-If Factors (Monthly)", 0, 100, 0),
+            field('savings_increase_rate', 'Savings Increase Rate (%)', "What-If Factors (Monthly)", 0, 100, 0)
         ],
     },
     budgeting: {
@@ -455,4 +455,5 @@ document.getElementById('suggest-btn').addEventListener('click', async (event) =
 
 document.getElementById('close-msg-btn').addEventListener('click', function() {
     messageBox.style.display = 'none';
+    messageBox.className = '';
 });
