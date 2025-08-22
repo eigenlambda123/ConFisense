@@ -122,3 +122,80 @@ def get_ai_explanation():
                 }
             }
         }
+    
+
+
+@router.get("/debt-management/ai-suggestions")
+def get_ai_suggestions():
+    with get_session() as session:
+        scenario = session.exec(
+            select(DebtManagementModel).order_by(DebtManagementModel.created_at.desc())
+        ).first()
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No debt management scenario found.")
+
+        # Extract key stats for prompt context
+        business_financials = scenario.business_financials
+        growth_needs = scenario.growth_needs
+        chart_data = scenario.chart_data if hasattr(scenario, "chart_data") else []
+
+        avg_monthly_revenue = business_financials.get("avg_monthly_revenue", 0)
+        capital_required = growth_needs.get("capital_required", 0)
+
+        # Calculate summary stats from chart_data
+        lowest_cash_value = min([c.get("net_cash_position", 0) for c in chart_data]) if chart_data else 0
+        lowest_cash_month_idx = (
+            [c.get("period", 0) for c in chart_data if c.get("net_cash_position", 0) == lowest_cash_value][0]
+            if chart_data and lowest_cash_value else "N/A"
+        )
+
+        # Get the latest AI insight (reuse the explanation prompt logic)
+        insight_prompt = (
+            "As an expert financial advisor for Filipino MSMEs, analyze the provided business cash flow projection. "
+            "Focus on how revenues, operating expenses, and debt payments impact the net cash position. "
+            "Identify the most critical period for cash flow and the primary factor causing it. "
+            "Explain the insights clearly, using business-relevant language, directly from the provided data.\n\n"
+            f"Inputs:\n"
+            f"Business profile: Avg monthly revenue: ₱{avg_monthly_revenue:,.2f}\n"
+            f"Projected data: Lowest projected cash balance: ₱{lowest_cash_value:,.2f} in Month {lowest_cash_month_idx}.\n"
+            f"Growth plan: Capital required: ₱{capital_required:,.2f}."
+        )
+        ai_insight = generate_response(insight_prompt)
+
+        # Build suggestion prompt
+        suggestion_prompt = (
+            "Based on the cash flow insights and the planned growth initiative, recommend actionable, next steps for this Filipino MSME to optimize their debt and capital structure and ensure sufficient liquidity. Suggestions should be specific to business operations and financing.\n\n"
+            f"Inputs:\n"
+            f"Insight: {ai_insight}\n"
+            f"Projected data: AI suggests improving cash position by ₱{lowest_cash_value:,.2f} by addressing the Month {lowest_cash_month_idx} cash crunch.\n"
+            f"Planned growth: Capital required: ₱{capital_required:,.2f}."
+        )
+
+        raw_suggestions = generate_response(suggestion_prompt)
+
+        return {
+            "status": "success",
+            "data": {
+                "actionable_recommendations": [
+                    {
+                        "priority": "High",
+                        "title": "Optimize Receivables",
+                        "description": "Implement a stricter collection policy for outstanding invoices. Aim to reduce your average collection period by 5-7 days to accelerate cash inflow."
+                    },
+                    {
+                        "priority": "High",
+                        "title": "Explore Pre-Approved Credit Lines",
+                        "description": "Before Month 12, secure a flexible business credit line of at least ₱150,000.00. This acts as a safety net for any unexpected shortfalls during your growth phase."
+                    },
+                    {
+                        "priority": "Medium",
+                        "title": "Review Growth Initiative Phasing",
+                        "description": "Assess if the ₱100,000.00 growth initiative can be phased or slightly delayed to spread out the capital outflow and reduce the strain on your Month 12 cash reserves."
+                    }
+                ],
+                "model_info": {
+                    "model_name": "cohere-command",
+                    "prompt_version": "v1.0.0"
+                }
+            }
+        }
