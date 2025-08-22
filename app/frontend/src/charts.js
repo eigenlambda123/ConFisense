@@ -1,17 +1,20 @@
-import {deleteEmergencyFundScenarioToDB} from './emergency-fund.js';
-
 // Global Chart.js defaults applied to all charts for consistent styles and typography
 Chart.defaults.set({
     font: {
         family: 'Roboto, sans-serif',
-        size: 12,
+        size: 12
     },
     plugins: {
+        legend: {
+            display: true,
+            position: 'top', // 'top', 'bottom', 'left', 'right'
+            align: 'center', // 'start', 'center', 'end'
+        },
         title: {
             color: '#060e27',
             font: {
                 size: 16,
-                weight: 'bold',
+                weight: 'bold'
             },
             padding: {
                 top: 10,
@@ -20,7 +23,6 @@ Chart.defaults.set({
         }
     },
     scales: {
-        // Default settings for ALL x-axes
         x: {
             title: {
                 display: true,
@@ -31,20 +33,17 @@ Chart.defaults.set({
                 }
             },
             ticks: {
-                color: '#3b3b3b' // Default color for x-axis tick labels
+                color: '#3b3b3b'
             },
             grid: {
-                color: 'gray', // Default color for x-axis grid lines
-                lineWidth: 1, // Default width for x-axis grid lines
-                // You can also set tickColor here if you want it different from grid.color
-                // tickColor: 'green'
+                color: 'gray',
+                lineWidth: 1
             },
             border: {
-                color: 'gray', // Default color for the x-axis line itself
-                width: 1, // Default width for the x-axis line
+                color: 'gray',
+                width: 1
             }
         },
-        // Default settings for ALL y-axes
         y: {
             title: {
                 display: true,
@@ -55,17 +54,15 @@ Chart.defaults.set({
                 }
             },
             ticks: {
-                color: '#3b3b3b' // Default color for y-axis tick labels
+                color: '#3b3b3b'
             },
             grid: {
-                color: 'gray', // Default color for y-axis grid lines
-                lineWidth: 1, // Default width for y-axis grid lines
-                // You can also set tickColor here if you want it different from grid.color
-                // tickColor: 'orange'
+                color: 'gray',
+                lineWidth: 1
             },
             border: {
-                color: 'gray', // Default color for the y-axis line itself
-                width: 1, // Default width for the y-axis line
+                color: 'gray',
+                width: 1
             }
         }
     }
@@ -86,7 +83,9 @@ const chartTypeConfig = {
 const chartDataConfig = {
     budget_optimization: {
         labels: [],
-        datasets: [],
+        datasets: [
+            {}
+        ],
     },
 }
 
@@ -96,10 +95,8 @@ const chartSettingsConfig = {
     budget_optimization: {
         responsive: true,
         maintainAspectRatio: false,
+        ...Chart.defaults.plugins,
         plugins: {
-            legend: {
-                display: false,
-            },
             title: {
                 display: true,
                 text: 'Income vs. Expense Categories'
@@ -240,27 +237,17 @@ export function updateChart(labels) {
 }
 
 export function destroyChart() {
-    console.log('Destroying chart...');
-    if (chart) {
-        chart.destroy(); // Properly dispose Chart.js instance
-        console.log('Chart instance destroyed.');
-        chart = null; // Explicitly set to null immediately after destruction
-    } 
-    else {
+    if (!chart) {
         console.log('No chart to destroy.');
+        return;
     }
 
-    // Always clear the global chartData's datasets and labels
-    chartData.datasets = [];
-    chartData.labels = [];
+    chart.destroy(); // Properly dispose Chart.js instance
 
-    // Clear the content of the active scenarios container to prevent old tabs from lingering
-    const activeScenariosContainer = document.getElementById('active-graphs');
-    if (activeScenariosContainer) {
-        activeScenariosContainer.innerHTML = '';
-        console.log('Active scenarios tabs cleared.');
-    }
-    
-    // Reset datasetCounter for a fresh start when new datasets are added
-    datasetCounter = 1;
+     // Clear the global chartData's datasets and labels
+    chart.data.datasets = [];
+    chart.data.labels = [];
+
+    console.log('Chart instance destroyed.');
+    chart = null; // Explicitly set to null immediately after destruction
 }
