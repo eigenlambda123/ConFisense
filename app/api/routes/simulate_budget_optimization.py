@@ -45,7 +45,7 @@ def save_budget_optimization_to_db(data: BudgetOptimizationInput):
     return {"id": scenario.id}
 
 
-@router.delete("/budget-optimization/{scenario_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/budget-optimization/{scenario_id}")
 def delete_budget_optimization(scenario_id: int):
     with get_session() as session:
         scenario = session.get(BudgetOptimizationModel, scenario_id)
@@ -54,7 +54,6 @@ def delete_budget_optimization(scenario_id: int):
 
         session.delete(scenario)
         session.commit()
-        session.refresh(scenario)
         return {"message": "Scenario deleted"}
 
 
