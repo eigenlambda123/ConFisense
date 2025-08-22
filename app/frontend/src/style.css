@@ -186,11 +186,11 @@ main.active { width: 0; }
     transition: width 0.5s ease-in-out;
 }
 
-.scenario-name.active { font-size: 1.25rem }
+.scenario-name.active { font-size: 1rem }
 
-.scenario-desc.active { font-size: 0.75rem }
+.scenario-desc.active { font-size: 0.7rem }
 
-.scenario-icon.active { width: 4rem }
+.scenario-icon.active { width: 3rem }
 
 aside {
     position: absolute;
@@ -440,7 +440,7 @@ aside.active { width: 100%; }
 }
 
 .ai-text-container {
-    border: 1px solid black;
+    border: 1px solid var(--gray-blue);
     border-radius: 10px;
     padding: 1rem;
     height: 7rem;
@@ -554,7 +554,7 @@ aside.active { width: 100%; }
     #dashboard-container { padding: 1rem 1.5rem 6rem 1.5rem }
 
     main.active { 
-        width: 25%;
+        width: 20%;
         position: fixed;
         top: 0;
         left: 0;
@@ -577,7 +577,7 @@ aside.active { width: 100%; }
         border-radius: 0;
     }
 
-    aside.active { width: 75% } 
+    aside.active { width: 80% } 
 }
 
 @media (min-width: 1440px) {
