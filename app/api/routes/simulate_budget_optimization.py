@@ -5,6 +5,7 @@ from app.models.budgeting_optimization_model import BudgetOptimizationModel
 
 from app.db.session import get_session
 from fastapi import status
+from fastapi import HTTPException
 
 router = APIRouter()
 
@@ -37,3 +38,16 @@ def save_budget_optimization_to_db(data: BudgetOptimizationInput):
         session.refresh(scenario)
 
     return {"id": scenario.id}
+
+
+@router.delete("/budget-optimization/{scenario_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_budget_optimization(scenario_id: int):
+    with get_session() as session:
+        scenario = session.get(BudgetOptimizationModel, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
+
+        session.delete(scenario)
+        session.commit()
+        session.refresh(scenario)
+        return {"message": "Scenario deleted"}
