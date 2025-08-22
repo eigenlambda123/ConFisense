@@ -271,6 +271,12 @@ aside.active { width: 100%; }
     border: 2px solid var(--gray-blue);
 }
 
+.widget-container {
+    border: 2px solid var(--gray-blue);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
 #field-container {
     display: flex;
     flex-direction: column;
@@ -404,12 +410,9 @@ aside.active { width: 100%; }
 }
 
 #chart-canvas {
-    border: 2px solid var(--gray-blue);
-    border-radius: 10px;
     position: absolute;
     top: 0;
     left: 0;
-    padding: 1rem;
     width: 100%;
     height: 100%;
 }
@@ -452,9 +455,6 @@ aside.active { width: 100%; }
 }
 
 .ai-text-container {
-    border: 1px solid var(--gray-blue);
-    border-radius: 10px;
-    padding: 1rem;
     height: 7rem;
 }
 
@@ -530,6 +530,11 @@ aside.active { width: 100%; }
 .math-msg-box button { color: white }
 .math-msg-box button:hover { color: #3160ac }
 .math-msg-box p { text-align: left }
+
+.download-msg-box { background-color: #399139 }
+.download-msg-box button { color: white }
+.download-msg-box button:hover { color: #399139 }
+.download-msg-box p { text-align: center }
 
 @keyframes skeleton-loading {
     0% { background-color: var(--dark-gray-blue) }
