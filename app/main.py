@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.db.base import init_db
 from app.api.routes import (
     simulate_budget_optimization,
-    simulate_budgeting,
+    simulate_debt_management
 )
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,3 +26,4 @@ def on_startup():
     init_db()
 
 app.include_router(simulate_budget_optimization.router, tags=["Budget Optimization"])
+app.include_router(simulate_debt_management.router, tags=["Debt Management"])
