@@ -79,82 +79,36 @@ let chart = null;
 
 // Different scenarios may use different visualizations
 const chartTypeConfig = {
-    emergency_fund: 'line',
-    budgeting: 'bar',
-    debt_management: '',
-    investing: '',
-    education_funding: '',
-    major_purchase: ''
+    budget_optimization: 'bar',
 };
 
 // Initial dataset structure for each scenario
 const chartDataConfig = {
-
-    emergency_fund: {
-        labels: [],
-        datasets: [
-            {
-                // Placeholder until API provides real data
-                data: [],
-            },
-        ],
-    },
-    budgeting: {
-        labels: [],
-        datasets: [
-            {
-                // Placeholder until API provides real data
-                data: [],
-            },
-        ],
-    },
-    debt_management: {
-        labels: [],
-        datasets: [
-            {
-                // Placeholder until API provides real data
-                data: [],
-            },
-        ],
-    },
-    investing: {
+    budget_optimization: {
         labels: [],
         datasets: [],
     },
-    education_funding: {
-        labels: [],
-        datasets: [],
-    },
-    major_purchase: {
-        labels: [],
-        datasets: [],
-    }
-
 }
 
 // Consiguration for chart behavior and visuals per scenario
 const chartSettingsConfig = {
 
-    emergency_fund: {
+    budget_optimization: {
         responsive: true,
         maintainAspectRatio: false,
-        elements: {
-            point: {
-                radius: 0, 
-                hitRadius: 10,
-            }
-        },
         plugins: {
             legend: {
                 display: false,
             },
             title: {
                 display: true,
+                text: 'Income vs. Expense Categories'
             },
         },
         scales: {
             x: {
                 ...Chart.defaults.scales.x,
+                stacked: true,
                 title: {
                     ...Chart.defaults.scales.x.title,
                     text: 'Time (Months)'
@@ -162,9 +116,10 @@ const chartSettingsConfig = {
             },
             y: {
                 ...Chart.defaults.scales.y,
+                stacked: true,
                 title: {
                     ...Chart.defaults.scales.y.title,
-                    text: 'Total Savings ($)'
+                    text: 'Amount (PHP)'
                 }
             }
         }
@@ -174,26 +129,6 @@ const chartSettingsConfig = {
         responsive: true,
         maintainAspectRatio: false,
     },
-
-    debt_management: {
-        responsive: true,
-        maintainAspectRatio: false,
-    },
-
-    investing: {
-        responsive: true,
-        maintainAspectRatio: false,
-    },
-
-    education_funding: {
-        responsive: true,
-        maintainAspectRatio: false,
-    },
-
-    major_purchase: {
-        responsive: true,
-        maintainAspectRatio: false,
-    }
 
 };
 
@@ -234,62 +169,48 @@ export function renderChart(scenario) {
 let datasetCounter = 1;
 const activeScenariosContainer = document.getElementById('active-graphs');
 
-export function createDataset(title, color, data, labels, scenarioId) {
+export function addDatasets(data) {
     if (!chart) {
         console.error('Chart not initialized.')
         return;
     }
 
+    const chartLabels = data.map(item => item.month);
+    const fixedExpensesData = data.map(item => item.fixed_expenses);
+    const variableExpensesData = data.map(item => item.variable_expenses);
+    const wantsExpensesData = data.map(item => item.wants_expenses);
+    const netCashFlowData = data.map(item => item.net_cash_flow);
+
     // New dataset for scenario run
-    const newDataset = {
-        label: title,
-        data: data,
-        fill: false,
-        borderColor: color, // Scenario color picked by user
-        tension: 0.1, // Curve smoothing for readability
-        scenarioId: scenarioId // ID identifier for the scenario
-    };
+    const datasets = [
+        {
+            label: 'Fixed Expenses',
+            data: fixedExpensesData,
+            backgroundColor: '#4c72b0'
+        },
+        {
+            label: 'Variable Expenses',
+            data: variableExpensesData,
+            backgroundColor: '#55a868'
+        },
+        {
+            label: 'Wants Expenses',
+            data: wantsExpensesData,
+            backgroundColor: '#c44e52'
+        },
+        {
+            label: 'Net Cash Flow',
+            data: netCashFlowData,
+            backgroundColor: '#8172b3'
+        }
+    ];
 
-    // Push dataset into chart's data collection
-    chart.data.datasets.push(newDataset);
+    chart.data.labels = chartLabels;
+    chart.data.datasets = datasets;
+    console.log("Labels: ", chart.data.labels);
     console.log("Datasets: ", chart.data.datasets);
-    const datasetIndex = datasetCounter;
-    datasetCounter++;
 
-    // Build UI tab for dataset so user can identfy/remove it
-    const tabTemplate = document.getElementById('graph-tab-template');
-    if (!tabTemplate) {
-        console.error('Scenario tab template not found.');
-        return;
-    }
-    
-    // Clone entire structure from template
-    const tabClone = tabTemplate.content.cloneNode(true);
-    const tabWrapper = tabClone.querySelector('div');
-    const label = tabClone.querySelector('label');
-    const deleteBtn = tabClone.querySelector('button');
-
-    // Populate cloned elements with dynamic data
-    label.textContent = newDataset.label;
-    label.style.color = color;
-    tabWrapper.style.border = `2px solid ${color}`;
-
-    // Delete button removes dataset from chart and UI
-    deleteBtn.onclick = () => {
-        chart.data.datasets.splice(datasetIndex, 1);
-        datasetCounter--;
-        console.log(`Removing dataset '${newDataset.label}'.`);
-        tabWrapper.remove();
-        console.log(chart.data.datasets);
-        updateChart(chart.data.labels);
-
-        // Delete emergency fund scenario from database
-        console.log("Deleting dataset with ID:", newDataset.scenarioId);
-        deleteEmergencyFundScenarioToDB(newDataset.scenarioId);
-    };
-
-    activeScenariosContainer.appendChild(tabClone); // Append to "active scenarios" container
-    updateChart(labels); // Trigger chart update with latest labels)
+    chart.update();
 }
 
 export function updateChartTitle(summary) {
