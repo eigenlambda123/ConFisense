@@ -245,4 +245,4 @@ def simulate_debt_management(
         }
     }
 
-    return
+    return response
