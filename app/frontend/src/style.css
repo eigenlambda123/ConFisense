@@ -234,8 +234,11 @@ aside.active { width: 100%; }
 #back-btn svg {
     width: 1.25rem;
     height: 1.25rem;
-    color: var(--azure-blue);
+    fill: none;
+    stroke-width: 2.5px;
+    stroke: var(--azure-blue);
     vertical-align: middle;
+    transform: rotate(180deg);
 }
 
 #scenario-title {
