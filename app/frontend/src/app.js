@@ -24,7 +24,7 @@ const field = (id, label, min, step, def, type='number') => ({id, label, min, st
 
 const scenariosConfig = {
     emergency_fund: {
-        label: "Building an Emergency Fund",
+        label: "Manage My Family's Budget",
         endpoint: "/simulate/emergency-fund",
         fields: [
             field("monthly_expenses", "Monthly Expenses (₱)", 0, 1000, 10000),
@@ -37,7 +37,7 @@ const scenariosConfig = {
         ],
     },
     budgeting: {
-        label: "Effective Budgeting and Expense Tracking",
+        label: "Plan Business Growth & Debt",
         endpoint: "/simulate/budgeting",
         fields: [
             field("income", "Monthly Income (₱)", 0, 1000, 40000),
@@ -48,7 +48,7 @@ const scenariosConfig = {
         ],
     },
     debt_management: {
-        label: "Managing and Reducing Debt",
+        label: "Grow My Client's Wealth",
         endpoint: "/simulate/debt-management",
         fields: [
             field("debt", "Total Debt Amount (₱)", 0, 10000, 200000),
@@ -59,7 +59,7 @@ const scenariosConfig = {
         ],
     },
     investing: {
-        label: "Starting to Save and Invest for the Future",
+        label: "Plan for the Future",
         endpoint: "/simulate/investing",
         fields: [
             field("initial", "Current Investment/Savings Amount (₱)", 0, 10000, 100000),
@@ -70,7 +70,7 @@ const scenariosConfig = {
         ],
     },
     education_funding: {
-        label: "Education Funding",
+        label: "Manage My Capital",
         endpoint: "/simulate/education-fund",
         fields: [
             field("today_cost", "Target Education Cost (Today) (₱)", 0, 50000, 1000000),
@@ -83,7 +83,7 @@ const scenariosConfig = {
         ],
     },
     major_purchase: {
-        label: "Major Purchase Planning",
+        label: "Analyze Client Portfolios",
         endpoint: "/simulate/major-purchase",
         fields: [
             field("price", "Target Purchase Price (₱)", 0, 100000, 3000000),
@@ -105,12 +105,16 @@ const greetingsContainer = document.getElementById(('greetings-container'));
 const cardButton = document.getElementsByClassName('card-btn');
 const scenarioName = document.getElementsByClassName('scenario-name');
 const scenarioDescription = document.getElementsByClassName('scenario-desc');
+const scenarioIcon = document.getElementsByClassName('scenario-icon');
 const dashboard = document.getElementById('dashboard');
 const scenarioTitleElement = document.getElementById('scenario-title');
-const exContainer = document.getElementById('explanation');
-const suContainer = document.getElementById('suggestions');
+// const exContainer = document.getElementById('explanation');
+// const suContainer = document.getElementById('suggestions');
 const messageBox = document.getElementById('msg-box');
 const messageText = document.getElementById('msg-text');
+
+console.log(scenarioName);
+console.log(scenarioDescription);
 
 // Helper function to show custom message box
 function showMessage(message) {
@@ -127,6 +131,7 @@ function openDashboard() {
         cardButton[i].classList.add('active');
         scenarioName[i].classList.add('active');
         scenarioDescription[i].classList.add('active');
+        scenarioIcon[i].classList.add('active');
     }
 }
 
@@ -139,6 +144,7 @@ function closeDashboard() {
         cardButton[i].classList.remove('active');
         scenarioName[i].classList.remove('active');
         scenarioDescription[i].classList.remove('active');
+        scenarioIcon[i].classList.remove('active');
     }
 }
 
