@@ -319,6 +319,8 @@ aside.active { width: 100%; }
 }
 
 .input-field {
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
     border: 2px solid var(--gray-blue);
     display: block;
     width: 100%;
@@ -327,11 +329,6 @@ aside.active { width: 100%; }
     font-size: 1rem;
     font-family: "HPSimplified";
     font-weight: normal;
-}
-
-.non-color-input {
-    padding: 0.25rem 0.5rem;
-    border-radius: 10px;
 }
 
 .widget-btns {
@@ -511,7 +508,6 @@ aside.active { width: 100%; }
 #msg-box button {
     background-color: transparent;
     border: 2px solid white;
-    color: white;
     padding: 8px 16px;
     margin-top: 10px;
     cursor: pointer;
@@ -526,11 +522,13 @@ aside.active { width: 100%; }
 }
 
 .empty-field-msg-box { background-color: #a53535 }
-.empty-field-msg-box:hover { color: #a53535 }
+.empty-field-msg-box button { color: white }
+.empty-field-msg-box button:hover { color: #a53535 }
 .empty-field-msg-box p { text-align: center }
 
 .math-msg-box { background-color: #3160ac }
-.math-msg-box:hover { color: #3160ac }
+.math-msg-box button { color: white }
+.math-msg-box button:hover { color: #3160ac }
 .math-msg-box p { text-align: left }
 
 @keyframes skeleton-loading {
