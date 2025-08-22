@@ -1,7 +1,7 @@
 import { 
     renderChart, 
     destroyChart, 
-    createDataset, 
+    addDatasets, 
     updateChartTitle, 
     clearChartTitle
 } from "./charts.js";
@@ -31,38 +31,34 @@ const scenariosConfig = {
             field("projection_months", "Projection Months", 12, 1, 12),
 
             // Income Fields
-            field("income_monthly_net_income", "Monthly Net Income (₱)", 0, 1000, 50000),
-            field("income_other_monthly_income", "Other Monthly Income (₱)", 0, 500, 0),
+            field("monthly_net_income", "Monthly Net Income (₱)", 0, 1000, 50000),
+            field("other_monthly_income", "Other Monthly Income (₱)", 0, 500, 0),
 
             // Fixed Needs Expenses
-            field("expenses_fixed_needs_rent_mortgage", "Rent / Mortgage (₱)", 0, 1000, 15000),
-            field("expenses_fixed_needs_utilities", "Utilities (₱)", 0, 500, 4000),
-            field("expenses_fixed_needs_loan_payments", "Loan Payments (₱)", 0, 100, 0),
-            field("expenses_fixed_needs_insurance_premiums", "Insurance Premiums (₱)", 0, 100, 0),
-            field("expenses_fixed_needs_tuition_fees", "Tuition & Fees (₱)", 0, 1000, 0),
-            field("expenses_fixed_needs_groceries", "Groceries (₱)", 0, 500, 8000),
-            field("expenses_fixed_needs_transportation", "Transportation (₱)", 0, 500, 3000),
+            field("rent_mortgage", "Rent / Mortgage (₱)", 0, 1000, 15000),
+            field("utilities", "Utilities (₱)", 0, 500, 4000),
+            field("loan_payments", "Loan Payments (₱)", 0, 100, 0),
+            field("insurance_premiums", "Insurance Premiums (₱)", 0, 100, 0),
+            field("tuition_fees", "Tuition & Fees (₱)", 0, 1000, 0),
+            field("groceries", "Groceries (₱)", 0, 500, 8000),
+            field("transportation", "Transportation (₱)", 0, 500, 3000),
             
             // Variable Needs Expenses
-            field("expenses_variable_needs_household_supplies", "Household Supplies (₱)", 0, 100, 500),
-            field("expenses_variable_needs_medical_health", "Medical & Health (₱)", 0, 100, 0),
-            field("expenses_variable_needs_misc_needs", "Miscellaneous Needs (₱)", 0, 100, 0),
+            field("household_supplies", "Household Supplies (₱)", 0, 100, 500),
+            field("medical_health", "Medical & Health (₱)", 0, 100, 0),
+            field("misc_needs", "Miscellaneous Needs (₱)", 0, 100, 0),
 
             // Wants & Discretionary Expenses
-            field("expenses_wants_discretionary_dining_out", "Dining Out (₱)", 0, 100, 2500),
-            field("expenses_wants_discretionary_entertainment_hobbies", "Entertainment & Hobbies (₱)", 0, 100, 1500),
-            field("expenses_wants_discretionary_personal_care", "Personal Care (₱)", 0, 100, 0),
-            field("expenses_wants_discretionary_shopping_leisure", "Shopping & Leisure (₱)", 0, 100, 0),
-            field("expenses_wants_discretionary_travel_vacation", "Travel & Vacation (₱)", 0, 1000, 0),
-            field("expenses_wants_discretionary_misc_wants", "Miscellaneous Wants (₱)", 0, 100, 0),
+            field("dining_out", "Dining Out (₱)", 0, 100, 2500),
+            field("entertainment_hobbies", "Entertainment & Hobbies (₱)", 0, 100, 1500),
+            field("personal_care", "Personal Care (₱)", 0, 100, 0),
+            field("shopping_leisure", "Shopping & Leisure (₱)", 0, 100, 0),
+            field("travel_vacation", "Travel & Vacation (₱)", 0, 1000, 0),
+            field("misc_wants", "Miscellaneous Wants (₱)", 0, 100, 0),
 
             // Savings Goals Fields
-            field("savings_goals_target_monthly_savings", "Target Monthly Savings (₱)", 0, 100, 5000),
-            field("savings_goals_emergency_fund_target", "Emergency Fund Target (₱)", 0, 1000, 120000),
-
-            // Scenario Display Fields
-            field("scenario_title", "What If Scenario Title", null, null, "My Current Situation", 'text'),
-            field("scenario_color", "Scenario Color", null, null, "#007bff", 'color'),
+            field("target_monthly_savings", "Target Monthly Savings (₱)", 0, 100, 5000),
+            field("emergency_fund_target", "Emergency Fund Target (₱)", 0, 1000, 120000),
         ],
     },
     budgeting: {
@@ -101,13 +97,10 @@ const scenarioDescription = document.getElementsByClassName('scenario-desc');
 const scenarioIcon = document.getElementsByClassName('scenario-icon');
 const dashboard = document.getElementById('dashboard');
 const scenarioTitleElement = document.getElementById('scenario-title');
-// const exContainer = document.getElementById('explanation');
-// const suContainer = document.getElementById('suggestions');
+const exContainer = document.getElementById('explanation');
+const suContainer = document.getElementById('suggestions');
 const messageBox = document.getElementById('msg-box');
 const messageText = document.getElementById('msg-text');
-
-console.log(scenarioName);
-console.log(scenarioDescription);
 
 // Helper function to show custom message box
 function showMessage(message) {
@@ -215,7 +208,7 @@ function showDashboard(buttonElement) {
     console.log('Opening dashboard...');
     openDashboard();
     clearChartTitle();
-    clearAIResponses();
+    //clearAIResponses();
     renderChart(currentScenario); // Draw scenario-specific chart after form is set up
 }
 
@@ -225,23 +218,64 @@ function showHome() {
     scenarioTitleElement.textContent = '';
     closeDashboard();
     clearChartTitle();
-    clearAIResponses();
+    //clearAIResponses();
     destroyChart();
+}
+
+function transformFrontendData(data) {
+    const apiBody = {
+        scenario_type: data.scenario_type,
+        user_type: data.user_type,
+        projection_months: data.projection_months,
+        income: {
+            monthly_net_income: data.monthly_net_income,
+            other_monthly_income: data.other_monthly_income,
+            income_frequency: "monthly"
+        },
+        expenses: {
+            fixed_needs: {
+                rent_mortgage: data.rent_mortgage,
+                utilities: data.utilities,
+                loan_payments: data.loan_payments,
+                insurance_premiums: data.insurance_premiums,
+                tuition_fees: data.tuition_fees,
+                groceries: data.groceries,
+                transportation: data.transportation
+            },
+            variable_needs: {
+                household_supplies: data.household_supplies,
+                medical_health: data.medical_health,
+                misc_needs: data.misc_needs
+            },
+            wants_discretionary: {
+                dining_out: data.dining_out,
+                entertainment_hobbies: data.entertainment_hobbies,
+                personal_care: data.personal_care,
+                shopping_leisure: data.shopping_leisure,
+                travel_vacation: data.travel_vacation,
+                misc_wants: data.misc_wants
+            }
+        },
+        savings_goals: {
+            target_monthly_savings: data.target_monthly_savings,
+            emergency_fund_target: data.emergency_fund_target
+        }
+    };
+
+    return apiBody;
 }
 
 async function runSimulation(endpoint, params) {
     // Prepare request payload (parameters for simulation scenario)
-    const requestBody = params;
+    console.log(params);
+    const requestBody = transformFrontendData(params);
 
-    // Extract scenario-specific details fo visualization
-    const scenarioTitle = requestBody.scenario_title;
-    const scenarioColor = requestBody.scenario_color;
+    console.log(requestBody); // FOR DEBUGGING
 
     try {
         console.log('Running simulation...');
 
         // Send a POST request to the FastAPI backend
-        // Using localhost (127.0.0.1:8000) since backend is served by uvicorn
         const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
             method: 'POST',
             headers: {
@@ -255,21 +289,17 @@ async function runSimulation(endpoint, params) {
 
         // Parse backend JSON response (contains simulation results)
         const result = await response.json();
-
-        // Extract what inputs the backend received (for debugging & validation)
-        const inputsReceived = result.inputs_received;
+        const chartData = result.data.chart_data;
+        const inputsReceived = result.data.inputs_received;
+        const formulas = result.data.show_my_math;
+        
+        // FOR DEBUGGING
+        console.log('Result: ', result);
+        console.log('Chart Data: ', chartData);
         console.log('Inputs Received: ', inputsReceived);
+        console.log('Formulas: ', formulas); 
 
-        // Extract simulation outputs for frontend
-        const data = result.data.projection_data.balance_history;
-        const labels = result.data.projection_data.months_labels;
-
-        // Save the Emergency Fund scenario to the db
-        const savedScenario = await saveEmergencyFundScenarioToDB(params);
-
-        // Feed proceessed data into chart layer
-        // Each new scenario gets a unique color + title for comparison
-        createDataset(scenarioTitle, scenarioColor, data, labels, savedScenario.id);
+        addDatasets(chartData);
         fetchAndRenderAISummary();
 
     } catch (err) {
