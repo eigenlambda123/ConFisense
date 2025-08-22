@@ -105,3 +105,144 @@ def simulate_budget_optimization(
     }
 
     return response
+
+
+
+def simulate_debt_management(
+    scenario_type,
+    user_type,
+    projection_period,
+    loans,
+    business_financials,
+    growth_needs,
+    proposed_financing,
+    reinvestment_rate
+):
+    # Unpack business financials
+    avg_monthly_revenue = business_financials.get("avg_monthly_revenue", 0)
+    avg_monthly_operating_expenses = business_financials.get("avg_monthly_operating_expenses", 0)
+    starting_cash = business_financials.get("current_cash_reserves", 0)
+
+    # Unpack growth needs
+    capital_required = growth_needs.get("capital_required", 0)
+    expected_roi = growth_needs.get("expected_roi", 0)
+
+    # Unpack proposed financing
+    proposed_loan_amount = proposed_financing.get("proposed_loan_amount", 0)
+    proposed_interest_rate = proposed_financing.get("proposed_annual_interest_rate", 0)
+    proposed_loan_term = proposed_financing.get("proposed_loan_term", 0)
+
+    # Prepare loan breakdowns
+    loan_payments = []
+    for loan in loans:
+        principal = loan.get("principal_amount", 0)
+        outstanding = loan.get("outstanding_balance", 0)
+        annual_rate = loan.get("annual_interest_rate", 0)
+        monthly_rate = annual_rate / 12 / 100
+        term = loan.get("remaining_term_months", 1)
+        # Amortization formula
+        if monthly_rate > 0 and term > 0:
+            payment = principal * (monthly_rate * (1 + monthly_rate) ** term) / ((1 + monthly_rate) ** term - 1)
+        else:
+            payment = outstanding / term if term else 0
+        loan_payments.append({
+            "loan_name": loan.get("loan_name", "Loan"),
+            "monthly_payment": payment,
+            "monthly_interest": outstanding * monthly_rate,
+            "monthly_principal": payment - (outstanding * monthly_rate)
+        })
+
+    # Proposed loan breakdown
+    if proposed_loan_amount and proposed_loan_term:
+        monthly_rate = proposed_interest_rate / 12 / 100
+        if monthly_rate > 0 and proposed_loan_term > 0:
+            proposed_payment = proposed_loan_amount * (monthly_rate * (1 + monthly_rate) ** proposed_loan_term) / ((1 + monthly_rate) ** proposed_loan_term - 1)
+        else:
+            proposed_payment = proposed_loan_amount / proposed_loan_term if proposed_loan_term else 0
+        loan_payments.append({
+            "loan_name": "Proposed Loan",
+            "monthly_payment": proposed_payment,
+            "monthly_interest": proposed_loan_amount * monthly_rate,
+            "monthly_principal": proposed_payment - (proposed_loan_amount * monthly_rate)
+        })
+
+    # Waterfall chart data
+    chart_data = []
+    cash_balance = starting_cash
+    for period in range(1, projection_period + 1):
+        # Calculate total loan payments for this period
+        total_loan_interest = sum(lp["monthly_interest"] for lp in loan_payments)
+        total_loan_principal = sum(lp["monthly_principal"] for lp in loan_payments)
+        total_loan_payment = sum(lp["monthly_payment"] for lp in loan_payments)
+
+        # Cash flows
+        cash_inflow = avg_monthly_revenue
+        cash_outflow = avg_monthly_operating_expenses + total_loan_interest
+        net_operating_cash_flow = cash_inflow - cash_outflow
+        net_cash_position = cash_balance + net_operating_cash_flow - total_loan_principal
+
+        chart_data.append({
+            "period": period,
+            "starting_cash": cash_balance,
+            "revenue": cash_inflow,
+            "operating_expenses": avg_monthly_operating_expenses,
+            "loan_interest_payments": total_loan_interest,
+            "loan_principal_payments": total_loan_principal,
+            "net_operating_cash_flow": net_operating_cash_flow,
+            "net_cash_position": net_cash_position
+        })
+
+        # Update cash balance for next period
+        cash_balance = net_cash_position
+        # Optionally add reinvestment logic here
+
+    # Key metrics
+    total_interest_paid = sum([c["loan_interest_payments"] for c in chart_data])
+    total_principal_paid = sum([c["loan_principal_payments"] for c in chart_data])
+    ending_cash = chart_data[-1]["net_cash_position"] if chart_data else starting_cash
+
+    key_metrics = {
+        "total_interest_paid": total_interest_paid,
+        "total_principal_paid": total_principal_paid,
+        "ending_cash_position": ending_cash,
+        "capital_required": capital_required,
+        "expected_roi": expected_roi
+    }
+
+    # Insight
+    insight = (
+        f"Over the projected period, your MSME's cash position will change based on operating cash flows and debt repayments. "
+        f"Total interest paid: ₱{total_interest_paid:,.2f}. Total principal repaid: ₱{total_principal_paid:,.2f}. "
+        f"Ending cash position: ₱{ending_cash:,.2f}. Consider optimizing loan terms or reinvestment rates to improve liquidity."
+    )
+
+    # Show my math
+    show_my_math = [
+        "Total Cash Inflow = Monthly Revenue",
+        "Total Cash Outflow = Operating Expenses + Loan Interest Payments",
+        "Net Operating Cash Flow = Inflow - Outflow",
+        "Loan Principal Payment per Period = Amortization formula",
+        "Net Cash Position = Starting Cash + Net Operating Cash Flow - Total Loan Principal Payments"
+    ]
+
+    response = {
+        "status": "success",
+        "data": {
+            "inputs_received": {
+                "scenario_type": scenario_type,
+                "user_type": user_type,
+                "projection_period": projection_period,
+                "loans": loans,
+                "business_financials": business_financials,
+                "growth_needs": growth_needs,
+                "proposed_financing": proposed_financing,
+                "reinvestment_rate": reinvestment_rate
+            },
+            "chart_data": chart_data,
+            "key_metrics": key_metrics,
+            "insight": insight,
+            "show_my_math": show_my_math
+        }
+    }
+
+    return
