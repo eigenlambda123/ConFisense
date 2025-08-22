@@ -421,8 +421,7 @@ document.getElementById('back-btn').addEventListener('click', function() {
 document.getElementById('clear-btn').addEventListener('click', function() {
     // Reset all form fields to empty
     fields.forEach((input) => {
-        if (input.type === 'color') input.value = '#000000';
-        else input.value = null;
+        input.value = null;
     });
     console.log("Fields cleared.");
 })
@@ -447,6 +446,10 @@ document.getElementById('math-btn').addEventListener('click', async (event) => {
         return;
     }
     showMessage(`Formulas Used<br><br>${formulas.join('<br><br>')}` ,'math-msg-box');
+});
+
+document.getElementById('download-btn').addEventListener('click', async (event) => {
+    showMessage('Download Report is not available right now.' ,'download-msg-box');
 });
 
 document.getElementById('suggest-btn').addEventListener('click', async (event) => {
