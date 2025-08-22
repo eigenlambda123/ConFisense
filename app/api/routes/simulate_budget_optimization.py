@@ -10,6 +10,7 @@ from fastapi import status
 from fastapi import HTTPException
 
 from sqlmodel import select
+import json
 
 
 router = APIRouter()
@@ -200,6 +201,89 @@ def get_ai_suggestions():
                         "description": "Use a simple budgeting app or notebook to record all your daily variable expenses for one month. This builds awareness and helps you stick to your revised budget."
                     }
                 ],
+                "model_info": {
+                    "model_name": "cohere-command",
+                    "prompt_version": "v1.0.0"
+                }
+            }
+        }
+    
+
+
+@router.get("/budget-optimization/ai-suggestions")
+def get_ai_suggestions():
+    with get_session() as session:
+        scenario = session.exec(
+            select(BudgetOptimizationModel).order_by(BudgetOptimizationModel.created_at.desc())
+        ).first()
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No budget optimization scenario found.")
+
+        # Extract key stats for prompt context
+        income = scenario.income
+        expenses = scenario.expenses
+        savings_goals = scenario.savings_goals
+
+        total_monthly_income = income.get("monthly_net_income", 0) + income.get("other_monthly_income", 0)
+        wants = expenses.get("wants_discretionary", {})
+        highest_discretionary_category = max(wants, key=wants.get) if wants else "N/A"
+        highest_discretionary_value = wants.get(highest_discretionary_category, 0)
+        emergency_fund_target = savings_goals.get("emergency_fund_target", 0)
+        target_monthly_savings = savings_goals.get("target_monthly_savings", 0)
+        emergency_fund_months_current = (
+            emergency_fund_target / target_monthly_savings if target_monthly_savings else "N/A"
+        )
+
+        # Simulate a 20% reduction in highest discretionary category
+        potential_increase_in_savings = highest_discretionary_value * 0.2 if highest_discretionary_value else 0
+        optimized_monthly_savings = target_monthly_savings + potential_increase_in_savings
+        emergency_fund_months_optimized = (
+            emergency_fund_target / optimized_monthly_savings if optimized_monthly_savings else "N/A"
+        )
+
+        # Get the latest AI insight
+        insight_prompt = (
+            "As an expert financial advisor for Filipino families, analyze the provided monthly cash flow projection for a family in Lucena City. "
+            "Focus on their income, expenses (fixed, variable, discretionary), and their net cash flow trend over the projected period. "
+            "Identify key strengths or weaknesses in their spending habits. Explain in natural language, drawing insights specifically from the data. "
+            "Highlight the most significant area of discretionary spending and its impact. Keep it concise, value-adding, and directly based on the numbers provided.\n\n"
+            f"Inputs:\n"
+            f"User profile: Income: ₱{total_monthly_income:,.2f}\n"
+            f"Projected data: Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}.\n"
+            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months."
+        )
+        ai_insight = generate_response(insight_prompt)
+
+        # Build suggestion prompt, instructing the AI to return JSON
+        suggestion_prompt = (
+            "Given the financial insights from the cash flow analysis and the goal to reach an emergency fund, "
+            "recommend actionable, next steps for this Filipino family. The suggestions should be practical, easy to understand, "
+            "and directly address the identified weaknesses, particularly regarding discretionary spending. Focus on specific, measurable actions.\n\n"
+            "Return your answer as a JSON array of objects with keys: priority, title, description.\n"
+            f"Inputs:\n"
+            f"Insight: {ai_insight}\n"
+            f"Projected data: Potential monthly savings from 20% reduction in highest discretionary: ₱{potential_increase_in_savings:,.2f}. "
+            f"Optimized path to emergency fund: {emergency_fund_months_optimized} months.\n"
+            f"Emergency Fund Goal: ₱{emergency_fund_target:,.2f}."
+        )
+
+        raw_suggestions = generate_response(suggestion_prompt)
+
+        # Try to parse the AI output as JSON
+        try:
+            actionable_recommendations = json.loads(raw_suggestions)
+        except Exception:
+            # fallback: wrap the raw text in a single recommendation
+            actionable_recommendations = [{
+                "priority": "Info",
+                "title": "AI Suggestion",
+                "description": raw_suggestions
+            }]
+
+        return {
+            "status": "success",
+            "data": {
+                "actionable_recommendations": actionable_recommendations,
                 "model_info": {
                     "model_name": "cohere-command",
                     "prompt_version": "v1.0.0"
