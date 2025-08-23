@@ -26,20 +26,6 @@ def count_tokens(text: str) -> int:
     """Count tokens in a string using tiktoken."""
     return len(tokenizer.encode(text or ""))
 
-def safe_truncate_text(text: str, max_tokens: int) -> str:
-    """Truncate text to fit within max_tokens."""
-    tokens = tokenizer.encode(text or "")
-    return tokenizer.decode(tokens[:max_tokens])
-
-def safe_get(obj, keys, default=""):
-    """Safely get nested keys from dict."""
-    for k in keys:
-        if isinstance(obj, dict):
-            obj = obj.get(k, default)
-        else:
-            return default
-    return obj or default
-
 def peso_wrap_prompt(prompt: str) -> str:
     """Ensure Philippine peso clarification is added."""
     return (
