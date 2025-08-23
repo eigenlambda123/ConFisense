@@ -69,4 +69,68 @@ def delete_wealth_building(scenario_id: int):
         session.commit()
         return {"message": "Scenario deleted"}
     
+
+
+@router.get("/wealth-building/ai-explanation")
+def get_ai_explanation():
+    with get_session() as session:
+        scenario = session.exec(
+            select(WealthBuildingModel).order_by(WealthBuildingModel.created_at.desc())
+        ).first()
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No wealth building scenario found.")
+
+        goal_name = scenario.goal_name
+        current_age = scenario.current_age
+        target_age = scenario.target_age
+        target_amount = scenario.target_amount
+        current_savings = scenario.current_savings
+        monthly_contribution = scenario.monthly_contribution
+        annual_contribution_increase = scenario.annual_contribution_increase
+        expected_annual_return = scenario.expected_annual_return
+        inflation_rate = scenario.inflation_rate
+        risk_profile = scenario.risk_profile
+        advisor_fee_percent = scenario.advisor_fee_percent
+
+        chart_data = scenario.chart_data if hasattr(scenario, "chart_data") else []
+        key_metrics = scenario.key_metrics if hasattr(scenario, "key_metrics") else {}
+
+        # Calculate summary stats
+        total_projected_value = key_metrics.get("total_projected_value", 0)
+        inflation_adjusted_target = key_metrics.get("inflation_adjusted_target", 0)
+        projected_shortfall = key_metrics.get("projected_shortfall", 0)
+        percent_from_growth = key_metrics.get("percent_from_growth", 0)
+
+        prompt = (
+            "As an expert financial advisor, analyze the provided wealth building projection for a client. "
+            "Focus on their goal, contributions, investment growth, and inflation-adjusted target. "
+            "Identify the projected shortfall or surplus and the main factors driving the outcome. "
+            "Explain the insights clearly, using client-relevant language, directly from the provided data.\n\n"
+            f"Inputs:\n"
+            f"Goal: {goal_name}\n"
+            f"Client age: {current_age}, Target age: {target_age}\n"
+            f"Target amount: ₱{target_amount:,.2f}\n"
+            f"Current savings: ₱{current_savings:,.2f}\n"
+            f"Monthly contribution: ₱{monthly_contribution:,.2f}, Annual increase: {annual_contribution_increase:.2%}\n"
+            f"Expected annual return: {expected_annual_return:.2%}, Inflation rate: {inflation_rate:.2%}, Risk profile: {risk_profile}\n"
+            f"Advisor fee: {advisor_fee_percent:.2f}%\n"
+            f"Projected data: Total projected value: ₱{total_projected_value:,.2f}. "
+            f"Inflation-adjusted target: ₱{inflation_adjusted_target:,.2f}. "
+            f"Projected shortfall/surplus: ₱{projected_shortfall:,.2f}. "
+            f"Percent from investment growth: {percent_from_growth:.2f}%."
+        )
+
+        explanation_text = generate_response(prompt)
+
+        return {
+            "status": "success",
+            "data": {
+                "explanation_text": explanation_text,
+                "model_info": {
+                    "model_name": "cohere-command",
+                    "prompt_version": "v1.0.0"
+                }
+            }
+        }
     
+
