@@ -9,54 +9,6 @@ import json
 
 router = APIRouter()
 
-def get_financial_summary(scenario: BudgetOptimizationModel):
-    """A helper function to extract and calculate key financial metrics."""
-    income = scenario.income
-    expenses = scenario.expenses
-    savings_goals = scenario.savings_goals
-    
-    total_monthly_income = income.get("monthly_gross_income", 0) + income.get("other_monthly_income", 0)
-    
-    fixed_total = sum(expenses.get("fixed_needs", {}).values())
-    variable_total = sum(expenses.get("variable_needs", {}).values())
-    wants_total = sum(expenses.get("wants_discretionary", {}).values())
-    
-    total_monthly_expenses = fixed_total + variable_total + wants_total
-    
-    avg_net_cash_flow = total_monthly_income - total_monthly_expenses - savings_goals.get("target_monthly_savings", 0)
-    
-    wants = expenses.get("wants_discretionary", {})
-    highest_discretionary_category = max(wants, key=wants.get) if wants else "N/A"
-    highest_discretionary_value = wants.get(highest_discretionary_category, 0)
-    
-    discretionary_spending_percent = (wants_total / total_monthly_income) if total_monthly_income else 0
-    
-    emergency_fund_target = savings_goals.get("emergency_fund_target", 0)
-    target_monthly_savings = savings_goals.get("target_monthly_savings", 0)
-    
-    emergency_fund_months_current = (
-        emergency_fund_target / target_monthly_savings if target_monthly_savings > 0 else "N/A"
-    )
-    
-    potential_increase_in_savings = highest_discretionary_value * 0.2 if highest_discretionary_value else 0
-    optimized_monthly_savings = target_monthly_savings + potential_increase_in_savings
-    emergency_fund_months_optimized = (
-        emergency_fund_target / optimized_monthly_savings if optimized_monthly_savings > 0 else "N/A"
-    )
-
-    return {
-        "total_monthly_income": total_monthly_income,
-        "total_monthly_expenses": total_monthly_expenses,
-        "avg_net_cash_flow": avg_net_cash_flow,
-        "discretionary_spending_percent": discretionary_spending_percent,
-        "highest_discretionary_category": highest_discretionary_category,
-        "highest_discretionary_value": highest_discretionary_value,
-        "emergency_fund_target": emergency_fund_target,
-        "emergency_fund_months_current": emergency_fund_months_current,
-        "potential_increase_in_savings": potential_increase_in_savings,
-        "optimized_monthly_savings": optimized_monthly_savings,
-        "emergency_fund_months_optimized": emergency_fund_months_optimized
-    }
 
 @router.post("/simulate/budget-optimization")
 def simulate_and_save_route(data: BudgetOptimizationInput):
