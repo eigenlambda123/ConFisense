@@ -132,8 +132,8 @@ def get_ai_explanation():
         income = scenario.income
         expenses = scenario.expenses
         savings_goals = scenario.savings_goals
+        what_if_factors = scenario.what_if_factors
 
-        # Extract summary stat
         total_monthly_income = income.get("monthly_gross_income", 0) + income.get("other_monthly_income", 0)
         fixed = expenses.get("fixed_needs", {})
         variable = expenses.get("variable_needs", {})
@@ -152,6 +152,11 @@ def get_ai_explanation():
             if savings_goals.get("target_monthly_savings", 0) else "N/A"
         )
 
+        # What-if factors context
+        income_growth_rate = what_if_factors.get("income_growth_rate", 0)
+        wants_reduction_rate = what_if_factors.get("wants_reduction_rate", 0)
+        savings_increase_rate = what_if_factors.get("savings_increase_rate", 0)
+
         prompt = (
             "As an expert financial advisor for Filipino families, analyze the provided monthly cash flow projection for a family in Lucena City. "
             "Focus on their income, expenses (fixed, variable, discretionary), and their net cash flow trend over the projected period. "
@@ -164,7 +169,8 @@ def get_ai_explanation():
             f"Average monthly net cash flow: ₱{avg_net_cash_flow:,.2f}. "
             f"Discretionary spending: ₱{wants_total:,.2f} ({discretionary_spending_percent:.2%} of income). "
             f"Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}.\n"
-            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months."
+            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months.\n"
+            f"What-if factors: Income growth rate: {income_growth_rate:.2%}, Wants reduction rate: {wants_reduction_rate:.2%}, Savings increase rate: {savings_increase_rate:.2%}."
         )
 
         explanation_text = generate_response(prompt)
@@ -179,7 +185,7 @@ def get_ai_explanation():
                 }
             }
         }
-
+    
 
 @router.get("/budget-optimization/ai-suggestions")
 def get_ai_suggestions():
