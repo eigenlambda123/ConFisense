@@ -186,6 +186,7 @@ def get_ai_explanation():
             }
         }
     
+    
 
 @router.get("/budget-optimization/ai-suggestions")
 def get_ai_suggestions():
@@ -200,6 +201,7 @@ def get_ai_suggestions():
         income = scenario.income
         expenses = scenario.expenses
         savings_goals = scenario.savings_goals
+        what_if_factors = scenario.what_if_factors
 
         total_monthly_income = income.get("monthly_gross_income", 0) + income.get("other_monthly_income", 0)
         wants = expenses.get("wants_discretionary", {})
@@ -210,6 +212,11 @@ def get_ai_suggestions():
         emergency_fund_months_current = (
             emergency_fund_target / target_monthly_savings if target_monthly_savings else "N/A"
         )
+
+        # What-if factors context
+        income_growth_rate = what_if_factors.get("income_growth_rate", 0)
+        wants_reduction_rate = what_if_factors.get("wants_reduction_rate", 0)
+        savings_increase_rate = what_if_factors.get("savings_increase_rate", 0)
 
         # Simulate a 20% reduction in highest discretionary category
         potential_increase_in_savings = highest_discretionary_value * 0.2 if highest_discretionary_value else 0
@@ -227,7 +234,8 @@ def get_ai_suggestions():
             f"Inputs:\n"
             f"User profile: Income: ₱{total_monthly_income:,.2f}\n"
             f"Projected data: Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}.\n"
-            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months."
+            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months.\n"
+            f"What-if factors: Income growth rate: {income_growth_rate:.2%}, Wants reduction rate: {wants_reduction_rate:.2%}, Savings increase rate: {savings_increase_rate:.2%}."
         )
         ai_insight = generate_response(insight_prompt)
 
@@ -241,7 +249,8 @@ def get_ai_suggestions():
             f"Insight: {ai_insight}\n"
             f"Projected data: Potential monthly savings from 20% reduction in highest discretionary: ₱{potential_increase_in_savings:,.2f}. "
             f"Optimized path to emergency fund: {emergency_fund_months_optimized} months.\n"
-            f"Emergency Fund Goal: ₱{emergency_fund_target:,.2f}."
+            f"Emergency Fund Goal: ₱{emergency_fund_target:,.2f}.\n"
+            f"What-if factors: Income growth rate: {income_growth_rate:.2%}, Wants reduction rate: {wants_reduction_rate:.2%}, Savings increase rate: {savings_increase_rate:.2%}."
         )
 
         raw_suggestions = generate_response(suggestion_prompt)
@@ -250,7 +259,6 @@ def get_ai_suggestions():
         try:
             actionable_recommendations = json.loads(raw_suggestions)
         except Exception:
-            # fallback: wrap the raw text in a single recommendation
             actionable_recommendations = [{
                 "priority": "Info",
                 "title": "AI Suggestion",
@@ -266,4 +274,5 @@ def get_ai_suggestions():
                     "prompt_version": "v1.0.0"
                 }
             }
-        }   
+        }
+    
