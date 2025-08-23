@@ -56,3 +56,17 @@ def save_wealth_building_to_db(data: WealthBuildingInput):
         session.commit()
         session.refresh(scenario)
     return {"id": scenario.id}
+
+
+@router.delete("/wealth-building/{scenario_id}")
+def delete_wealth_building(scenario_id: int):
+    with get_session() as session:
+        scenario = session.get(WealthBuildingModel, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
+
+        session.delete(scenario)
+        session.commit()
+        return {"message": "Scenario deleted"}
+    
+    
