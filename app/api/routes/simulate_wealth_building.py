@@ -31,3 +31,5 @@ def simulate_wealth_building_route(data: WealthBuildingInput):
         risk_profile=data.risk_profile,
         advisor_fee_percent=data.advisor_fee_percent
     )
+
+    return result
