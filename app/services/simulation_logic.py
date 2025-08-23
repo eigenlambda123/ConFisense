@@ -299,78 +299,96 @@ def simulate_wealth_building(
             FV_contributions += current_monthly_contribution * ((1 + monthly_return) ** months_remaining)
         current_monthly_contribution *= (1 + annual_contribution_increase)
 
-    total_projected_value = FV_initial + FV_contributions
+    total_projected_value_nominal = FV_initial + FV_contributions
+    projected_final_value_real = total_projected_value_nominal / inflation_adjustment
     inflation_adjusted_target = target_amount / inflation_adjustment
-    projected_shortfall = total_projected_value - inflation_adjusted_target
+    total_shortfall_real = inflation_adjusted_target - projected_final_value_real
+
+    # Calculate required monthly contribution to hit the goal
+    try:
+        r = monthly_return
+        n = months_to_goal
+        FV_goal = inflation_adjusted_target
+        required_monthly_contribution = (
+            (FV_goal - FV_initial) * r / ((1 + r) ** n - 1)
+        ) if r > 0 and n > 0 else FV_goal / n if n > 0 else FV_goal
+    except Exception:
+        required_monthly_contribution = None
+
+    # Calculate required annual return to hit the goal (simple estimate)
+    try:
+        required_annual_return = (
+            ((FV_goal / (current_savings + monthly_contribution * n)) ** (1 / years_to_goal)) - 1
+        ) if years_to_goal > 0 else expected_annual_return
+    except Exception:
+        required_annual_return = expected_annual_return
 
     # Chart Data (stacked area)
     chart_data = []
     cumulative_contributions = 0
-    cumulative_growth = current_savings
+    cumulative_investment_growth = 0
     current_monthly_contribution = monthly_contribution
+    total_value = current_savings
     for year in range(years_to_goal + 1):
         for month in range(12):
             if year * 12 + month > months_to_goal:
                 break
             cumulative_contributions += current_monthly_contribution
-            cumulative_growth = cumulative_growth * (1 + monthly_return) + current_monthly_contribution
+            total_value = total_value * (1 + monthly_return) + current_monthly_contribution
+            cumulative_investment_growth = total_value - cumulative_contributions
         chart_data.append({
             "year": current_age + year,
-            "cumulative_contributions": cumulative_contributions,
-            "cumulative_growth": cumulative_growth,
-            "total": cumulative_contributions + cumulative_growth
+            "cumulative_contributions": round(cumulative_contributions, 2),
+            "cumulative_investment_growth": round(cumulative_investment_growth, 2),
+            "total_value": round(total_value, 2),
+            "inflation_adjusted_target": round(inflation_adjusted_target, 2)
         })
         current_monthly_contribution *= (1 + annual_contribution_increase)
 
-    percent_from_growth = (FV_initial + FV_contributions - cumulative_contributions) / total_projected_value * 100 if total_projected_value else 0
-
-    key_metrics = {
-        "future_value_initial": FV_initial,
-        "future_value_contributions": FV_contributions,
-        "total_projected_value": total_projected_value,
-        "inflation_adjusted_target": inflation_adjusted_target,
-        "projected_shortfall": projected_shortfall,
-        "percent_from_growth": round(percent_from_growth, 2)
-    }
-
-    # Insight
-    insight = (
-        f"Based on your client's goal of ₱{target_amount:,.2f} for '{goal_name}' by age {target_age}, "
-        f"their current savings and projected contributions will result in a projected "
-        f"{'shortfall' if projected_shortfall < 0 else 'surplus'} of ₱{abs(projected_shortfall):,.2f} in real (inflation-adjusted) terms. "
-        f"The chart illustrates that {key_metrics['percent_from_growth']}% of their projected wealth will come from investment growth, "
-        f"emphasizing the importance of consistent investing. To close this gap and ensure a high probability of reaching their goal, "
-        f"our AI suggests either increasing their monthly contribution or considering a portfolio with a higher target return, "
-        f"which implies a {risk_profile.lower()} risk profile. This provides clear, data-driven options for client discussion."
+    # Rule-based insight
+    percent_achieved = (projected_final_value_real / inflation_adjusted_target * 100) if inflation_adjusted_target else 0
+    rule_based_insight = (
+        f"Your current savings and contributions are projected to fall short of your {goal_name.lower()} goal by ₱{total_shortfall_real:,.2f} in real terms. "
+        f"The current strategy is on track to achieve only {percent_achieved:.0f}% of the goal."
     )
 
     show_my_math = [
-        "Future Value of Initial Savings (FV_initial) = Initial Savings * (1+Expected Annual Return)^(Years to Goal)",
-        "Future Value of Contributions (FV_contributions) = Sum of each monthly contribution compounded to target date",
+        "Future Value of Initial Savings (FV_initial) = Initial Savings * (1 + Expected Return)^Years",
+        "Future Value of Contributions (FV_contributions) = PMT * [((1 + r)^n - 1) / r]",
         "Total Projected Value = FV_initial + FV_contributions",
-        "Inflation-Adjusted Target = Target Amount / (1+Inflation Rate)^(Years to Goal)",
-        "Projected Shortfall/Surplus = Total Projected Value - Inflation-Adjusted Target"
+        "Inflation-Adjusted Target = Nominal Target / (1 + Inflation Rate)^Years",
+        "Shortfall = Inflation-Adjusted Target - Total Projected Value"
     ]
 
     response = {
         "status": "success",
         "data": {
             "inputs_received": {
-                "goal_name": goal_name,
-                "current_age": current_age,
-                "target_age": target_age,
-                "target_amount": target_amount,
-                "current_savings": current_savings,
-                "monthly_contribution": monthly_contribution,
-                "annual_contribution_increase": annual_contribution_increase,
-                "expected_annual_return": expected_annual_return,
-                "inflation_rate": inflation_rate,
-                "risk_profile": risk_profile,
-                "advisor_fee_percent": advisor_fee_percent
+                "scenario_type": "wealth_building",
+                "user_type": "financial_advisor",
+                "client_goal": {
+                    "goal_name": goal_name,
+                    "target_age": target_age,
+                    "target_amount": target_amount
+                },
+                "contributions": {
+                    "current_monthly_contribution": monthly_contribution,
+                    "annual_contribution_increase_percent": annual_contribution_increase
+                },
+                "investment_details": {
+                    "expected_annual_return_percent": expected_annual_return,
+                    "inflation_rate_percent": inflation_rate
+                }
             },
             "chart_data": chart_data,
-            "key_metrics": key_metrics,
-            "insight": insight,
+            "key_metrics": {
+                "projected_final_value_nominal": round(total_projected_value_nominal, 2),
+                "projected_final_value_real": round(projected_final_value_real, 2),
+                "total_shortfall_real": round(total_shortfall_real, 2),
+                "required_monthly_contribution": round(required_monthly_contribution, 2) if required_monthly_contribution else None,
+                "required_annual_return": round(required_annual_return, 4) if required_annual_return else None
+            },
+            "insight": rule_based_insight,
             "show_my_math": show_my_math
         }
     }
