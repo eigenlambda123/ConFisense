@@ -71,8 +71,21 @@ def simulate_and_save_route(data: BudgetOptimizationInput):
     )
     return result
 
+
 @router.post("/budget-optimization/save")
 def save_budget_optimization_to_db(data: BudgetOptimizationInput):
+    # run simulation to get results
+    sim_result = simulate_budget_optimization(
+        scenario_type=data.scenario_type,
+        user_type=data.user_type,
+        projection_months=data.projection_months,
+        income=data.income.model_dump(),
+        expenses=data.expenses.model_dump(),
+        savings_goals=data.savings_goals.model_dump(),
+        what_if_factors=data.what_if_factors.model_dump()
+    )
+    sim_data = sim_result["data"]
+
     with get_session() as session:
         scenario = BudgetOptimizationModel(
             scenario_type=data.scenario_type,
@@ -82,15 +95,15 @@ def save_budget_optimization_to_db(data: BudgetOptimizationInput):
             expenses=data.expenses.model_dump(),
             savings_goals=data.savings_goals.model_dump(),
             what_if_factors=data.what_if_factors.model_dump(),
-            chart_data=data.chart_data,
-            key_metrics=data.key_metrics,
-            insight=data.insight
+            chart_data=sim_data.get("chart_data"),
+            key_metrics=sim_data.get("key_metrics"),
+            insight=sim_data.get("insight")
         )
 
         session.add(scenario)
         session.commit()
         session.refresh(scenario)
-        
+
     return {"id": scenario.id}
 
 
