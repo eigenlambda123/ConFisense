@@ -231,14 +231,12 @@ def simulate_debt_management(
         "expected_roi": expected_roi
     }
 
-    # Insight
     insight = (
         f"Over the projected period, your MSME's cash position will change based on operating cash flows and debt repayments. "
         f"Total interest paid: ₱{total_interest_paid:,.2f}. Total principal repaid: ₱{total_principal_paid:,.2f}. "
         f"Ending cash position: ₱{ending_cash:,.2f}. Consider optimizing loan terms or reinvestment rates to improve liquidity."
     )
 
-    # Show my math
     show_my_math = [
         "Total Cash Inflow = Monthly Revenue",
         "Total Cash Outflow = Operating Expenses + Loan Interest Payments",
@@ -259,6 +257,116 @@ def simulate_debt_management(
                 "growth_needs": growth_needs,
                 "proposed_financing": proposed_financing,
                 "reinvestment_rate": reinvestment_rate
+            },
+            "chart_data": chart_data,
+            "key_metrics": key_metrics,
+            "insight": insight,
+            "show_my_math": show_my_math
+        }
+    }
+
+    return response
+
+
+
+def simulate_wealth_building(
+    goal_name,
+    current_age,
+    target_age,
+    target_amount,
+    current_savings,
+    monthly_contribution,
+    annual_contribution_increase=0,
+    expected_annual_return=0.07,
+    inflation_rate=0.035,
+    risk_profile="Moderate",
+    advisor_fee_percent=0
+):
+    years_to_goal = target_age - current_age
+    months_to_goal = years_to_goal * 12
+    monthly_return = (expected_annual_return - advisor_fee_percent / 100) / 12
+    inflation_adjustment = (1 + inflation_rate) ** years_to_goal
+
+    # Future Value of Initial Savings
+    FV_initial = current_savings * ((1 + monthly_return) ** months_to_goal)
+
+    # Future Value of Contributions (growing annuity if annual increase)
+    FV_contributions = 0
+    current_monthly_contribution = monthly_contribution
+    for year in range(years_to_goal):
+        for month in range(12):
+            months_remaining = months_to_goal - (year * 12 + month)
+            FV_contributions += current_monthly_contribution * ((1 + monthly_return) ** months_remaining)
+        current_monthly_contribution *= (1 + annual_contribution_increase)
+
+    total_projected_value = FV_initial + FV_contributions
+    inflation_adjusted_target = target_amount / inflation_adjustment
+    projected_shortfall = total_projected_value - inflation_adjusted_target
+
+    # Chart Data (stacked area)
+    chart_data = []
+    cumulative_contributions = 0
+    cumulative_growth = current_savings
+    current_monthly_contribution = monthly_contribution
+    for year in range(years_to_goal + 1):
+        for month in range(12):
+            if year * 12 + month > months_to_goal:
+                break
+            cumulative_contributions += current_monthly_contribution
+            cumulative_growth = cumulative_growth * (1 + monthly_return) + current_monthly_contribution
+        chart_data.append({
+            "year": current_age + year,
+            "cumulative_contributions": cumulative_contributions,
+            "cumulative_growth": cumulative_growth,
+            "total": cumulative_contributions + cumulative_growth
+        })
+        current_monthly_contribution *= (1 + annual_contribution_increase)
+
+    percent_from_growth = (FV_initial + FV_contributions - cumulative_contributions) / total_projected_value * 100 if total_projected_value else 0
+
+    key_metrics = {
+        "future_value_initial": FV_initial,
+        "future_value_contributions": FV_contributions,
+        "total_projected_value": total_projected_value,
+        "inflation_adjusted_target": inflation_adjusted_target,
+        "projected_shortfall": projected_shortfall,
+        "percent_from_growth": round(percent_from_growth, 2)
+    }
+
+    # Insight
+    insight = (
+        f"Based on your client's goal of ₱{target_amount:,.2f} for '{goal_name}' by age {target_age}, "
+        f"their current savings and projected contributions will result in a projected "
+        f"{'shortfall' if projected_shortfall < 0 else 'surplus'} of ₱{abs(projected_shortfall):,.2f} in real (inflation-adjusted) terms. "
+        f"The chart illustrates that {key_metrics['percent_from_growth']}% of their projected wealth will come from investment growth, "
+        f"emphasizing the importance of consistent investing. To close this gap and ensure a high probability of reaching their goal, "
+        f"our AI suggests either increasing their monthly contribution or considering a portfolio with a higher target return, "
+        f"which implies a {risk_profile.lower()} risk profile. This provides clear, data-driven options for client discussion."
+    )
+
+    show_my_math = [
+        "Future Value of Initial Savings (FV_initial) = Initial Savings * (1+Expected Annual Return)^(Years to Goal)",
+        "Future Value of Contributions (FV_contributions) = Sum of each monthly contribution compounded to target date",
+        "Total Projected Value = FV_initial + FV_contributions",
+        "Inflation-Adjusted Target = Target Amount / (1+Inflation Rate)^(Years to Goal)",
+        "Projected Shortfall/Surplus = Total Projected Value - Inflation-Adjusted Target"
+    ]
+
+    response = {
+        "status": "success",
+        "data": {
+            "inputs_received": {
+                "goal_name": goal_name,
+                "current_age": current_age,
+                "target_age": target_age,
+                "target_amount": target_amount,
+                "current_savings": current_savings,
+                "monthly_contribution": monthly_contribution,
+                "annual_contribution_increase": annual_contribution_increase,
+                "expected_annual_return": expected_annual_return,
+                "inflation_rate": inflation_rate,
+                "risk_profile": risk_profile,
+                "advisor_fee_percent": advisor_fee_percent
             },
             "chart_data": chart_data,
             "key_metrics": key_metrics,
