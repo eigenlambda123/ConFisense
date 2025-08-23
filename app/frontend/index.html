@@ -122,12 +122,7 @@
                 <div id="explain" class="dashboard-widget">
                     <h2 class="widget-title">AI-Powered Explanation</h2>
                     <hr class="widget-line">
-                    <div id="explanation" class="widget-container ai-text-container skeleton-text-container">
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                    </div>
+                    <div id="explanation" class="widget-container ai-text-container"></div>
                     <div class="widget-btns">
                         <button id="suggest-btn" class="widget-btn main-btn">
                             Suggest Next Steps
@@ -137,12 +132,7 @@
                 <div id="suggest" class="dashboard-widget">
                     <h2 class="widget-title">Suggested Action Steps</h2>
                     <hr class="widget-line">
-                    <div id="suggestions" class="widget-container ai-text-container skeleton-text-container">
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                    </div>
+                    <div id="suggestions" class="widget-container ai-text-container"></div>
                 </div>
             </div>
         </div>
@@ -153,20 +143,18 @@
         <button id="close-msg-btn">Close</button>
     </div>
 
-    <template id="graph-tab-template">
-        <div class="tab-container">
-            <label class="tab-label"></label>
-            <button class="tab-dlt-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-    </template>
     <template id="field-template">
         <div>
             <label class="input-label"></label>
             <input class="input-field">
+        </div>
+    </template>
+    <template id="skeleton-loader-template">
+        <div class="skeleton-text-container">
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
         </div>
     </template>
     <template id="ai-response-template">
