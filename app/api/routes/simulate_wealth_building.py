@@ -33,3 +33,26 @@ def simulate_wealth_building_route(data: WealthBuildingInput):
     )
 
     return result
+
+
+
+@router.post("/wealth-building/save")
+def save_wealth_building_to_db(data: WealthBuildingInput):
+    with get_session() as session:
+        scenario = WealthBuildingModel(
+            goal_name=data.goal_name,
+            current_age=data.current_age,
+            target_age=data.target_age,
+            target_amount=data.target_amount,
+            current_savings=data.current_savings,
+            monthly_contribution=data.monthly_contribution,
+            annual_contribution_increase=data.annual_contribution_increase,
+            expected_annual_return=data.expected_annual_return,
+            inflation_rate=data.inflation_rate,
+            risk_profile=data.risk_profile,
+            advisor_fee_percent=data.advisor_fee_percent
+        )
+        session.add(scenario)
+        session.commit()
+        session.refresh(scenario)
+    return {"id": scenario.id}
