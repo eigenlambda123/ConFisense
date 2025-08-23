@@ -19,7 +19,7 @@ const field = (id, label, category, min, step, def, type='number') => ({id, labe
 const scenariosConfig = {
     budget_optimization: {
         label: "Manage My Family's Budget",
-        endpoint: "/simulate/budget-optimization",
+        endpoint: "/budget-optimization",
         fields: [
             // General Parameters
             field("projection_months", "Projection Months", "General", 12, 1, 12),
@@ -62,7 +62,7 @@ const scenariosConfig = {
     },
     budgeting: {
         label: "Plan Business Growth & Debt",
-        endpoint: "/simulate/",
+        endpoint: "",
         fields: [],
     },
     debt_management: {
@@ -226,7 +226,7 @@ function showDashboard(buttonElement) {
     console.log('Opening dashboard...');
     openDashboard();
     clearChartTitle();
-    //clearAIResponses();
+    clearAIResponses();
     renderChart(currentScenario);
 }
 
@@ -236,7 +236,7 @@ function showHome() {
     scenarioTitleElement.textContent = '';
     closeDashboard();
     clearChartTitle();
-    //clearAIResponses();
+    clearAIResponses();
     destroyChart();
 }
 
@@ -296,7 +296,7 @@ async function runSimulation(endpoint, params) {
         console.log('Running simulation...');
 
         // Send a POST request to the FastAPI backend
-        const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
+        const response = await fetch(`http://127.0.0.1:8000/simulate${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // Ensure backend interprets body as JSON
@@ -330,11 +330,30 @@ async function runSimulation(endpoint, params) {
     }
 }
 
-async function fetchAndRenderAIExplanation() {
+// Get a reference to the skeleton template
+const skeletonTemplate = document.getElementById('skeleton-loader-template');
+
+async function fetchAndRenderAIExplanation(endpoint) {
+    // Clear previous content and clone the skeleton template
+    exContainer.style.display = 'block';
+    exContainer.innerHTML = '';
+    exContainer.appendChild(skeletonTemplate.content.cloneNode(true));
+
+    console.log(`http://127.0.0.1:8000${endpoint}/ai-explanation`);
     try {
         console.log('Fetching AI Explanation...');
-        const explanationResult = await getEmergencyFundAIExplaination();
-        const ai_explanation = explanationResult.ai_explanation || 'No explanation available.';
+        const response = await fetch(`http://127.0.0.1:8000${endpoint}/ai-explanation`, {
+            method: 'GET',
+        });
+
+        // Throw error if request didn't succeed
+        if (!response.ok) throw new Error('Request failed');
+
+        // Parse backend JSON response (contains simulation results)
+        const result = await response.json();
+        const explanation = result.data.explanation_text || 'No explanation available.';
+
+        console.log(explanation);
 
         // Grab reusable AI response template from DOM (for explanation and suggestions)
         const aiResponseTemplate = document.getElementById('ai-response-template');
@@ -343,23 +362,36 @@ async function fetchAndRenderAIExplanation() {
             return;
         }
 
-        exContainer.innerHTML = '';
-
         const explanationNode = aiResponseTemplate.content.cloneNode(true);
-        explanationNode.querySelector('p').textContent = ai_explanation;
-        exContainer.appendChild(explanationNode);
-    }
+        explanationNode.querySelector('p').textContent = explanation;
 
-    catch (error) {
-        console.error('Error fetching AI explanation:', error);
+        exContainer.innerHTML = ''; // Clear skeleton
+        exContainer.appendChild(explanationNode);
+
+    } 
+    catch (err) {
+        console.error('Fetch error:', err);
     }
 }
 
-async function fetchAndRenderAISuggestions() {
+async function fetchAndRenderAISuggestions(endpoint) {
+    // Clear previous content and clone the skeleton template
+    suContainer.style.display = 'block';
+    suContainer.innerHTML = '';
+    suContainer.appendChild(skeletonTemplate.content.cloneNode(true));
+
     try {
         console.log('Fetching AI Suggestions...');
-        const suggestionResult = await getEmergencyFundAISuggestion();
-        const ai_suggestions = suggestionResult.ai_suggestions || [];
+        const response = await fetch(`http://127.0.0.1:8000${endpoint}/ai-suggestions`, {
+            method: 'GET',
+        });
+
+        // Throw error if request didn't succeed
+        if (!response.ok) throw new Error('Request failed');
+
+        // Parse backend JSON response (contains simulation results)
+        const result = await response.json();
+        const suggestions = result.data.actionable_recommendations || [];
 
         // Grab reusable AI response template from DOM (for explanation and suggestions)
         const aiResponseTemplate = document.getElementById('ai-response-template');
@@ -368,13 +400,13 @@ async function fetchAndRenderAISuggestions() {
             return;
         }
 
-        suContainer.innerHTML = '';
-
         // AI suggestions
         const suggestionsNode = aiResponseTemplate.content.cloneNode(true);
-        suggestionsNode.querySelector('p').textContent = Array.isArray(ai_suggestions) && ai_suggestions.length > 0
-            ? ai_suggestions.join('\n\n\n') // Joins array elements with two newlines for readability
+        suggestionsNode.querySelector('p').textContent = Array.isArray(suggestions) && suggestions.length > 0
+            ? suggestions.join('\n\n\n') // Joins array elements with two newlines for readability
             : "No specific suggestions available at this time."; // Fallback if array is empty or not an array
+
+        suContainer.innerHTML = ''; // Clear skeleton    
         suContainer.appendChild(suggestionsNode);
     }
 
@@ -387,6 +419,8 @@ function clearAIResponses() {
     // Clear previous AI responses before injecting new ones
     exContainer.innerHTML = '';
     suContainer.innerHTML = '';
+    exContainer.style.display = 'none';
+    suContainer.style.display = 'none';
     console.log('AI responses cleared.');
 }
 
@@ -437,7 +471,7 @@ document.getElementById('simulate-btn').addEventListener('click', async (event) 
 });
 
 document.getElementById('explain-btn').addEventListener('click', async (event) => {
-    await fetchAndRenderAIExplanation();
+    await fetchAndRenderAIExplanation(currentScenarioEndpoint);
 });
 
 document.getElementById('math-btn').addEventListener('click', async (event) => {
@@ -453,7 +487,7 @@ document.getElementById('download-btn').addEventListener('click', async (event) 
 });
 
 document.getElementById('suggest-btn').addEventListener('click', async (event) => {
-    await fetchAndRenderAISuggestions();
+    await fetchAndRenderAISuggestions(currentScenarioEndpoint);
 });
 
 document.getElementById('close-msg-btn').addEventListener('click', function() {
