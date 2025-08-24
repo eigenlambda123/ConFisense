@@ -498,7 +498,6 @@ aside.active { width: 100%; }
 }
 
 #msg-box p {
-    text-align: left;
     font-family: "HPSimplified";
     font-size: 1.25rem;
 }
