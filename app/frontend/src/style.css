@@ -404,7 +404,13 @@ aside.active { width: 100%; }
 }
 
 #clear-btn {
+    color: white;
     background-color: #a53535;
+}
+
+#wipe-history-btn {
+    color: white;
+    background-color: #c61616;
 }
 
 #math-btn {
@@ -413,12 +419,13 @@ aside.active { width: 100%; }
 }
 
 #download-btn {
+    color: white;
     background-color: #399139;
 }
 
-#download-btn svg, #clear-btn svg {
-    width: 1.5rem;
-    height: 1.5rem;
+#clear-btn svg, #wipe-history-btn svg, #math-btn svg, #download-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
     fill: none;
     stroke-width: 2px;
     stroke: white;
@@ -491,6 +498,7 @@ aside.active { width: 100%; }
 }
 
 #msg-box p {
+    text-align: left;
     font-family: "HPSimplified";
     font-size: 1.25rem;
 }
@@ -525,6 +533,11 @@ aside.active { width: 100%; }
 .download-msg-box button { color: white }
 .download-msg-box button:hover { color: #399139 }
 .download-msg-box p { text-align: center }
+
+.wipe-history-msg-box { background-color: #c61616 }
+.wipe-history-msg-box button { color: white }
+.wipe-history-msg-box button:hover { color: #c61616 }
+.wipe-history-msg-box p { text-align: center }
 
 @keyframes skeleton-loading {
     0% { background-color: var(--dark-gray-blue) }
@@ -593,6 +606,7 @@ aside.active { width: 100%; }
     aside.active { width: 80% } 
 }
 
+/* For extra large screens */
 @media (min-width: 1440px) {
     #home-container { padding: 1rem 3rem 6rem 3rem }
     #dashboard-container { padding: 1rem 3rem 6rem 3rem }
