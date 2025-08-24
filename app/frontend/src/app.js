@@ -451,7 +451,6 @@ function areInputFieldsEmpty() {
     for (const field of fields) {
         if (field.value === null || field.value === '') {
             // An empty string or null can indicate emptiness
-            console.log('An input field is empty.')
             return true;
         }
     }
@@ -534,7 +533,10 @@ document.getElementById('download-btn').addEventListener('click', function() {
     }
     catch (error) {
         console.error("PDF download failed:", error);
-        showMessage('Download Report is not available right now.' ,'download-msg-box');
+        showMessage(
+            'To download a report, please first run a simulation, then generate the AI explanation and suggestions.' ,
+            'download-msg-box'
+        );
     }
 });
 
