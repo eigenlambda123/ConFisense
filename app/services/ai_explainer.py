@@ -1,31 +1,28 @@
-from dotenv import load_dotenv
 import os
-import cohere
-import tiktoken
+import google.generativeai as genai
 import logging
+from dotenv import load_dotenv
 
-# CONFIG
+# Load .env file
 load_dotenv()
-key = os.getenv("COHERE_API_KEY")
-if not key:
-    raise RuntimeError("COHERE_API_KEY is missing in .env")
 
-co = cohere.Client(key)
+# Get API key from environment variable
+api_key = os.getenv("GEMINI_API_KEY")
 
-MAX_CONTEXT_TOKENS = 4096  # Adjust per model
-MAX_OUTPUT_TOKENS = 1000   # Upper bound for explanation
+# Configure Gemini with the key
+genai.configure(api_key=api_key)
+
+# Instantiate the model once
+model = genai.GenerativeModel('gemini-1.5-flash')
+
+MAX_CONTEXT_TOKENS = 4096 
+MAX_OUTPUT_TOKENS = 1000
 MAX_SUGGESTION_TOKENS = 120
-
-tokenizer = tiktoken.get_encoding("cl100k_base")  # Approx for Cohere
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # UTILITIES
-def count_tokens(text: str) -> int:
-    """Count tokens in a string using tiktoken."""
-    return len(tokenizer.encode(text or ""))
-
 def peso_wrap_prompt(prompt: str) -> str:
     """Ensure Philippine peso clarification is added."""
     return (
@@ -37,15 +34,30 @@ def peso_wrap_prompt(prompt: str) -> str:
 # AI response Settings
 def generate_response(prompt: str) -> str:
     peso_prompt = peso_wrap_prompt(prompt)
-    prompt_tokens = count_tokens(peso_prompt)
-    available = MAX_CONTEXT_TOKENS - prompt_tokens
-    max_output_tokens = min(1200, available)  # be conservative
-
-    response = co.generate(
-        model="command",
-        prompt=peso_prompt,
-        max_tokens=max_output_tokens,
-        temperature=0.7,
-        truncate="END"
-    )
-    return response.generations[0].text.strip()
+    
+    try:
+        # Use the pre-instantiated model's token counter
+        prompt_tokens = model.count_tokens(peso_prompt).total_tokens
+        
+        available = MAX_CONTEXT_TOKENS - prompt_tokens
+        # Gemini uses max_output_tokens for max_tokens
+        max_output_tokens = min(1200, available)
+        
+        # Check if there is enough context space for a response
+        if max_output_tokens <= 0:
+            logger.warning("Not enough token capacity for a response.")
+            return "Unable to generate a response due to prompt size."
+            
+        response = model.generate_content(
+            contents=peso_prompt,
+            generation_config=genai.GenerationConfig(
+                temperature=0.7,
+                max_output_tokens=max_output_tokens,
+            )
+        )
+        # The generated text is in the 'text' attribute of the response
+        return response.text.strip()
+    
+    except Exception as e:
+        logger.error(f"Gemini API error: {e}")
+        return "An error occurred while generating the AI explanation."
