@@ -1,7 +1,7 @@
 import { 
     renderChart, 
     destroyChart, 
-    addDatasets,
+    addChartData,
     getExplanation,
     getSuggestions,
     exportChart
@@ -209,19 +209,19 @@ function showDashboard(buttonElement) {
     });
 
     // Toggle home to dashboard
-    console.log('Opening dashboard...');
     openDashboard();
     clearAIResponses();
     renderChart(currentScenario);
+    console.log('Dashboard opened.');
 }
 
 function showHome() {
     // Toggle dashboard to home
-    console.log('Closing dashboard...');
     scenarioTitleElement.textContent = '';
     closeDashboard();
     clearAIResponses();
     destroyChart();
+    console.log('Dashboard closed.');
 }
 
 // Only for budget optimization for now
@@ -274,7 +274,6 @@ const buildRequestBody = (flatData) => {
 
 async function runSimulation(endpoint, params) {
     const requestBody = buildRequestBody(params); // Prepare request payload
-    console.log(requestBody); // FOR DEBUGGING
 
     try {
         // Send a POST request to the FastAPI backend
@@ -299,11 +298,11 @@ async function runSimulation(endpoint, params) {
 
         console.log('Simulation successful:', result);
 
-        addDatasets(chartData);
+        addChartData(chartData);
         saveToDatabase(endpoint, requestBody);
 
     } catch (err) {
-        console.error('Fetch error:', err);
+        console.error('Error fetching simulation:', err);
     }
 }
 
@@ -324,7 +323,7 @@ async function saveToDatabase(endpoint, requestBody) {
         console.log('Data saved successfully.');
 
     } catch (err) {
-        console.error('Fetch error:', err);
+        console.error('Error fetching database:', err);
     }
 }
 
