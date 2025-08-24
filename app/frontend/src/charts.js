@@ -1,4 +1,4 @@
-// Global Chart.js defaults applied to all charts for consistent styles and typography
+// Global Chart.js defaults applied to all charts
 Chart.defaults.set({
     font: {
         family: 'Roboto, sans-serif',
@@ -7,8 +7,8 @@ Chart.defaults.set({
     plugins: {
         legend: {
             display: true,
-            position: 'top', // 'top', 'bottom', 'left', 'right'
-            align: 'center', // 'start', 'center', 'end'
+            position: 'top',
+            align: 'center',
         },
         title: {
             color: '#060e27',
@@ -77,6 +77,8 @@ let chart = null;
 // Different scenarios may use different visualizations
 const chartTypeConfig = {
     budget_optimization: 'bar',
+    debt_management: '',
+    wealth_building: ''
 };
 
 // Initial dataset structure for each scenario
@@ -85,8 +87,10 @@ const chartDataConfig = {
         labels: [],
         datasets: [
             {}
-        ],
+        ]
     },
+    debt_management: {},
+    wealth_building: {}
 }
 
 // Consiguration for chart behavior and visuals per scenario
@@ -121,11 +125,8 @@ const chartSettingsConfig = {
             }
         }
     },
-    
-    budgeting: {
-        responsive: true,
-        maintainAspectRatio: false,
-    },
+    debt_management: {},
+    wealth_building: {}
 
 };
 
@@ -162,9 +163,6 @@ export function renderChart(scenario) {
         options: chartSettings,
     });
 }
-
-let datasetCounter = 1;
-const activeScenariosContainer = document.getElementById('active-graphs');
 
 export function addDatasets(data) {
     if (!chart) {
@@ -208,24 +206,7 @@ export function addDatasets(data) {
     console.log("Datasets: ", chart.data.datasets);
 
     chart.update();
-}
-
-export function updateChartTitle(summary) {
-    // Update chart title dynamically with scenario summary
-    if (chart) {
-        chart.options.plugins.title.text = summary;
-        chart.update();
-        console.log('Chart title updated.')
-    }
-}
-
-export function clearChartTitle() {
-    if (chart) {
-        // Clear chart title when exiting dashboard
-        chart.options.plugins.title.text = '';
-        chart.update();
-        console.log('Chart title cleared.')
-    }
+    console.log("Datasets successfully added.");
 }
 
 export function updateChart(labels) {
@@ -244,10 +225,67 @@ export function destroyChart() {
 
     chart.destroy(); // Properly dispose Chart.js instance
 
-     // Clear the global chartData's datasets and labels
+     // Clear global chartData's datasets and labels
     chart.data.datasets = [];
     chart.data.labels = [];
 
     console.log('Chart instance destroyed.');
     chart = null; // Explicitly set to null immediately after destruction
+}
+
+// Retrieve explanation text after API fetch
+let explanation;
+export function getExplanation(explanationText) {
+    explanation = explanationText;
+}
+
+// Retrieve suggestions array after API fetch
+let suggestions;
+export function getSuggestions(suggestionsArray) {
+    suggestions = suggestionsArray;
+}
+
+export function exportChart() {
+    if (!chart) {
+        throw new Error("Chart is not available");
+    }
+    if (!explanation) {
+        throw new Error("Explanation is not available");
+    }
+    if (!suggestions || suggestions.length === 0) {
+        throw new Error("Suggestions are not available or are empty");
+    }
+    
+    const chartImage = chart.toBase64Image(); // Convert chart instance into base64 image
+
+    // Define structure and content of PDF
+    const docDefinition = {
+        content: [
+            // Title of report
+            { text: 'Simulation Report', style: 'header' },
+
+            // Embed chart image
+            { image: chartImage, width: 500 },
+
+            // Subheading for the explanation section
+            { text: 'AI-Powered Explanation:', style: 'subheader' },
+
+            // Explanation text with bottom margin
+            { text: explanation, margin: [0, 0, 0, 10] },
+
+            // Subheading for suggestions section
+            { text: 'AI-Powered Suggestions:', style: 'subheader' },
+
+            // Renders suggestions array as bullet list automatically
+            { ul: suggestions }
+        ],
+        // Define reusable styles for headings and subheadin
+        styles: {
+            header: { fontSize: 18, bold: true, alignment: 'center', margin: [0, 0, 0, 20] },
+            subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] }
+        }
+    };
+
+    // Create and trigger download of the PDF
+    pdfMake.createPdf(docDefinition).download("report.pdf");
 }
