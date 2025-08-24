@@ -450,6 +450,12 @@ aside.active { width: 100%; }
     font-size: 1rem;
 }
 
+.ai-suggestions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .skeleton {
     opacity: 0.7;
     animation: skeleton-loading 1s linear infinite alternate;
