@@ -1,9 +1,10 @@
 import { 
     renderChart, 
     destroyChart, 
-    addDatasets, 
-    updateChartTitle, 
-    clearChartTitle
+    addDatasets,
+    getExplanation,
+    getSuggestions,
+    exportChart
 } from "./charts.js";
 
 // Global states
@@ -58,33 +59,18 @@ const scenariosConfig = {
             field('income_growth_rate', 'Income Growth Rate (%)', "What-If Factors (Monthly)", 0, 100, 0),
             field('wants_reduction_rate', 'Wants Reduction Rate (%)', "What-If Factors (Monthly)", 0, 100, 0),
             field('savings_increase_rate', 'Savings Increase Rate (%)', "What-If Factors (Monthly)", 0, 100, 0)
-        ],
-    },
-    budgeting: {
-        label: "Plan Business Growth & Debt",
-        endpoint: "",
-        fields: [],
+        ]
     },
     debt_management: {
+        label: "Plan Business Growth & Debt",
+        endpoint: "/simulate/debt-management",
+        fields: []
+    },
+    wealth_building: {
         label: "Grow My Client's Wealth",
-        endpoint: "/simulate/",
-        fields: [],
-    },
-    investing: {
-        label: "Plan for the Future",
-        endpoint: "/simulate/",
-        fields: [],
-    },
-    education_funding: {
-        label: "Manage My Capital",
-        endpoint: "/simulate/",
-        fields: [],
-    },
-    major_purchase: {
-        label: "Analyze Client Portfolios",
-        endpoint: "/simulate/",
-        fields: [],
-    },
+        endpoint: "/simulate/wealth-building",
+        fields: []
+    }
 };
 
 // Prepare DOM elements
@@ -225,7 +211,6 @@ function showDashboard(buttonElement) {
     // Toggle home to dashboard
     console.log('Opening dashboard...');
     openDashboard();
-    clearChartTitle();
     clearAIResponses();
     renderChart(currentScenario);
 }
@@ -235,7 +220,6 @@ function showHome() {
     console.log('Closing dashboard...');
     scenarioTitleElement.textContent = '';
     closeDashboard();
-    clearChartTitle();
     clearAIResponses();
     destroyChart();
 }
@@ -289,13 +273,12 @@ const buildRequestBody = (flatData) => {
 };
 
 async function runSimulation(endpoint, params) {
-    const apiURL = `http://127.0.0.1:8000/simulate${endpoint}`;
     const requestBody = buildRequestBody(params); // Prepare request payload
     console.log(requestBody); // FOR DEBUGGING
 
     try {
         // Send a POST request to the FastAPI backend
-        const response = await fetch(apiURL, {
+        const response = await fetch(`http://127.0.0.1:8000/simulate${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // Ensure backend interprets body as JSON
@@ -306,8 +289,6 @@ async function runSimulation(endpoint, params) {
         // Throw error if request didn't succeed
         if (!response.ok) throw new Error('Request failed');
 
-        console.log(`Simulation successful: ${apiURL}`);
-
         // Parse backend JSON response (contains simulation results)
         const result = await response.json();
         const chartData = result.data.chart_data;
@@ -315,14 +296,8 @@ async function runSimulation(endpoint, params) {
         const insight = result.data.insight;
         const keyMetrics = result.data.key_metrics;
         formulas = result.data.show_my_math;
-        
-        // FOR DEBUGGING
-        console.log('Result: ', result);
-        console.log('Chart Data: ', chartData);
-        console.log('Insight: ', insight);
-        console.log('Key Metrics: ', keyMetrics);
-        console.log('Inputs Received: ', inputsReceived);
-        console.log('Formulas: ', formulas); 
+
+        console.log('Simulation successful:', result);
 
         addDatasets(chartData);
         saveToDatabase(endpoint, requestBody);
@@ -333,13 +308,12 @@ async function runSimulation(endpoint, params) {
 }
 
 async function saveToDatabase(endpoint, requestBody) {
-    const apiURL = `http://127.0.0.1:8000${endpoint}/save`;
     try {
         // Send a POST request to the FastAPI backend
-        const response = await fetch(apiURL, {
+        const response = await fetch(`http://127.0.0.1:8000${endpoint}/save`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Ensure backend interprets body as JSON
+                'Content-Type': 'application/json' // Ensure backend interprets body as JSON
             },
             body: JSON.stringify(requestBody) // Pass scenario parameters to backend
         });
@@ -347,7 +321,7 @@ async function saveToDatabase(endpoint, requestBody) {
         // Throw error if request didn't succeed
         if (!response.ok) throw new Error('Request failed');
 
-        console.log(`Data saved successfully: ${apiURL}`);
+        console.log('Data saved successfully.');
 
     } catch (err) {
         console.error('Fetch error:', err);
@@ -375,7 +349,7 @@ async function fetchAndRenderAIExplanation(endpoint) {
     try {
         console.log('Fetching AI Explanation...');
         const response = await fetch(`http://127.0.0.1:8000${endpoint}/ai-explanation`, {
-            method: 'GET',
+            method: 'GET'
         });
 
         // Throw error if request didn't succeed
@@ -385,7 +359,8 @@ async function fetchAndRenderAIExplanation(endpoint) {
         const result = await response.json();
         const explanation = result.data.explanation_text || 'No explanation available.';
 
-        console.log(explanation);
+        console.log('Explanation fetch successful:',explanation);
+        getExplanation(explanation);
 
         explanationNode.querySelector('p').textContent = explanation;
     }
@@ -422,7 +397,7 @@ async function fetchAndRenderAISuggestions(endpoint) {
     try {
         console.log('Fetching AI Suggestions...');
         const response = await fetch(`http://127.0.0.1:8000${endpoint}/ai-suggestions`, {
-            method: 'GET',
+            method: 'GET'
         });
 
         // Throw error if request didn't succeed
@@ -433,8 +408,8 @@ async function fetchAndRenderAISuggestions(endpoint) {
         const suggestions = result.data.suggestions_text || [];
         const suggestionsArray = suggestions.split('\n\n');
 
-        console.log(suggestions);
-        console.log(suggestionsArray);
+        console.log('Suggestions fetch successful:',suggestions);
+        getSuggestions(suggestionsArray);
 
         // Clear placeholder content
         containerDiv.innerHTML = '';
@@ -474,17 +449,35 @@ function clearAIResponses() {
 // Helper function to check if any input fields are empty
 function areInputFieldsEmpty() {
     for (const field of fields) {
-        // Trim whitespace for text inputs before checking for emptiness
-        if (field.type === 'text' || field.type === 'color') {
-            if (field.value.trim() === '') {
-                return true;
-            }
-        } else if (field.value === null || field.value === '') {
-            // For number inputs, an empty string or null can indicate emptiness
+        if (field.value === null || field.value === '') {
+            // An empty string or null can indicate emptiness
+            console.log('An input field is empty.')
             return true;
         }
     }
     return false;
+}
+
+async function wipeDBHistory(endpoint) {
+    try {
+        console.log('Fetching AI Explanation...');
+        const response = await fetch(`http://127.0.0.1:8000${endpoint}/delete-all`, {
+            method: 'DELETE'
+        });
+
+        // Throw error if request didn't succeed
+        if (!response.ok) throw new Error('Request failed');
+
+        // Parse backend JSON response (contains simulation results)
+        const result = await response.json();
+        const message = result.message;
+
+        console.log('Wipe successful:', message);
+    }
+
+    catch (err) {
+        console.error('Error wiping database history:', err);
+    }
 }
 
 // Attach click handler to all scenario card buttons at home
@@ -505,6 +498,12 @@ document.getElementById('clear-btn').addEventListener('click', function() {
         input.value = null;
     });
     console.log("Fields cleared.");
+})
+
+document.getElementById('wipe-history-btn').addEventListener('click', function() {
+    // Wipe database history
+    wipeDBHistory(currentScenarioEndpoint);
+    showMessage("History wiped.", 'wipe-history-msg-box');
 })
 
 document.getElementById('simulate-btn').addEventListener('click', async (event) => {
@@ -529,8 +528,14 @@ document.getElementById('math-btn').addEventListener('click', async (event) => {
     showMessage(`Formulas Used<br><br>${formulas.join('<br><br>')}` ,'math-msg-box');
 });
 
-document.getElementById('download-btn').addEventListener('click', async (event) => {
-    showMessage('Download Report is not available right now.' ,'download-msg-box');
+document.getElementById('download-btn').addEventListener('click', function() {
+    try {
+        exportChart();
+    }
+    catch (error) {
+        console.error("PDF download failed:", error);
+        showMessage('Download Report is not available right now.' ,'download-msg-box');
+    }
 });
 
 document.getElementById('suggest-btn').addEventListener('click', async (event) => {
