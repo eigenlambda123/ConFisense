@@ -130,6 +130,7 @@ const chartSettingsConfig = {
 
 };
 
+// Renders new Chart.js instance on canvas based on selected scenario
 export function renderChart(scenario) {
     console.log(scenario);
     const ctx = document.getElementById('chart-canvas');
@@ -164,7 +165,8 @@ export function renderChart(scenario) {
     });
 }
 
-export function addDatasets(data) {
+// Adds new chart data to active chart after simulation is run
+export function addChartData(data) {
     if (!chart) {
         console.error('Chart not initialized.')
         return;
@@ -233,18 +235,19 @@ export function destroyChart() {
     chart = null; // Explicitly set to null immediately after destruction
 }
 
-// Retrieve explanation text after API fetch
+// Retrieves explanation text after API fetch
 let explanation;
 export function getExplanation(explanationText) {
     explanation = explanationText;
 }
 
-// Retrieve suggestions array after API fetch
+// Retrieves suggestions array after API fetch
 let suggestions;
 export function getSuggestions(suggestionsArray) {
     suggestions = suggestionsArray;
 }
 
+// Generates and downloads PDF report containing chart and AI-generated insights
 export function exportChart() {
     if (!chart) {
         throw new Error("Chart is not available");
@@ -255,7 +258,7 @@ export function exportChart() {
     if (!suggestions || suggestions.length === 0) {
         throw new Error("Suggestions are not available or are empty");
     }
-    
+
     const chartImage = chart.toBase64Image(); // Convert chart instance into base64 image
 
     // Define structure and content of PDF
