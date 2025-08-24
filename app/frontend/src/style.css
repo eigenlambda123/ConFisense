@@ -495,9 +495,12 @@ aside.active { width: 100%; }
     z-index: 1000;
     box-shadow: 0 4px 6px black;
     display: none;
+    min-width: 20rem;
+    max-width: 30rem;
 }
 
 #msg-box p {
+    text-align: left;
     font-family: "HPSimplified";
     font-size: 1.25rem;
 }
