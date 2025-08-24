@@ -289,14 +289,13 @@ const buildRequestBody = (flatData) => {
 };
 
 async function runSimulation(endpoint, params) {
+    const apiURL = `http://127.0.0.1:8000/simulate${endpoint}`;
     const requestBody = buildRequestBody(params); // Prepare request payload
     console.log(requestBody); // FOR DEBUGGING
 
     try {
-        console.log('Running simulation...');
-
         // Send a POST request to the FastAPI backend
-        const response = await fetch(`http://127.0.0.1:8000/simulate${endpoint}`, {
+        const response = await fetch(apiURL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // Ensure backend interprets body as JSON
@@ -306,6 +305,8 @@ async function runSimulation(endpoint, params) {
 
         // Throw error if request didn't succeed
         if (!response.ok) throw new Error('Request failed');
+
+        console.log(`Simulation successful: ${apiURL}`);
 
         // Parse backend JSON response (contains simulation results)
         const result = await response.json();
@@ -324,6 +325,29 @@ async function runSimulation(endpoint, params) {
         console.log('Formulas: ', formulas); 
 
         addDatasets(chartData);
+        saveToDatabase(endpoint, requestBody);
+
+    } catch (err) {
+        console.error('Fetch error:', err);
+    }
+}
+
+async function saveToDatabase(endpoint, requestBody) {
+    const apiURL = `http://127.0.0.1:8000${endpoint}/save`;
+    try {
+        // Send a POST request to the FastAPI backend
+        const response = await fetch(apiURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // Ensure backend interprets body as JSON
+            },
+            body: JSON.stringify(requestBody) // Pass scenario parameters to backend
+        });
+
+        // Throw error if request didn't succeed
+        if (!response.ok) throw new Error('Request failed');
+
+        console.log(`Data saved successfully: ${apiURL}`);
 
     } catch (err) {
         console.error('Fetch error:', err);
@@ -339,7 +363,15 @@ async function fetchAndRenderAIExplanation(endpoint) {
     exContainer.innerHTML = '';
     exContainer.appendChild(skeletonTemplate.content.cloneNode(true));
 
-    console.log(`http://127.0.0.1:8000${endpoint}/ai-explanation`);
+    // Grab reusable AI response template from DOM (for explanation and suggestions)
+    const aiExplanationTemplate = document.getElementById('ai-explanation-template');
+    if (!aiExplanationTemplate) {
+        console.error('AI response template not found.');
+        return;
+    }
+
+    const explanationNode = aiExplanationTemplate.content.cloneNode(true);
+
     try {
         console.log('Fetching AI Explanation...');
         const response = await fetch(`http://127.0.0.1:8000${endpoint}/ai-explanation`, {
@@ -355,22 +387,18 @@ async function fetchAndRenderAIExplanation(endpoint) {
 
         console.log(explanation);
 
-        // Grab reusable AI response template from DOM (for explanation and suggestions)
-        const aiResponseTemplate = document.getElementById('ai-response-template');
-        if (!aiResponseTemplate) {
-            console.error('AI response template not found.');
-            return;
-        }
-
-        const explanationNode = aiResponseTemplate.content.cloneNode(true);
         explanationNode.querySelector('p').textContent = explanation;
+    }
 
-        exContainer.innerHTML = ''; // Clear skeleton
-        exContainer.appendChild(explanationNode);
-
-    } 
     catch (err) {
-        console.error('Fetch error:', err);
+        console.error('Error fetching AI explanation:', err);
+        explanationNode.querySelector('p').textContent = "Run simulation first";
+    }
+
+    finally {
+        // Replace skeleton with final explanation
+        exContainer.innerHTML = '';
+        exContainer.appendChild(explanationNode);
     }
 }
 
@@ -379,6 +407,17 @@ async function fetchAndRenderAISuggestions(endpoint) {
     suContainer.style.display = 'block';
     suContainer.innerHTML = '';
     suContainer.appendChild(skeletonTemplate.content.cloneNode(true));
+
+    // Grab reusable AI response template from DOM (for explanation and suggestions)
+    const aiSuggestionsTemplate = document.getElementById('ai-suggestions-template');
+    if (!aiSuggestionsTemplate) {
+        console.error('AI response template not found.');
+        return;
+    }
+
+    const suggestionsNode = aiSuggestionsTemplate.content.cloneNode(true);
+    const containerDiv = suggestionsNode.querySelector('div');
+    const baseP = containerDiv.querySelector('p');
 
     try {
         console.log('Fetching AI Suggestions...');
@@ -391,27 +430,35 @@ async function fetchAndRenderAISuggestions(endpoint) {
 
         // Parse backend JSON response (contains simulation results)
         const result = await response.json();
-        const suggestions = result.data.actionable_recommendations || [];
+        const suggestions = result.data.suggestions_text || [];
+        const suggestionsArray = suggestions.split('\n\n');
 
-        // Grab reusable AI response template from DOM (for explanation and suggestions)
-        const aiResponseTemplate = document.getElementById('ai-response-template');
-        if (!aiResponseTemplate) {
-            console.error('AI response template not found.');
-            return;
-        }
+        console.log(suggestions);
+        console.log(suggestionsArray);
 
-        // AI suggestions
-        const suggestionsNode = aiResponseTemplate.content.cloneNode(true);
-        suggestionsNode.querySelector('p').textContent = Array.isArray(suggestions) && suggestions.length > 0
-            ? suggestions.join('\n\n\n') // Joins array elements with two newlines for readability
-            : "No specific suggestions available at this time."; // Fallback if array is empty or not an array
+        // Clear placeholder content
+        containerDiv.innerHTML = '';
 
-        suContainer.innerHTML = ''; // Clear skeleton    
-        suContainer.appendChild(suggestionsNode);
+        // Add each suggestion as a cloned paragraph
+        suggestionsArray.forEach(suggestion => {
+            const pClone = baseP.cloneNode(true);
+            pClone.textContent = suggestion;
+            containerDiv.appendChild(pClone);
+        });
     }
 
     catch (error) {
         console.error('Error fetching AI suggestions:', error);
+        containerDiv.innerHTML = ''; // clear
+        const pClone = baseP.cloneNode(true);
+        pClone.textContent = "Run simulation first"; // fallback message
+        containerDiv.appendChild(pClone);
+    }
+
+    finally {
+        // Replace skeleton with final suggestions
+        suContainer.innerHTML = '';
+        suContainer.appendChild(suggestionsNode);
     }
 }
 
