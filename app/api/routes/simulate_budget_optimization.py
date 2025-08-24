@@ -4,8 +4,7 @@ from app.services.simulation_logic import simulate_budget_optimization
 from app.models.budgeting_optimization_model import BudgetOptimizationModel
 from app.services.ai_explainer import generate_response
 from app.db.session import get_session
-from sqlmodel import select
-import json
+from sqlmodel import select, delete
 
 router = APIRouter()
 
@@ -59,16 +58,24 @@ def save_budget_optimization_to_db(data: BudgetOptimizationInput):
     return {"id": scenario.id}
 
 
-@router.delete("/budget-optimization/{scenario_id}")
-def delete_budget_optimization(scenario_id: int):
-    with get_session() as session:
-        scenario = session.get(BudgetOptimizationModel, scenario_id)
-        if not scenario:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
+# @router.delete("/budget-optimization/{scenario_id}")
+# def delete_budget_optimization(scenario_id: int):
+#     with get_session() as session:
+#         scenario = session.get(BudgetOptimizationModel, scenario_id)
+#         if not scenario:
+#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scenario not found")
         
-        session.delete(scenario)
+#         session.delete(scenario)
+#         session.commit()
+#         return {"message": "Scenario deleted"}
+
+
+@router.delete("/budget-optimization/delete-all")
+def delete_all_budget_optimizations():
+    with get_session() as session:
+        result = session.exec(delete(BudgetOptimizationModel))
         session.commit()
-        return {"message": "Scenario deleted"}
+        return {"message": f"{result.rowcount} scenarios deleted"}
 
 
 @router.get("/budget-optimization/ai-explanation")
@@ -109,35 +116,42 @@ def get_ai_explanation():
         wants_reduction_rate = what_if_factors.get("wants_reduction_rate", 0)
         savings_increase_rate = what_if_factors.get("savings_increase_rate", 0)
 
-        prompt = (
-            "As an expert financial advisor for Filipino families, analyze the provided monthly cash flow projection for a family in Lucena City. "
-            "Focus on their income, expenses (fixed, variable, discretionary), and their net cash flow trend over the projected period. "
-            "Identify key strengths or weaknesses in their spending habits. Explain in natural language, drawing insights specifically from the data. "
-            "Highlight the most significant area of discretionary spending and its impact. Keep it concise, value-adding, and directly based on the numbers provided.\n\n"
-            f"Inputs:\n"
-            f"User profile: Income: ₱{total_monthly_income:,.2f}\n"
-            f"Projected data: Average monthly net income: ₱{total_monthly_income:,.2f}. "
-            f"Average monthly total expenses: ₱{total_monthly_expenses:,.2f}. "
-            f"Average monthly net cash flow: ₱{avg_net_cash_flow:,.2f}. "
-            f"Discretionary spending: ₱{wants_total:,.2f} ({discretionary_spending_percent:.2%} of income). "
-            f"Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}.\n"
-            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months.\n"
-            f"What-if factors: Income growth rate: {income_growth_rate:.2%}, Wants reduction rate: {wants_reduction_rate:.2%}, Savings increase rate: {savings_increase_rate:.2%}."
+        explanation_prompt = (
+            f'''As a financial advisor specializing in helping Filipino families, analyze the following monthly cash flow data.  
+
+            **Output format (IMPORTANT):**  
+            Return ONLY one short paragraph of plain text.  
+            Do not include JSON, Markdown, bullet points, or extra formatting.  
+
+            Guidelines:
+            - Speak directly to the user using "you" and "your," not "this family."
+            - Maximum 3–5 sentences (under 120 words).
+            - Use a warm, conversational tone.
+            - Focus on insights, not repeating the numbers.
+            - Mention their overall financial health, the biggest discretionary spending issue, and one clear recommendation.
+
+            [Data provided below]
+            • Income: ₱{total_monthly_income:,.2f}
+            • Expenses: ₱{total_monthly_expenses:,.2f}
+            • Net Cash Flow: ₱{avg_net_cash_flow:,.2f}
+            • Discretionary spending: ₱{wants_total:,.2f} ({discretionary_spending_percent:.2%})
+            • Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}
+            • Emergency fund target: ₱{emergency_fund_target:,.2f}, current path {emergency_fund_months_current} months
+            • What-if factors: Income growth {income_growth_rate:.2%}, Wants reduction {wants_reduction_rate:.2%}, Savings increase {savings_increase_rate:.2%}
+            '''
         )
 
-        explanation_text = generate_response(prompt)
+        explanation_text = generate_response(explanation_prompt)
 
         return {
             "status": "success",
             "data": {
                 "explanation_text": explanation_text,
                 "model_info": {
-                    "model_name": "cohere-command",
-                    "prompt_version": "v1.0.0"
+                    "model_name": "gemini-1.5-flash"
                 }
             }
         }
-    
     
 
 @router.get("/budget-optimization/ai-suggestions")
@@ -177,53 +191,39 @@ def get_ai_suggestions():
             emergency_fund_target / optimized_monthly_savings if optimized_monthly_savings else "N/A"
         )
 
-        # Get the latest AI insight
-        insight_prompt = (
-            "As an expert financial advisor for Filipino families, analyze the provided monthly cash flow projection for a family in Lucena City. "
-            "Focus on their income, expenses (fixed, variable, discretionary), and their net cash flow trend over the projected period. "
-            "Identify key strengths or weaknesses in their spending habits. Explain in natural language, drawing insights specifically from the data. "
-            "Highlight the most significant area of discretionary spending and its impact. Keep it concise, value-adding, and directly based on the numbers provided.\n\n"
-            f"Inputs:\n"
-            f"User profile: Income: ₱{total_monthly_income:,.2f}\n"
-            f"Projected data: Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}.\n"
-            f"Emergency fund target: ₱{emergency_fund_target:,.2f}. Current path to target: {emergency_fund_months_current} months.\n"
-            f"What-if factors: Income growth rate: {income_growth_rate:.2%}, Wants reduction rate: {wants_reduction_rate:.2%}, Savings increase rate: {savings_increase_rate:.2%}."
-        )
-        ai_insight = generate_response(insight_prompt)
-
         # Build suggestion prompt, instructing the AI to return JSON
         suggestion_prompt = (
-            "Given the financial insights from the cash flow analysis and the goal to reach an emergency fund, "
-            "recommend actionable, next steps for this Filipino family. The suggestions should be practical, easy to understand, "
-            "and directly address the identified weaknesses, particularly regarding discretionary spending. Focus on specific, measurable actions.\n\n"
-            "Return your answer as a JSON array of objects with keys: priority, title, description.\n"
-            f"Inputs:\n"
-            f"Insight: {ai_insight}\n"
-            f"Projected data: Potential monthly savings from 20% reduction in highest discretionary: ₱{potential_increase_in_savings:,.2f}. "
-            f"Optimized path to emergency fund: {emergency_fund_months_optimized} months.\n"
-            f"Emergency Fund Goal: ₱{emergency_fund_target:,.2f}.\n"
-            f"What-if factors: Income growth rate: {income_growth_rate:.2%}, Wants reduction rate: {wants_reduction_rate:.2%}, Savings increase rate: {savings_increase_rate:.2%}."
+            f'''As a financial expert, generate 3 to 5 actionable next steps for a Filipino family in Lucena City
+            to improve their budget and accelerate their savings.
+
+            **Output format (IMPORTANT):**
+            - Return a numbered list of practical suggestions.
+            - Each item should be a complete sentence or two, without any special formatting like bolding.
+            - Do not include any JSON, markdown, or other special formatting.
+
+            **Example Output:**
+            1. Reduce Dining Out: Given your high spending on restaurants, consider packing baon (packed lunch) to work at least three times a week. This could save you up to ₱500 per week.
+            2. Explore Palengke for Groceries: Shop for your produce at the local palengke (wet market) instead of the supermarket. This can reduce your food expenses by 15-20% monthly.
+
+            **Inputs:**
+            • Highest discretionary category: {highest_discretionary_category} at ₱{highest_discretionary_value:,.2f}
+            • Emergency Fund Goal: ₱{emergency_fund_target:,.2f}
+            • Current path to goal: {emergency_fund_months_current} months
+            • Optimized path to goal (20% reduction): {emergency_fund_months_optimized} months
+            • Potential increase in monthly savings: ₱{potential_increase_in_savings:,.2f}
+            '''
         )
 
         raw_suggestions = generate_response(suggestion_prompt)
 
-        # Try to parse the AI output as JSON
-        try:
-            actionable_recommendations = json.loads(raw_suggestions)
-        except Exception:
-            actionable_recommendations = [{
-                "priority": "Info",
-                "title": "AI Suggestion",
-                "description": raw_suggestions
-            }]
+        print('RAW SUGGESTIONS: ', raw_suggestions)
 
         return {
             "status": "success",
             "data": {
-                "actionable_recommendations": actionable_recommendations,
+                "suggestions_text": raw_suggestions,
                 "model_info": {
-                    "model_name": "cohere-command",
-                    "prompt_version": "v1.0.0"
+                    "model_name": "gemini-1.5-flash"
                 }
             }
         }
