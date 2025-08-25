@@ -10,7 +10,7 @@ ConFiSense helps you make sense of complex financial data with ease, providing A
 - 🏠 **Simple Home Page** – Clean landing screen for quick access.
 - 📊 **Interactive Dashboard** – Input your data with an intuitive interface.
 - 📈 **Smart Outputs** – Visual insights presented clearly.
-- 🤖 **AI-Powered Explanations** – Understand your results with contextual insights.
+- 🤖 **AI-Powered Explanations and Suggestions** – Understand your results with contextual insights.
 - 📤 **Easy Export** – Download reports and share them effortlessly.
 
 ---
@@ -98,32 +98,59 @@ uvicorn app.main:app --reload
 
 ### 5. Run the Frontend (Tailwind + HTML + JS)
 
-```bash
-cd app/frontend
-npm install
-npm run dev
-```
+You have a few options for running the frontend.
 
-This compiles Tailwind from `src/input.css` to `src/output.css` and watches for changes.
 
-Then open this in your browser:
+#### Option A: The Simplest Way
 
-```
-app/frontend/src/index.html
-```
+Simply open the index.html file in your browser. The method is quick but may have issues with some browser security restrictions (like cross-origin requests).
 
-**S the frontend with a local server:**
+1. Locate the file: `frontend/index.html`
 
-- Go to `app/frontend` and then run:
+2. Open it: Double-click the file or drag it into your browser's window.
 
-```bash
-npx serve .
-```
 
-> This will run at something like:  
-> `http://localhost:3000`
+#### Option B: Using a Python Simple Server
 
----
+This is the recommended method for development as it provides a local server that handles API requests correctly.
 
-## 📌 License
-This project is licensed under the [MIT License](LICENSE).
+1. Navigate to the frontend directory.
+
+    ```bash
+    cd frontend
+    ```
+
+3. Run a simple Python web server.
+
+    ```bash
+    python -m http.server 5500
+    ```
+
+    > The frontend will run at:  
+    > `http://localhost:5500`
+
+
+#### Option C: Using a Node.js Server
+
+If you have Node.js and npm installed, this is another reliable way to run a local server.
+
+1. Install the serve package globally.
+
+    ```bash
+    npm install -g serve
+    ```
+
+3. Navigate to the frontend directory.
+
+    ```bash
+    cd frontend
+    ```
+
+4. Run the server.
+
+    ```bash
+    serve .
+    ```
+
+    > The frontend will run at:  
+    > `http://localhost:3000`
