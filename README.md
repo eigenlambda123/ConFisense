@@ -1,5 +1,23 @@
 # ConFiSense
 
+
+## 📸 Demo Screenshots
+
+### Home Page
+![Home Page](demo_screenshots/home-page.png)
+
+### Dashboard with Inputs
+![Dashboard with Inputs](demo_screenshots/dashboard-Winputs.png)
+
+### Dashboard with Outputs
+![Dashboard with Outputs](demo_screenshots/dashboard-Woutputs.png)
+
+### AI Explanation
+![AI Explanation](demo_screenshots/dashboard-AIexplanation.png)
+
+### Sample Export
+![Sample Export](demo_screenshots/sample-export.png)
+
 ## Project Setup Instructions (Frontend + Backend)
 
 ---
