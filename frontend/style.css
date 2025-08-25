@@ -1,0 +1,615 @@
+:root{
+  --dark-blue: #121d38;
+  --darker-blue: #060e27;
+  --azure-blue: #4465a2;;
+  --light-blue: #b0e7ff;
+  --gray-blue: #99a1af;
+  --medium-gray-blue: #707274;
+  --dark-gray-blue: #4f5259;
+}
+
+@font-face {
+  font-family: HPSimplified;
+  font-weight: normal;
+  src: url(../assets/fonts/HPSimplifiedRegular.woff);
+}
+
+@font-face {
+  font-family: HPSimplified;
+  font-weight: bold;
+  src: url(../assets/fonts/HPSimplifiedBold.woff);
+}
+
+@font-face {
+  font-family: NunitoSans;
+  font-weight: normal;
+  src: url(../assets/fonts/NunitoSans.ttf);
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    min-width: 425px;
+    position: relative;
+    height: 100vh;
+    background-color: white;
+    /* background-image: radial-gradient(white, #ffffff17, #50adf4);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover; */
+}
+
+h1, h2, h3, h4, p {
+    /* font-family: "HPSimplifiedRegular", Arial, Helvetica, sans-serif; */
+    font-size: 1rem;
+    line-height: 1;
+}
+
+button {
+    padding: 1rem 0;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: white;
+    border-bottom: 1px solid gray;
+    padding: 0.5rem 2rem;
+    height: 4rem;
+    width: 100%;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+#header-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+#header-container div {
+    display: flex;
+    flex-direction: column;
+}
+
+#header-container img {
+    width: 2.5rem;
+    height: auto;
+}
+
+.accent-gradient-text {
+    background: linear-gradient(to top right, #1592DB, #001D5C);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+}
+
+#title {
+    font-size: 1.75rem;
+}
+
+#subtitle {
+    color: var(--dark-blue);
+    font-size: 1rem;
+}
+
+main {
+    padding-top: 4rem;
+    max-width: 100%;
+    width: 100%;
+    transition: width 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+main.active { width: 0; }
+
+#home-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 3rem 6rem 3rem;
+    transition: padding 0.3s ease-in-out;
+}
+
+#greetings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-height: 5rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+    transition: max-height 0.5s ease-in-out;
+    overflow-y: hidden;
+}
+
+#greetings-container.active { max-height: 0 }
+
+#main-greeting {
+    text-align: center;
+    color: var(--dark-blue);
+    font-size: 1.5rem;
+}
+
+#main-tip {
+    text-align: center;
+    color: var(--azure-blue);
+    font-size: 1rem;
+}
+
+#card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: 33.33%;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.card-btn {
+    display: flex;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    min-height: 9rem;
+    max-width: 25rem;
+    width: 25rem;
+    background-image: linear-gradient(to top right, #1592DB, #001D5C);
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: start;
+    filter: drop-shadow(0px 3px 1px var(--dark-blue));
+    transition: transform 0.3s ease-in-out, width 0.5s ease-in-out, min-height 0.5s ease-in-out;
+}
+
+.card-btn.active { min-height: 6rem }
+
+.card-btn:hover { transform: translateY(-5px) }
+
+.card-btn:active { transform: translateY(5px) }
+
+.scenario-texts {
+    display: flex;
+    flex-direction: column;
+}
+
+.scenario-name {
+    color: white;
+    font-size: 1.25rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+    transition: font-size 0.5s ease-in-out;
+}
+
+.scenario-desc {
+    color: var(--light-blue);
+    font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: normal;
+    transition: font-size 0.5s ease-in-out;
+}
+
+.scenario-icon {
+    margin-left: auto;
+    width: 6rem;
+    height: auto;
+    transition: width 0.5s ease-in-out;
+}
+
+.scenario-name.active { font-size: 1rem }
+
+.scenario-desc.active { font-size: 0.7rem }
+
+.scenario-icon.active { width: 3rem }
+
+aside {
+    position: absolute;
+    top: 4rem;
+    right: 0;
+    max-width: 100%;
+    width: 0;
+    height: auto;
+    transition: width 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+aside.active { width: 100%; }
+
+#dashboard-container {
+    background-color: #E0E0E0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 3rem 6rem 3rem;
+    transition: padding 0.3s ease-in-out;
+}
+
+#dashboard-header {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 1rem;
+}
+
+#back-btn {
+    background-color: transparent;
+    border: 0;
+    color: var(--azure-blue);
+    font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#back-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke-width: 2.5px;
+    stroke: var(--azure-blue);
+    vertical-align: middle;
+    transform: rotate(180deg);
+}
+
+#scenario-title {
+    font-size: 1.25rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+#widget-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.dashboard-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    filter: drop-shadow(0px 3px 0px gray);
+}
+
+.widget-title {
+    color: var(--dark-blue);
+    font-size: 1.25rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+.widget-line {
+    border: 2px solid var(--gray-blue);
+}
+
+.widget-container {
+    border: 2px solid var(--gray-blue);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+#field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 1rem;
+    margin: 1rem 0;
+    max-height: 400px;
+    font-family: "HPSimplified";
+    font-weight: normal;
+    overflow-y: auto;
+}
+
+#field-container::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+}
+
+#field-container::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+#field-container::-webkit-scrollbar-thumb {
+    background-color: var(--gray-blue);
+    border-radius: 10px;
+}
+
+.category-label {
+    background: linear-gradient(to top right, #1592DB, #001D5C);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    font-size: 1.25rem;
+}
+
+.category-line {
+    border: 2px dashed var(--gray-blue);
+}
+
+.input-label {
+    display: block;
+    padding: 0 0 0.5rem 0;
+    color: var(--dark-blue);
+    font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: bold;
+}
+
+.input-field {
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    border: 2px solid var(--gray-blue);
+    display: block;
+    width: 100%;
+    background-color: white;
+    color: var(--dark-blue);
+    font-size: 1rem;
+    font-family: "HPSimplified";
+    font-weight: normal;
+}
+
+.widget-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.widget-btn {
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: 10px;
+    font-family: "HPSimplified";
+    font-weight: normal;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: filter 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.widget-btn:hover {
+    filter: brightness(0.6);
+    transform: translateY(-3px);
+}
+
+.widget-btn:active {
+    filter: brightness(0.6);
+    transform: translateY(1px);
+}
+
+#chart-container {
+    width: 100%;
+    height: 400px;
+    position: relative;
+}
+
+#chart-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.main-btn {
+    background-image: linear-gradient(to top right, #1592DB, #001D5C);
+    color: white;
+}
+
+#clear-btn {
+    color: white;
+    background-color: #a53535;
+}
+
+#wipe-history-btn {
+    color: white;
+    background-color: #c61616;
+}
+
+#math-btn {
+    background-color: #3160ac;
+    color: white;
+}
+
+#download-btn {
+    color: white;
+    background-color: #399139;
+}
+
+#clear-btn svg, #wipe-history-btn svg, #math-btn svg, #download-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke-width: 2px;
+    stroke: white;
+    vertical-align: middle;
+}
+
+#explain {
+    grid-row: 3;
+    grid-column: 1 / span 1;
+}
+
+#suggest {
+    grid-row: 4;
+    grid-column: 1 / span 1;
+}
+
+#explanation { display: none }
+#suggestions { display: none }
+
+.ai-text-container {
+    display: none;
+    min-height: 0;
+}
+
+.ai-text {
+    color: var(--medium-gray-blue);
+    font-family: "HPSimplified";
+    font-weight: normal;
+    font-size: 1rem;
+}
+
+.ai-suggestions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.skeleton {
+    opacity: 0.7;
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skeleton-text {
+    width: 100%;
+    height: 1rem;
+    border-radius: 0.25rem;
+}
+
+.skeleton-text:last-child {
+    width: 80%;
+}
+
+#msg-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    box-shadow: 0 4px 6px black;
+    display: none;
+    min-width: 20rem;
+    max-width: 30rem;
+}
+
+#msg-box p {
+    text-align: left;
+    font-family: "HPSimplified";
+    font-size: 1.25rem;
+}
+
+#msg-box button {
+    background-color: transparent;
+    border: 2px solid white;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: "HPSimplified";
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#msg-box button:hover {
+    background-color: white;
+}
+
+.empty-field-msg-box { background-color: #a53535 }
+.empty-field-msg-box button { color: white }
+.empty-field-msg-box button:hover { color: #a53535 }
+.empty-field-msg-box p { text-align: center }
+
+.math-msg-box { background-color: #3160ac }
+.math-msg-box button { color: white }
+.math-msg-box button:hover { color: #3160ac }
+.math-msg-box p { text-align: left }
+
+.download-msg-box { background-color: #399139 }
+.download-msg-box button { color: white }
+.download-msg-box button:hover { color: #399139 }
+.download-msg-box p { text-align: center }
+
+.wipe-history-msg-box { background-color: #c61616 }
+.wipe-history-msg-box button { color: white }
+.wipe-history-msg-box button:hover { color: #c61616 }
+.wipe-history-msg-box p { text-align: center }
+
+@keyframes skeleton-loading {
+    0% { background-color: var(--dark-gray-blue) }
+    100% { background-color: var(--gray-blue) }
+}
+
+/* For medium screens */
+@media (min-width: 426px) {
+    #main-greeting { font-size: 2rem }
+    #main-tip { font-size: 1.25rem }
+
+    .scenario-name { font-size: 1.75rem }
+    .scenario-desc { font-size: 1.25rem }
+
+    #scenario-title { font-size: 1.5rem }
+    .widget-title { font-size: 1.5rem }
+    #widget-grid { grid-template-columns: 1fr 2fr }
+
+    .widget-btns {
+        flex-direction: row;
+    }
+
+    #explain {
+        grid-row: 2;
+        grid-column: 1 / span 2;
+    }
+
+    #suggest {
+        grid-row: 3;
+        grid-column: 1 / span 2;
+    }
+}
+
+/* For large screens */
+@media (min-width: 1024px) {
+    main { width: 100%; }
+    aside { width: 0 }
+
+    #home-container { padding: 1rem 1.5rem 6rem 1.5rem }
+    #dashboard-container { padding: 1rem 1.5rem 6rem 1.5rem }
+
+    main.active { 
+        width: 20%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    main.active::-webkit-scrollbar {
+        width: 0;
+        background-color: transparent;
+    }
+
+    main.active::-webkit-scrollbar-track {
+        background-color: transparent;
+        border-radius: 0;
+    }
+
+    main.active::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 0;
+    }
+
+    aside.active { width: 80% } 
+}
+
+/* For extra large screens */
+@media (min-width: 1440px) {
+    #home-container { padding: 1rem 3rem 6rem 3rem }
+    #dashboard-container { padding: 1rem 3rem 6rem 3rem }
+}
