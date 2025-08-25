@@ -1,24 +1,31 @@
 # ConFiSense
 
+**Your intelligent financial analysis and decision-support tool.**  
+ConFiSense helps you make sense of complex financial data with ease, providing AI-powered insights, interactive dashboards, and seamless export features.
+
+---
+
+## ✨ Features
+
+- 🏠 **Simple Home Page** – Clean landing screen for quick access.
+- 📊 **Interactive Dashboard** – Input your data with an intuitive interface.
+- 📈 **Smart Outputs** – Visual insights presented clearly.
+- 🤖 **AI-Powered Explanations** – Understand your results with contextual insights.
+- 📤 **Easy Export** – Download reports and share them effortlessly.
+
+---
 
 ## 📸 Demo Screenshots
 
-### Home Page
-![Home Page](demo_screenshots/home-page.png)
+Here’s a quick look at **ConFiSense in action**:  
 
-### Dashboard with Inputs
-![Dashboard with Inputs](demo_screenshots/dashboard-Winputs.png)
+| 🏠 Home Page | 📊 Dashboard (Inputs) | 📈 Dashboard (Outputs) |
+|--------------|-----------------------|-------------------------|
+| ![Home Page](demo_screenshots/home-page.png) | ![Dashboard with Inputs](demo_screenshots/dashboard-Winputs.png) | ![Dashboard with Outputs](demo_screenshots/dashboard-Woutputs.png) |
 
-### Dashboard with Outputs
-![Dashboard with Outputs](demo_screenshots/dashboard-Woutputs.png)
-
-### AI Explanation
-![AI Explanation](demo_screenshots/dashboard-AIexplanation.png)
-
-### Sample Export
-![Sample Export](demo_screenshots/sample-export.png)
-
-## Project Setup Instructions (Frontend + Backend)
+| 🤖 AI Explanation | 📤 Sample Export |
+|-------------------|------------------|
+| ![AI Explanation](demo_screenshots/dashboard-AIexplanation.png) | ![Sample Export](demo_screenshots/sample-export.png) |
 
 ---
 
