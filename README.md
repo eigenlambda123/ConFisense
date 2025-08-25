@@ -44,6 +44,8 @@ Here’s a quick look at **ConFiSense in action**:
 
 ---
 
+## 🚀 Quick Start
+
 ### 1. Navigate to Project Root
 
 ```bash
@@ -120,3 +122,8 @@ npx serve .
 
 > This will run at something like:  
 > `http://localhost:3000`
+
+---
+
+## 📌 License
+This project is licensed under the [MIT License](LICENSE).
