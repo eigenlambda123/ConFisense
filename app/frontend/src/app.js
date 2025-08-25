@@ -209,6 +209,7 @@ function showDashboard(buttonElement) {
     });
 
     // Toggle home to dashboard
+    fieldContainer.scrollTop = 0; // Reset fields scroll to top
     openDashboard();
     clearAIResponses();
     renderChart(currentScenario);
