@@ -19,13 +19,28 @@ ConFiSense helps you make sense of complex financial data with ease, providing A
 
 Here’s a quick look at **ConFiSense in action**:  
 
-| 🏠 Home Page | 📊 Dashboard (Inputs) | 📈 Dashboard (Outputs) |
-|--------------|-----------------------|-------------------------|
-| ![Home Page](demo_screenshots/home-page.png) | ![Dashboard with Inputs](demo_screenshots/dashboard-Winputs.png) | ![Dashboard with Outputs](demo_screenshots/dashboard-Woutputs.png) |
+### 🏠 Home Page  
+![Home Page](demo_screenshots/home-page.png)  
 
-| 🤖 AI Explanation | 📤 Sample Export |
-|-------------------|------------------|
-| ![AI Explanation](demo_screenshots/dashboard-AIexplanation.png) | ![Sample Export](demo_screenshots/sample-export.png) |
+---
+
+### 📊 Dashboard with Inputs  
+![Dashboard with Inputs](demo_screenshots/dashboard-Winputs.png)  
+
+---
+
+### 📈 Dashboard with Outputs  
+![Dashboard with Outputs](demo_screenshots/dashboard-Woutputs.png)  
+
+---
+
+### 🤖 AI Explanation  
+![AI Explanation](demo_screenshots/dashboard-AIexplanation.png)  
+
+---
+
+### 📤 Sample Export  
+![Sample Export](demo_screenshots/sample-export.png)  
 
 ---
 
