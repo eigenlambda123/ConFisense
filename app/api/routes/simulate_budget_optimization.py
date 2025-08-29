@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException, status
+
+from sqlmodel import select, delete
+
+from app.db.session import get_session
+from app.models.budgeting_optimization_model import BudgetOptimizationModel
 from app.schemas.budget_optimization_schema import BudgetOptimizationInput
 from app.services.simulation_logic import simulate_budget_optimization
-from app.models.budgeting_optimization_model import BudgetOptimizationModel
 from app.services.ai_explainer import generate_response
-from app.db.session import get_session
-from sqlmodel import select, delete
 
 router = APIRouter()
 
