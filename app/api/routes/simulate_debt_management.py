@@ -1,16 +1,12 @@
-from fastapi import APIRouter
-from requests import session
-from app.schemas.debt_management_schema import DebtManagementInput
-from app.services.simulation_logic import simulate_debt_management 
-from app.models.debt_management_model import DebtManagementModel
-from app.services.ai_explainer import generate_response
-
-from app.db.session import get_session
-from fastapi import status
-from fastapi import HTTPException
-
+from fastapi import APIRouter, status, HTTPException
 from sqlmodel import select
 import json
+
+from app.schemas.debt_management_schema import DebtManagementInput
+from app.services.simulation_logic import simulate_debt_management
+from app.models.debt_management_model import DebtManagementModel
+from app.services.ai_explainer import generate_response
+from app.db.session import get_session
 
 
 router = APIRouter()

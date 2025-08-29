@@ -1,16 +1,12 @@
-from fastapi import APIRouter
-from requests import session
-from app.schemas.wealth_building_schema import WealthBuildingInput
-from app.services.simulation_logic import simulate_wealth_building 
-from app.models.wealth_building_model import WealthBuildingModel
-from app.services.ai_explainer import generate_response
-
-from app.db.session import get_session
-from fastapi import status
-from fastapi import HTTPException
-
+from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 import json
+
+from app.schemas.wealth_building_schema import WealthBuildingInput
+from app.services.simulation_logic import simulate_wealth_building
+from app.models.wealth_building_model import WealthBuildingModel
+from app.services.ai_explainer import generate_response
+from app.db.session import get_session
 
 
 router = APIRouter()
