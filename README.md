@@ -1,6 +1,5 @@
 # ConFiSense
 
-**Your intelligent financial analysis and decision-support tool.**  
 ConFiSense helps you make sense of complex financial data with ease, providing AI-powered insights, interactive dashboards, and seamless export features.
 
 ---
