@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
+from typing import Optional
 
 class IncomeDetails(BaseModel):
     monthly_gross_income: float = Field(..., description="Take-home pay after taxes and deductions")
@@ -27,7 +27,7 @@ class WantsDiscretionary(BaseModel):
     shopping_leisure: float = Field(0, description="Monthly shopping and leisure expenses")
     travel_vacation: float = Field(0, description="Monthly travel and vacation expenses")
     misc_wants: float = Field(0, description="Monthly miscellaneous wants expenses")
-    
+
 class Expenses(BaseModel):
     fixed_needs: FixedNeeds = Field(..., description="Monthly fixed essential expenses")
     variable_needs: VariableNeeds = Field(..., description="Monthly variable essential expenses")
