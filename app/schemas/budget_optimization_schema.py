@@ -7,35 +7,35 @@ class IncomeDetails(BaseModel):
     income_frequency: Optional[str] = Field("monthly", description="Income frequency (monthly, semi-monthly, weekly)")
 
 class FixedNeeds(BaseModel):
-    rent: float = 0
-    utilities: float = 0
-    loan_payments: float = 0
-    insurance_premiums: float = 0
-    tuition_fees: float = 0
-    groceries: float = 0
-    transportation: float = 0
+    rent: float = Field(0, description="Monthly rent payment")
+    utilities: float = Field(0, description="Monthly utility bills (electricity, water, etc.)")
+    loan_payments: float = Field(0, description="Monthly loan payments (e.g., student loans, car loans)")
+    insurance_premiums: float = Field(0, description="Monthly insurance premiums (health, auto, etc.)")
+    tuition_fees: float = Field(0, description="Monthly tuition or education-related fees")
+    groceries: float = Field(0, description="Monthly grocery expenses")
+    transportation: float = Field(0, description="Monthly transportation costs (public transit, fuel, etc.)")
 
 class VariableNeeds(BaseModel):
-    household_supplies: float = 0
-    medical_health: float = 0
-    misc_needs: float = 0
+    household_supplies: float = Field(0, description="Monthly household supplies expenses")
+    medical_health: float = Field(0, description="Monthly medical and health expenses")
+    misc_needs: float = Field(0, description="Monthly miscellaneous needs expenses")
 
 class WantsDiscretionary(BaseModel):
-    dining_out: float = 0
-    entertainment_hobbies: float = 0
-    personal_care: float = 0
-    shopping_leisure: float = 0
-    travel_vacation: float = 0
-    misc_wants: float = 0
-
+    dining_out: float = Field(0, description="Monthly dining out expenses")
+    entertainment_hobbies: float = Field(0, description="Monthly entertainment and hobbies expenses")
+    personal_care: float = Field(0, description="Monthly personal care expenses")
+    shopping_leisure: float = Field(0, description="Monthly shopping and leisure expenses")
+    travel_vacation: float = Field(0, description="Monthly travel and vacation expenses")
+    misc_wants: float = Field(0, description="Monthly miscellaneous wants expenses")
+    
 class Expenses(BaseModel):
-    fixed_needs: FixedNeeds
-    variable_needs: VariableNeeds
-    wants_discretionary: WantsDiscretionary
+    fixed_needs: FixedNeeds = Field(..., description="Monthly fixed essential expenses")
+    variable_needs: VariableNeeds = Field(..., description="Monthly variable essential expenses")
+    wants_discretionary: WantsDiscretionary = Field(..., description="Monthly discretionary/wants expenses")
 
 class SavingsGoals(BaseModel):
-    target_monthly_savings: float = 0
-    emergency_fund_target: float = 0
+    target_monthly_savings: float = Field(0, description="Target amount to save each month")
+    emergency_fund_target: float = Field(0, description="Total target amount for emergency fund")
 
 # New model for What-If Factors
 class WhatIfFactors(BaseModel):
