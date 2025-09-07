@@ -37,14 +37,9 @@ body {
     position: relative;
     height: 100vh;
     background-color: white;
-    /* background-image: radial-gradient(white, #ffffff17, #50adf4);
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover; */
 }
 
 h1, h2, h3, h4, p {
-    /* font-family: "HPSimplifiedRegular", Arial, Helvetica, sans-serif; */
     font-size: 1rem;
     line-height: 1;
 }
